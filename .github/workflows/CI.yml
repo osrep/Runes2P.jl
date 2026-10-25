@@ -52,7 +52,7 @@ jobs:
         run: |
           julia -e 'using Pkg; Pkg.add(name="JuliaFormatter", version="2.14.0"); using JuliaFormatter; format(".")'
           if ! git diff --quiet; then
-            git diff --name-only | while read -r file; do
+            git diff -z --name-only | while IFS= read -r -d '' file; do
               echo "::error file=$file::not formatted: run JuliaFormatter 2.14.0, format(\".\") at the root"
             done
             git diff --stat
