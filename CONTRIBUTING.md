@@ -15,7 +15,7 @@ These rules hold for every contribution, by people and by coding agents alike.
 - `dev` takes merge commits or squash merges, no rebase merges.
   `main` takes merge commits only.
 - A pull request whose commits are mostly review rounds may suggest a squash merge, with a proposed squash message.
-  Its subject has at most 72 characters; its body has at most 6 lines, or about 12 for a pull request over the size target below.
+  Its subject has at most 72 characters, including the ` (#n)` that GitHub appends; its body has at most 6 lines, or about 12 above the size target below.
   GitHub adds a `Co-authored-by` line for each co-author of the squashed commits.
 - A pull request aims at about 500 changed lines in `src/` and `ext/`; tests, reference data and documentation do not count.
   Above that, its description says why the change cannot be split.
