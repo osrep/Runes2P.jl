@@ -19,10 +19,9 @@ concurrency:
 
 env:
   RUNES2P_JACOBIAN_CHUNK_SIZE: "8"
-  # one target for the package images of the cached depot on every runner (AVX2 and FMA):
-  # images built on one runner and restored on another then hold the same code, whose last
-  # bits match the stored regression values. A runner without AVX2 rejects such an image and
-  # compiles its own. Code compiled during a run still targets the CPU of the runner.
+  # one target for the package images of the cached depot on every runner (AVX2 and FMA), so
+  # that an image restored from another runner holds the same code; a runner without AVX2
+  # rejects it and compiles its own. Code compiled during a run targets the runner's CPU.
   JULIA_CPU_TARGET: "x86-64-v3"
 
 jobs:

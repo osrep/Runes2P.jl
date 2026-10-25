@@ -23,13 +23,11 @@ concurrency:
 
 env:
   RUNES2P_JACOBIAN_CHUNK_SIZE: "8"
-  # one target for the package images of the cached depot on every runner (AVX2 and FMA):
-  # images built on one runner and restored on another then hold the same code, whose last
-  # bits match the stored regression values. A runner without AVX2 rejects such an image and
-  # compiles its own. Code compiled during a run still targets the CPU of the runner.
+  # the target of the package images in the cached depot, as in CI.yml
   JULIA_CPU_TARGET: "x86-64-v3"
   # the pure-Julia regression values of test_regression_values.jl to 1e-13, not bit for
-  # bit: the last bits on a runner can differ from those of the machine that stored them
+  # bit: a safety net for code compiled for another CPU, such as on a runner without AVX2;
+  # an entry that differs is logged with its deviation, also when it passes
   RUNES2P_REGRESSION_RTOL: "1e-13"
 
 jobs:
