@@ -13,6 +13,10 @@ permissions:
   contents: write
   actions: write
 
+env:
+  # the target of the package images in the cached depot, as in CI.yml and FullSuite.yml
+  JULIA_CPU_TARGET: "x86-64-v3"
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
