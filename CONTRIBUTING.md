@@ -16,7 +16,7 @@ These rules hold for every contribution, by people and by coding agents alike.
   `main` takes merge commits only.
 - A pull request whose commits are mostly review rounds may suggest a squash merge, with a proposed squash message.
   Its subject has at most 72 characters, including the ` (#n)` that GitHub appends; its body has at most 6 lines, or about 12 above the size target below.
-  GitHub adds a `Co-authored-by` line for each co-author of the squashed commits.
+  GitHub pre-fills a `Co-authored-by` line for each co-author of the squashed commits; they stay below the proposed message.
 - A pull request aims at about 500 changed lines in `src/` and `ext/`; tests, reference data and documentation do not count.
   Above that, its description says why the change cannot be split.
   The usual split is a series of pull requests that each pass the full suite on their own, for example the data layout, then the operator, then the solver wiring with its tests.

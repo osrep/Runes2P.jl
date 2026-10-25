@@ -14,8 +14,8 @@ using LinearAlgebra: BLAS
 # the relative tolerance of the pure-Julia entries at -O2, or `nothing` for bit for bit
 const REGRESSION_RTOL = let value = get(ENV, "RUNES2P_REGRESSION_RTOL", "")
     rtol = isempty(value) ? nothing : parse(Float64, value)
-    rtol === nothing || rtol > 0 ||
-        error("RUNES2P_REGRESSION_RTOL = $value: a relative tolerance is positive")
+    rtol === nothing || (rtol > 0 && isfinite(rtol)) ||
+        error("RUNES2P_REGRESSION_RTOL = $value: a relative tolerance is positive and finite")
     rtol
 end
 

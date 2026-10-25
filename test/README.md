@@ -73,8 +73,10 @@ Two kinds of assertion hold for optimised code alone:
 
 - Below `-O2` an assertion on allocations is skipped and reported as broken (`skip = !OPTIMIZED` in the test files).
 - Below `-O2` the stored values of `test_regression_values.jl` are compared to 1e-12 in place of bit for bit, since the sums run in another order.
-- At `-O2` they are compared bit for bit, or to the tolerance of `RUNES2P_REGRESSION_RTOL` where it is set.
-  An entry that differs is logged with its relative deviation, also when it passes.
+
+At `-O2` the pure-Julia entries of `test_regression_values.jl` are compared bit for bit, or to the tolerance of `RUNES2P_REGRESSION_RTOL` where it is set.
+Such an entry that differs is logged with its relative deviation, also when it passes.
+The `:blas` entries are compared to 1e-13 at every level.
 
 ## Environment variables
 
