@@ -102,6 +102,8 @@ jobs:
       # one depot cache for all groups, which share the test environment
       - uses: julia-actions/cache@v3
         with:
+          # the target in the name: images of another target are never restored
+          cache-name: julia-cache-${{ env.JULIA_CPU_TARGET }};workflow=${{ github.workflow }};job=${{ github.job }}
           include-matrix: false
       - name: Set the ADAS cache directory
         run: echo "RUNES2P_ADAS_CACHE=$HOME/.cache/Runes2P/adas" >> "$GITHUB_ENV"
