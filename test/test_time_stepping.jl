@@ -437,6 +437,65 @@ end
     @test maximum(abs.(F)) * dt / 1e19 > NewtonSolver().residual_tolerance
 end
 
+@testset "the polish of negative entries" begin
+    # the schemes decide which kinetic unknowns `:auto` polishes
+    mom = MomentumGrid(uniform_p_faces(20, 0.0, 1.0), uniform_xi_faces(4))
+    function polish_system(scheme)
+        g, op = iter_plasma_operator(mom, 100.0, 1.0; scheme)
+        layout = UnknownLayout(g.radial_grid, [KineticUnknown(:f, g; scale = 1e20)])
+        return EquationSystem(layout, [Equation(:f, TimeDerivative(), FokkerPlanckTerm(:f, op))])
+    end
+    tcdf, smart, central = polish_system(:tcdf), polish_system(:smart),
+    polish_system(:central)
+    polished(system, mode) = [group.unknown
+                              for group in NewtonWorkspace(
+        system, NewtonSolver(polish_negatives = mode)).polish]
+    @test polished(tcdf, :auto) == [:f]
+    @test isempty(polished(smart, :auto))
+    @test isempty(polished(central, :auto))
+    @test polished(smart, true) == [:f]
+    @test isempty(polished(tcdf, false))
+    @test_throws "polish_negatives must be" NewtonWorkspace(
+        tcdf, NewtonSolver(polish_negatives = :always))
+    # `:auto` stops after POLISH_MISSES polished steps in a row that leave negative entries,
+    # and queues a warning for the log of the run; `true` never stops
+    for (mode, stops) in ((:auto, true), (true, false))
+        solver = NewtonSolver(polish_negatives = mode)
+        ws = NewtonWorkspace(tcdf, solver)
+        u = ones(length(tcdf.layout))
+        u[3] = -1.0
+        for step in 1:POLISH_MISSES
+            @test Runes2P._start_polish!(ws, u)
+            Runes2P._finish_polish!(ws, solver, u, 1e-3 * step)
+        end
+        @test ws.polish[1].enabled[] == !stops
+        @test length(ws.polish_warnings) == (stops ? 1 : 0)
+        @test Runes2P._start_polish!(ws, u) == !stops
+    end
+    # an extra iteration that removes the negative entries resets the count
+    solver = NewtonSolver()
+    ws = NewtonWorkspace(tcdf, solver)
+    negative, clean = ones(length(tcdf.layout)), ones(length(tcdf.layout))
+    negative[3] = -1.0
+    for _ in 1:(POLISH_MISSES - 1)
+        Runes2P._start_polish!(ws, negative)
+        Runes2P._finish_polish!(ws, solver, negative, 0.0)
+    end
+    Runes2P._start_polish!(ws, negative)
+    Runes2P._finish_polish!(ws, solver, clean, 0.0)
+    @test ws.polish[1].misses[] == 0
+    @test ws.polish[1].enabled[]
+    # the warning goes to the log of the run, or to the logger of Julia without one
+    warning = "the extra Newton iteration for negative entries of f left them"
+    io = IOBuffer()
+    push!(ws.polish_warnings, warning)
+    Runes2P._log_polish_warnings!(ProgressLog(; io), ws)
+    @test occursin(warning, String(take!(io)))
+    @test isempty(ws.polish_warnings)
+    push!(ws.polish_warnings, warning)
+    @test_logs (:warn, warning) Runes2P._log_polish_warnings!(nothing, ws)
+end
+
 @testset "a stiff step converges at the residual floor" begin
     # With rate·dt = 1e10 the transient and the right-hand side cancel to ten digits, so
     # round-off keeps the scaled residual near 1e-6, above the default tolerance. Newton

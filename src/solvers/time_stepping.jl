@@ -205,6 +205,21 @@ function _solve_step!(run, from, to, t_next, h; kind::Symbol = :step)
     return result
 end
 
+# the warnings of a polish of negative entries that the Newton iteration turned off, to the
+# log of the run, or to the logger of Julia when the run has no log
+function _log_polish_warnings!(log, ws::NewtonWorkspace)
+    isempty(ws.polish_warnings) && return nothing
+    for message in ws.polish_warnings
+        if log === nothing
+            @warn message
+        else
+            log_event!(log, "negative polish off", Logging.Warn, message)
+        end
+    end
+    empty!(ws.polish_warnings)
+    return nothing
+end
+
 # a failed solve that the stepper gives up on
 function _give_up(run, options, t_next, h, result, how)
     log = options.log
@@ -1721,6 +1736,7 @@ function _run_steps!(run::RunState{T}, options::RunOptions) where {T}
         t = run.t
         advanced = advance!(
             run.stepper, run.stepper_state, run, options, run.ceilings[run.next_ceiling])
+        _log_polish_warnings!(log, run.ws)
         advanced === nothing && continue      # a failed or rejected attempt, retried by the stepper
         t_next, h = advanced
         last_record = length(stats.time)      # the accepted step is the last one recorded

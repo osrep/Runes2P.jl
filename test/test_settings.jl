@@ -204,7 +204,7 @@ _is_plain(x) = false
         @test record["line_search"] === true
         @test record["max_iterations"] === 30
         @test record["reuse_linear_matrix"] === true
-        @test record["polish_negatives"] === true
+        @test record["polish_negatives"] == "auto"
         @test record["linear_solver"]["type"] == "GMRES"
         @test record["linear_solver"]["restart_length"] == 60
         @test record["linear_solver"]["preconditioner_refresh"] == "every_step"
