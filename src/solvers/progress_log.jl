@@ -72,7 +72,7 @@ mutable struct ProgressLog <: Logging.AbstractLogger
     event_counts::Dict{String, Int}
     requested::Threads.Atomic{Bool}
     entries::Int
-    message_limits::Dict{Any, Int}  # per message id: the times it may still be written (`maxlog`)
+    message_limits::Dict{Any, Int}  # per message id: the writes left (`maxlog`)
 end
 
 function ProgressLog(; file::Union{Nothing, AbstractString} = nothing, io::IO = stdout,
@@ -227,18 +227,22 @@ end
 # the logger interface: messages of @info, @warn and @error inside a run
 
 Logging.min_enabled_level(::ProgressLog) = Logging.Info
-Logging.shouldlog(::ProgressLog, level, _module, group, id) = true
+# a message whose `maxlog` is used up is skipped before it is built, as Julia's loggers do
+function Logging.shouldlog(log::ProgressLog, level, _module, group, id)
+    get(log.message_limits, id, 1) > 0
+end
 Logging.catch_exceptions(::ProgressLog) = true
 
 function Logging.handle_message(
         log::ProgressLog, level::Logging.LogLevel, message, _module, group, id, file,
         line; kwargs...)
     # `maxlog = n` writes a message of one id at most n times, as Julia's loggers do
+    # (`SimpleLogger` in `base/logging/logging.jl`)
     maxlog = get(kwargs, :maxlog, nothing)
-    if maxlog isa Integer
-        remaining = get!(log.message_limits, id, Int(maxlog))
+    if maxlog isa Core.BuiltinInts
+        remaining = get!(log.message_limits, id, Int(maxlog)::Int)
+        remaining == 0 && return nothing
         log.message_limits[id] = remaining - 1
-        remaining > 0 || return nothing
     end
     shown = [(key, value) for (key, value) in kwargs if key !== :maxlog]
     details = if isempty(shown)

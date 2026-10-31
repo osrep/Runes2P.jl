@@ -109,6 +109,11 @@ _count(pattern, text) = length(collect(eachmatch(pattern, text)))
         @test occursin("(step = 2)", text)
         @test !occursin("maxlog", text)
         @test _count(r"written every time", text) == 2
+        # a message whose only keyword is maxlog has no list of keywords
+        with_logger(ProgressLog(; io)) do
+            @info "alone" maxlog = 2
+        end
+        @test occursin(r"alone\n", String(take!(io)))
     end
 
     @testset "header and entries of a run" begin
