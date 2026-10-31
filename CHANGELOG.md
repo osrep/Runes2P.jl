@@ -12,7 +12,7 @@ Until the first release, every change is listed under "Unreleased", with the sub
 
 ### Changed
 
-- The residual test of `NewtonSolver` weights the rows of a kinetic unknown by the larger of the row scale and the entry at the start of the step ([#PR](https://github.com/osrep/Runes2P.jl/pull/PR)).
+- The residual test of `NewtonSolver` weights the rows of a kinetic unknown by the larger of the row scale and the entry at the start of the step ([#163](https://github.com/osrep/Runes2P.jl/pull/163)).
   The collision fluxes of the bulk cancel in these rows, and the round-off of that cancellation held a step of the disruption case at the residual floor, with one or two extra iterations.
   The accepted states move by at most 2e-8 of the scale of the unknown in that case.
 - `radial_values(u, layout, id)`, the view of a radial unknown over the radii, is renamed `unknown_values(u, layout, id)` ([#123](https://github.com/osrep/Runes2P.jl/pull/123)).
