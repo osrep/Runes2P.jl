@@ -390,6 +390,50 @@ end
     end
 end
 
+@testset "the rows of a kinetic bulk take the size of their entry" begin
+    # A Maxwellian of 1e20 m^-3 at 130 eV relaxing at 100 eV: f reaches 1.5e24 in the bulk,
+    # against the scale 1e19 of the unknown. With a step of 1e-4 s, far above the collision
+    # time, the collision fluxes of the bulk cancel in its rows, and the round-off of that
+    # cancellation would hold the residual above the tolerance with the weight dt/scale. With
+    # the weight dt/|u_old| the step converges to the tolerance; the tail keeps dt/scale.
+    rad = RadialGrid(uniform_r_faces(1, 0.5))
+    theta = 100.0 / Constants.ELECTRON_REST_ENERGY
+    grid = cylindrical_grid(
+        MomentumGrid(uniform_p_faces(30, 0.0, 12 * sqrt(2theta)), uniform_xi_faces(2)), rad)
+    settings = CollisionSettings(mode = :full, screening = :complete, coulomb_logarithm = :thermal)
+    plasma(t) = PlasmaState(; cold_electron_temperature = [100.0],
+        ions = [IonSpecies("D", 1, 1, [1e20])], electric_field = [0.0], magnetic_field = [5.0])
+    operator = AdvectionDiffusion(grid; scheme = :exponential_fitting, p_upper_boundary = :f_zero)
+    layout = UnknownLayout(rad, [KineticUnknown(:f, grid; scale = 1e19)])
+    system = EquationSystem(layout,
+        [Equation(:f, TimeDerivative(), prescribed_fokker_planck_term(:f, operator, plasma; settings))])
+    u_old = zeros(length(layout))
+    f = kinetic_view(u_old, layout, 1, 1)
+    p = momentum_grid(grid).p_centers
+    for j in axes(f, 2), i in axes(f, 1)
+
+        f[i, j] = exp(-p[i]^2 / (2 * 1.3 * theta))
+    end
+    f .*= 1e20 / density(grid, reshape(f, size(f)..., 1))[1]
+    @test maximum(f) > 1e24
+    dt = 1e-4
+    u = copy(u_old)
+    ws = NewtonWorkspace(system)
+    result = newton_solve!(u, u_old, ws, dt, dt)
+    @test result.status === :converged
+    @test !result.residual_floor
+    @test result.residual_norm <= NewtonSolver().residual_tolerance
+    # the bulk row is weighted by its entry, the tail row by the scale of the unknown
+    @test ws.row_weights[1] == dt / abs(u_old[1])
+    @test abs(u_old[end]) < 1e19
+    @test ws.row_weights[end] == dt / 1e19
+    # the residual of the accepted state with the weight dt/scale on every row: the round-off
+    # floor of the bulk, above the tolerance
+    F = similar(u)
+    residual!(F, u, u_old, system, dt, dt)
+    @test maximum(abs.(F)) * dt / 1e19 > NewtonSolver().residual_tolerance
+end
+
 @testset "a stiff step converges at the residual floor" begin
     # With rate·dt = 1e10 the transient and the right-hand side cancel to ten digits, so
     # round-off keeps the scaled residual near 1e-6, above the default tolerance. Newton

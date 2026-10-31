@@ -16,7 +16,14 @@ Settings of the Newton iteration of a backward-Euler step.
   satisfies `|δ| ≤ absolute + relative |u|` with the unknown's Newton [`Tolerance`](@ref),
   and the residual, measured as the change it causes in one step relative to the unknown's
   scale (`dt |F|/scale` on differential rows, `|F|/scale` on algebraic rows), is at most
-  `residual_tolerance` everywhere. An infinite absolute tolerance excludes an unknown from
+  `residual_tolerance` everywhere. On the rows of a kinetic unknown the scale is the larger
+  of the row scale and the entry at the start of the step, `|u_old|`: the collision fluxes
+  of the bulk cancel to a net term hundreds of times smaller, and the round-off of that
+  cancellation grows with the entry, which exceeds the scale of the unknown by orders of
+  magnitude in the bulk. The tail, below the scale, keeps it. In a bulk cell the residual
+  test is then looser by `|u_old|/scale` in absolute terms, as the update test is relative
+  to `|u|` there; a bulk that grows by orders of magnitude within one step can still reach
+  the round-off floor below. An infinite absolute tolerance excludes an unknown from
   both tests; the merit function of the line search keeps all rows. The unknown of a
   [`Constraint`](@ref) is a rate: the system fixes the change `dt u` that it causes over the
   step, and round-off of the constrained quantity divided by `dt` is the accuracy it can
@@ -167,6 +174,7 @@ struct NewtonWorkspace{T, S <: EquationSystem, L, C}
     limit_reference::Vector{UnitRange{Int}}  # the entries whose magnitudes sum to the reference, empty for the own scale
     group_tolerance::Vector{T}     # the group part of the tolerance per entry, 0 outside groups
     group_ranges::Vector{UnitRange{Int}}     # the entries of the group of each entry with a group part
+    kinetic_rows::Vector{Int}      # the rows of the kinetic unknowns, weighted by their entry
     cache::C
     residual_norms::Vector{Float64}
     update_norms::Vector{Float64}
@@ -305,13 +313,20 @@ function NewtonWorkspace(system::EquationSystem{T}, solver::NewtonSolver = Newto
     matrix.nzval[diagonal_positions] .= one(T)
     cache = linear_solver_cache(solver.linear_solver, matrix, system, row_weights, scales)
     exact_jacobian = system.stored_jacobian_exact || newton_operator_exact(cache)
+    kinetic_rows = Int[]
+    for id in eachindex(layout.unknowns)
+        layout.kinds[id] === :kinetic || continue
+        for range in _unknown_ranges(layout, id)
+            append!(kinetic_rows, range)
+        end
+    end
     return NewtonWorkspace(
         system, solver, exact_jacobian, system.linear && exact_jacobian, zeros(T, n),
         zeros(T, n), zeros(T, n), zeros(T, n),
         zeros(T, n), zeros(T, n), row_weights, scales, absolute, relative, rate_tolerance,
         jacobian,
         matrix, diagonal_positions, limited, limit_value, limit_tolerance, limit_reference,
-        group_tolerance, group_ranges, cache,
+        group_tolerance, group_ranges, kinetic_rows, cache,
         Float64[], Float64[], Float64[], Ref(NaN), Ref(NaN), Ref(0))
 end
 
@@ -454,6 +469,14 @@ function newton_solve!(
     empty!(ws.step_lengths)
     @inbounds for i in eachindex(ws.row_weights)
         ws.row_weights[i] = (system.mass[i] == 0 ? one(dt) : dt) / system.row_scales[i]
+    end
+    # a kinetic row takes the size of its entry at the start of the step where that exceeds
+    # its row scale (the docstring of NewtonSolver); the start state, not `reference`
+    @inbounds for i in ws.kinetic_rows
+        size_at_start = abs(u_old[system.mass_columns[i]])
+        if size_at_start > system.row_scales[i]
+            ws.row_weights[i] = (system.mass[i] == 0 ? one(dt) : dt) / size_at_start
+        end
     end
     krylov = 0
     updates = 0
