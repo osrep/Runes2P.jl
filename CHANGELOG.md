@@ -59,3 +59,4 @@ Until the first release, every change is listed under "Unreleased", with the sub
   The conductivity of the default three-mode model moves by up to 0.03 %, depending on the effective charge.
 - `StepDoubling` rejects a step in which an unknown with no absolute tolerance is zero after the full step and not after the two half steps, as DREAM's acceptance does; before, it accepted it ([#157](https://github.com/osrep/Runes2P.jl/pull/157)).
   The next step follows from the largest error of the other unknowns, as in DREAM, and is half the step tried when that error is zero.
+- `ProgressLog` writes a message with `maxlog = n` at most `n` times and leaves `maxlog` out of the printed keywords, as Julia's loggers do ([#165](https://github.com/osrep/Runes2P.jl/pull/165)).
