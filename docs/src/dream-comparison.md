@@ -283,6 +283,7 @@ The reasons of the defaults that are choices of this package are on [Choices of 
 | ion masses | nuclear masses of H, D and T, standard atomic weights otherwise | standard atomic weights up to ``Z = 40``, ``2.3\,Z`` u beyond, `mass_table = :dream` |
 | charge states in the collisions of ``f`` | those of the start of the step, `lagged = :ions` | those of the iterate with their Jacobian columns, `lagged = ()` |
 | Newton matrix of a linear system | assembled and factorized once per step | every iteration, `reuse_linear_matrix = false` of [`NewtonSolver`](@ref) |
+| negative entries of a kinetic unknown at convergence | one more Newton iteration | none, `polish_negatives = false` of [`NewtonSolver`](@ref) |
 | floor of a temperature unknown | [`DEFAULT_TEMPERATURE_FLOOR`](@ref) ([`fluid_temperature_floors`](@ref)) | damped towards zero, a lower floor of [`PlasmaFromUnknowns`](@ref) or a [`LowerLimit`](@ref) |
 
 ### Behaviour without an option for DREAM's

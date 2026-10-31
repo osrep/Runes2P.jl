@@ -19,29 +19,30 @@ Settings of the Newton iteration of a backward-Euler step.
   `residual_tolerance` everywhere. On the differential rows of a kinetic unknown the scale
   is the larger of the row scale and the entry whose time derivative the row holds, at the
   start of the step (`|u_old|`): the collision fluxes of the bulk cancel to a net term
-  orders of magnitude smaller, and the round-off of that cancellation grows with the entry,
-  which exceeds the scale of the unknown by orders of magnitude in the bulk. The tail,
-  below the scale, keeps the row scale. In a bulk cell the residual test is then looser by
-  `|u_old|/scale` in absolute terms, as the update test is relative to `|u|` there. A bulk
-  that grows by orders of magnitude within one step can still meet the round-off floor of a
-  stiff step, the exception at the end of this item. An infinite absolute tolerance excludes an unknown from
-  both tests; the merit function of the line search keeps all rows. The unknown of a
-  [`Constraint`](@ref) is a rate: the system fixes the change `dt u` that it causes over the
-  step, and round-off of the constrained quantity divided by `dt` is the accuracy it can
-  reach. Its update test is `|δ| ≤ absolute + relative |u| + relative scale/dt`, with the
-  scale of its equation, which bounds the error of the change over the step as the
-  tolerances bound the other unknowns (such as the particle source at steps below 1e-6 s,
-  where the round-off of the density divided by `dt` exceeds a tolerance on the source
-  itself). A stiff step is an exception: when the transient and the right-hand side cancel
-  to many digits, round-off holds the residual above `residual_tolerance` whatever the
-  iterate, so a converged update is accepted once the residual stops decreasing (it grew, or
-  fell by less than 10%, in the last iteration). Such a step is flagged (`residual_floor` in
-  [`NewtonResult`](@ref)), since the same waiver would also accept a linearly converging
-  iteration whose small update understates its error (an inexact Jacobian or linear solve).
-  An inexact linear solve with relative residual `η` contracts the error by about `η` per
-  iteration, so the waiver applies only when the last linear solve was accurate to
-  `floor_linear_tolerance` (always true for direct solvers; for [`GMRES`](@ref) its
-  `relative_tolerance`), and never when the Newton matrix is itself approximate (a term with
+  orders of magnitude smaller, and the round-off of that cancellation grows with the
+  entry, which exceeds the scale of the unknown by orders of magnitude in the bulk. The
+  tail, below the scale, keeps the row scale. In a bulk cell the residual test is then
+  looser by `|u_old|/scale` in absolute terms, as the update test is relative to `|u|`
+  there. A bulk that grows by orders of magnitude within one step can still meet the
+  round-off floor of a stiff step, the exception at the end of this item. An infinite
+  absolute tolerance excludes an unknown from both tests; the merit function of the line
+  search keeps all rows. The unknown of a [`Constraint`](@ref) is a rate: the system fixes
+  the change `dt u` that it causes over the step, and round-off of the constrained
+  quantity divided by `dt` is the accuracy it can reach. Its update test is `|δ| ≤
+  absolute + relative |u| + relative scale/dt`, with the scale of its equation, which
+  bounds the error of the change over the step as the tolerances bound the other unknowns
+  (such as the particle source at steps below 1e-6 s, where the round-off of the density
+  divided by `dt` exceeds a tolerance on the source itself). A stiff step is an exception:
+  when the transient and the right-hand side cancel to many digits, round-off holds the
+  residual above `residual_tolerance` whatever the iterate, so a converged update is
+  accepted once the residual stops decreasing (it grew, or fell by less than 10%, in the
+  last iteration). Such a step is flagged (`residual_floor` in [`NewtonResult`](@ref)),
+  since the same waiver would also accept a linearly converging iteration whose small
+  update understates its error (an inexact Jacobian or linear solve). An inexact linear
+  solve with relative residual `η` contracts the error by about `η` per iteration, so the
+  waiver applies only when the last linear solve was accurate to `floor_linear_tolerance`
+  (always true for direct solvers; for [`GMRES`](@ref) its `relative_tolerance`), and
+  never when the Newton matrix is itself approximate (a term with
   [`jacobian_kind`](@ref)`(term) === :approximate` solved on the stored matrix): such a
   quasi-Newton iteration converges linearly by design, its residual falls by a constant
   factor per iteration that the stall test would mistake for the floor, and only the
@@ -75,7 +76,8 @@ Settings of the Newton iteration of a backward-Euler step.
   is refused. A temperature that only fluid terms read, with no declared limit, takes the
   default floor of 0.5 eV ([`fluid_temperature_floors`](@ref)). DREAM damps towards zero and
   has no floor.
-- `polish_negatives = true` takes one more iteration when an iterate that passes both tests
+- `polish_negatives = true` (a choice of this package; see the docs page *Choices of this
+  package*) takes one more iteration when an iterate that passes both tests
   has negative entries in a kinetic unknown, and accepts the iterate after it. A limiter
   that keeps the converged discrete solution non-negative (TCDF, OSPRE, van Albada) leaves
   negative entries near zero in the tail as long as Newton has not converged the limiter

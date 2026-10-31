@@ -52,8 +52,9 @@ Equation of the unknown `unknown` (a name in the layout): `TimeDerivative()`,
 weights of the residual ([`residual_scales`](@ref)); on the differential rows of a kinetic
 unknown, Newton takes the larger of it and the entry at the start of the step
 ([`NewtonSolver`](@ref)). By default it is the scale of the unknown whose time derivative
-the row holds, and the scale of the unknown of the equation for an algebraic row. An algebraic row that balances another quantity than its unknown
-names the scale of that quantity: the row of the poloidal flux holds Ampère's law.
+the row holds, and the scale of the unknown of the equation for an algebraic row. An
+algebraic row that balances another quantity than its unknown names the scale of that
+quantity: the row of the poloidal flux holds Ampère's law.
 
 `initial_value = :from_equation` makes [`integrate`](@ref) set the unknown of an algebraic
 equation from its row at the start of a run (DREAM's `INITRULE_EVAL_EQUATION`), in place

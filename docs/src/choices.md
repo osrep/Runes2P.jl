@@ -133,11 +133,15 @@ The Krylov basis holds `restart_length` vectors.
 | Choice | Value |
 |---|---|
 | next step of [`StepDoubling`](@ref) after a step that an unknown at zero fails while every other unknown has no error | half the step |
+| Newton iteration after an iterate that passes both tests with negative entries in a kinetic unknown | one more, `polish_negatives = true` of [`NewtonSolver`](@ref) |
 
 DREAM rejects a step in which an unknown with no absolute tolerance is zero after the full step and not after the two half steps.
 It takes the next step from the largest error of the other unknowns, as [`StepDoubling`](@ref) does.
 When that error is zero, DREAM's next step is unbounded; halving the step tried keeps the retry finite.
 DREAM has no finite behaviour to reproduce there, so no option gives DREAM's.
+
+A positivity-preserving limiter keeps the converged discrete solution non-negative, and the extra iteration converges it further where an accepted iterate still has negative entries ([Positivity](model/positivity.md#Convergence-of-the-limiter)).
+DREAM takes no such iteration: `polish_negatives = false`.
 
 ## Examples
 
