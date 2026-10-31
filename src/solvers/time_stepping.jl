@@ -29,6 +29,8 @@ time array:
   `residual_tolerance`, at the round-off floor of a stiff step (see [`NewtonSolver`](@ref));
 - `accepted_as_linear`: the step was accepted as a linear system, on the update test
   alone at the second Newton iteration (see [`NewtonSolver`](@ref));
+- `polished_for_negatives`: the Newton iteration took one more iteration for negative
+  entries of a kinetic unknown (`polish_negatives` of [`NewtonSolver`](@ref));
 - `wall_time`: seconds spent in the step, of which `jacobian_time` in the assembly of the
   stored Jacobian blocks, `residual_time` in residual evaluations (line search included),
   `linear_solve_time` in the linear solves and, within it, `factorization_time` in the
@@ -54,6 +56,7 @@ struct SolverStatistics
     smallest_step_length::Vector{Float64}
     accepted_at_residual_floor::Vector{Bool}
     accepted_as_linear::Vector{Bool}
+    polished_for_negatives::Vector{Bool}
     wall_time::Vector{Float64}
     jacobian_time::Vector{Float64}
     residual_time::Vector{Float64}
@@ -69,7 +72,7 @@ end
 function SolverStatistics()
     SolverStatistics(
         Float64[], Float64[], Bool[], Symbol[], Int[], Int[], Int[], Float64[],
-        Float64[], Float64[], Float64[], Float64[], Bool[], Bool[], Float64[],
+        Float64[], Float64[], Float64[], Float64[], Bool[], Bool[], Bool[], Float64[],
         Float64[], Float64[], Float64[], Float64[], Int[], Float64[], Float64[], Float64[],
         Symbol[], Float64[])
 end
@@ -94,6 +97,7 @@ function _record!(
     push!(stats.accepted_at_residual_floor, result.status === :converged &&
         result.residual_floor)
     push!(stats.accepted_as_linear, result.status === :converged && result.linear_step)
+    push!(stats.polished_for_negatives, result.polished)
     push!(stats.wall_time, wall)
     push!(stats.jacobian_time, result.jacobian_time)
     push!(stats.residual_time, result.residual_time)
@@ -1122,7 +1126,7 @@ function advance!(
                     result.residual_norm, result.update_norm,
                     result.convergence_order, result.smallest_step_length,
                     result.krylov_iterations, result.preconditioner_updates,
-                    false, false, 0.0, 0.0, 0.0, 0.0),
+                    false, false, false, 0.0, 0.0, 0.0, 0.0),
                 "with the error $error of its tolerance, after $(stepper.max_rejections) rejections in a row")
         end
         # the elementary rule for a local error of the order of the step, from the

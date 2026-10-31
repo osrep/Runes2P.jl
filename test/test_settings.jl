@@ -39,7 +39,7 @@ const DOCUMENTED_STATISTICS = [
     "convergence_order", "error", "factorization_time", "initial_residual_norm",
     "iteration_attempt", "iteration_residual_norm", "iteration_step_length",
     "iteration_update_norm", "jacobian_time", "kind", "krylov_iterations",
-    "linear_solve_time", "newton_iterations", "preconditioner_updates",
+    "linear_solve_time", "newton_iterations", "polished_for_negatives", "preconditioner_updates",
     "residual_norm", "residual_time", "smallest_step_length", "status", "time",
     "time_step", "update_norm", "wall_time"]
 const DOCUMENTED_CODE = [
@@ -204,6 +204,7 @@ _is_plain(x) = false
         @test record["line_search"] === true
         @test record["max_iterations"] === 30
         @test record["reuse_linear_matrix"] === true
+        @test record["polish_negatives"] === true
         @test record["linear_solver"]["type"] == "GMRES"
         @test record["linear_solver"]["restart_length"] == 60
         @test record["linear_solver"]["preconditioner_refresh"] == "every_step"
@@ -508,8 +509,8 @@ _is_plain(x) = false
         @test environment["cpu_threads"] == Sys.CPU_THREADS
         @test occursin(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{4}$", environment["start_time"])
         @test _is_plain(environment)
-        @test OUTPUT_FORMAT_VERSION == v"0.0.2"
-        @test Runes2P.output_format_version() == "0.0.2"
+        @test OUTPUT_FORMAT_VERSION == v"0.0.3"
+        @test Runes2P.output_format_version() == "0.0.3"
     end
 
     @testset "output file" begin
@@ -521,7 +522,7 @@ _is_plain(x) = false
         write_output(file, solution)
         h5open(file) do h5
             @test sort(collect(keys(attributes(h5)))) == DOCUMENTED_ROOT_ATTRIBUTES
-            @test read(attributes(h5)["format_version"]) == "0.0.2"
+            @test read(attributes(h5)["format_version"]) == "0.0.3"
             @test VersionNumber(read(attributes(h5)["format_version"])) ==
                   OUTPUT_FORMAT_VERSION
             @test read(attributes(h5)["runes2p_commit"]) == code_version()["commit"]
@@ -565,7 +566,7 @@ _is_plain(x) = false
         write_output(file, by_hand)
         h5open(file) do h5
             @test !haskey(h5, "settings")
-            @test read(attributes(h5)["format_version"]) == "0.0.2"
+            @test read(attributes(h5)["format_version"]) == "0.0.3"
             @test read(attributes(h5)["runes2p_commit"]) == code_version()["commit"]
         end
         @test isempty(read_settings(file))

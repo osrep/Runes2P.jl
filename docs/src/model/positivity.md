@@ -125,6 +125,16 @@ With [`GMRES`](@ref)`(operator = :exact)` the approximate block only preconditio
 A linear scheme with coefficients fixed within the step (no electric field or plasma read from unknowns) makes the term linear in ``f`` ([`is_linear`](@ref)).
 Its stored Jacobian is then exact, and [`NewtonSolver`](@ref) accepts the step on the update test alone (`linear_acceptance`).
 
+## Convergence of the limiter
+
+A positivity-preserving limiter keeps the converged discrete solution non-negative, not every Newton iterate.
+In the tail, where ``f`` is near zero, an iterate that passes both tests of [`NewtonSolver`](@ref) can still hold small negative entries.
+They lie far inside the tolerance of the unknown, so the residual and the update do not see them.
+In the relaxation run of `test/test_flux_limiters.jl`, TCDF leaves 5 such entries, down to ``10^{-25}`` of the maximum.
+`polish_negatives = true`, the default, takes one more Newton iteration when an accepted iterate has negative entries in a kinetic unknown, and that removes them there.
+A scheme whose converged solution has negative entries, such as SMART, pays the iteration on each such step without removing them all; `polish_negatives = false` saves it.
+The step statistics count the steps that took it (`polished_for_negatives` of [`SolverStatistics`](@ref)).
+
 ## Lower limits of the Newton step
 
 A [`LowerLimit`](@ref) declared on an unknown bounds every entry ``u_k`` from below by
@@ -166,7 +176,8 @@ The charge states have no limit of their own there (see [Comparison with DREAM](
 ## Tests
 
 - `test/test_exponential_fitting.jl`: no negative off-diagonal coupling of exponential fitting at any Péclet number, against the negative couplings of the central scheme, and the collisional Maxwellian as a steady state.
-- `test/test_flux_limiters.jl`: the orders of the four-point schemes by manufactured solutions, their Jacobian against dense forward-mode AD, the frozen limiter, and the sign of ``f`` in a relaxation run.
+- `test/test_flux_limiters.jl`: the orders of the four-point schemes by manufactured solutions, their Jacobian against dense forward-mode AD, and the frozen limiter.
+  It checks the sign of ``f`` in a relaxation run converged to a residual of ``10^{-10}``, and the extra iteration that removes the negative entries of TCDF at the default tolerance.
 - `test/test_pitch_accuracy.jl`: the pitch equilibrium per scheme and the sign of ``f`` in ``\xi``.
 - `test/test_cooling_dream.jl`: a cooling plasma with a slide-away field against DREAM, for central interpolation and TCDF, comparing the distribution and the number of cells where it is negative.
   The test requires that number to be zero with TCDF.

@@ -127,13 +127,14 @@ end
 
     @testset "positivity in a relaxation run" begin
         # a 1 keV Maxwellian relaxing on a 100 eV plasma with E = 1 V/m, 40 steps of 50 μs
-        # (fixed temperature, one radius): TCDF, OSPRE and van Albada stay non-negative,
-        # QUICK does not (observed 855 negative values over the saved states). MUSCL and
-        # SMART go slightly negative far in the tail (2 and 116 values, down to 2e-66 of the
-        # maximum). This run does not show positivity in general; the cooling plasma of
-        # test_cooling_dream.jl is the harder test.
+        # (fixed temperature, one radius). Positivity is a property of the converged discrete
+        # solution, so the run converges Newton to a residual of 1e-10: TCDF, OSPRE and van
+        # Albada stay non-negative, QUICK does not (847 negative values over the saved
+        # states, down to 1e-37 of the maximum). This run does not show positivity in general;
+        # the cooling plasma of test_cooling_dream.jl is the harder test.
         basic_grid = MomentumGrid(uniform_p_faces(300, 0.0, 1.0), uniform_xi_faces(20))
-        function relax(scheme)
+        converged = NewtonSolver(residual_tolerance = 1e-10)
+        function relax(scheme; solver = converged)
             g, op = iter_plasma_operator(basic_grid, 100.0, 1.0; scheme)
             layout = UnknownLayout(g.radial_grid, [KineticUnknown(:hot_tail_distribution, g; scale = 1e20)])
             system = EquationSystem(layout,
@@ -143,12 +144,21 @@ end
             f0 = [exp(-(sqrt(1 + p^2) - 1) / theta)
                   for p in basic_grid.p_centers, _ in 1:20, _ in 1:1]
             f0 .*= 1e20 / Runes2P.density(g, f0)[1]
-            solution = integrate(system, vec(f0), collect(range(0, 2e-3; length = 41)))
-            return count(<(0), solution.states)
+            solution = integrate(
+                system, vec(f0), collect(range(0, 2e-3; length = 41)); solver)
+            return (negative = count(<(0), solution.states),
+                polished = count(solution.statistics.polished_for_negatives))
         end
         for scheme in (:tcdf, :ospre, :van_albada)
-            @test relax(scheme) == 0
+            @test relax(scheme).negative == 0
         end
-        @test relax(:quick) > 0
+        @test relax(:quick).negative > 0
+        # at the default residual tolerance, Newton stops before it has converged the limiter
+        # in the tail cells near zero: TCDF leaves 5 entries down to -0.26 (1e-25 of the
+        # maximum), far inside the tolerance of f, and one more iteration removes them
+        @test relax(:tcdf; solver = NewtonSolver(polish_negatives = false)).negative > 0
+        polished = relax(:tcdf; solver = NewtonSolver())
+        @test polished.negative == 0
+        @test polished.polished >= 1
     end
 end

@@ -7,7 +7,7 @@
     NewtonSolver(; linear_solver=SparseLU(), max_iterations=30, max_reduction=0.9,
                  residual_tolerance=1e-8, floor_linear_tolerance=1e-8, line_search=false,
                  sufficient_decrease=1e-4, max_backtracks=20, linear_acceptance=true,
-                 reuse_linear_matrix=true)
+                 reuse_linear_matrix=true, polish_negatives=true)
 
 Settings of the Newton iteration of a backward-Euler step.
 
@@ -75,6 +75,15 @@ Settings of the Newton iteration of a backward-Euler step.
   is refused. A temperature that only fluid terms read, with no declared limit, takes the
   default floor of 0.5 eV ([`fluid_temperature_floors`](@ref)). DREAM damps towards zero and
   has no floor.
+- `polish_negatives = true` takes one more iteration when an iterate that passes both tests
+  has negative entries in a kinetic unknown, and accepts the iterate after it. A limiter
+  that keeps the converged discrete solution non-negative (TCDF, OSPRE, van Albada) leaves
+  negative entries near zero in the tail as long as Newton has not converged the limiter
+  there; the residual test does not see them, since their size is far below the tolerance
+  of the unknown. The extra iteration removes them. A scheme that is not
+  positivity-preserving (SMART, MUSCL) has negative entries in the converged solution too,
+  and pays the iteration on each such step without removing them all. A linear step and a
+  step without negative entries take no extra iteration.
 - `line_search = true` adds backtracking on `½‖F‖²` of the scaled residual (Armijo condition
   with `sufficient_decrease`, at most `max_backtracks` reductions), starting from the step
   length the lower limits allow. Off by default; DREAM's nonlinear solver
@@ -95,6 +104,7 @@ Base.@kwdef struct NewtonSolver{L <: LinearSolver}
     max_backtracks::Int = 20
     linear_acceptance::Bool = true
     reuse_linear_matrix::Bool = true
+    polish_negatives::Bool = true
 end
 
 """
@@ -115,7 +125,9 @@ direct solvers), `residual_floor`,
 true when the step converged with the residual above `residual_tolerance` because the
 residual had stopped decreasing (or, for a linear step, was not checked against it), and
 `linear_step`, true when the step was accepted as a linear system, on the update test
-alone (at the second iteration, see [`NewtonSolver`](@ref)).
+alone (at the second iteration, see [`NewtonSolver`](@ref)), and `polished`, true when the
+iteration took one more iteration for negative entries of a kinetic unknown
+(`polish_negatives` of [`NewtonSolver`](@ref)).
 """
 struct NewtonResult
     status::Symbol
@@ -129,6 +141,7 @@ struct NewtonResult
     preconditioner_updates::Int
     residual_floor::Bool
     linear_step::Bool
+    polished::Bool
     jacobian_time::Float64        # seconds in jacobian! (assembly of the stored blocks)
     residual_time::Float64        # seconds in residual evaluations, line search included
     factorization_time::Float64   # seconds factorizing (LU, or the preconditioner blocks)
@@ -493,7 +506,8 @@ function newton_solve!(
         NewtonResult(status, iterations, initial, isempty(ws.residual_norms) ? initial : last(ws.residual_norms),
                      isempty(ws.update_norms) ? NaN : last(ws.update_norms),
                      _convergence_order(ws.update_norms), smallest_step, krylov, updates, residual_floor,
-                     linear_step, jacobian_seconds, residual_seconds, factorization_seconds, solve_seconds)
+                     linear_step, polished, jacobian_seconds, residual_seconds, factorization_seconds,
+                     solve_seconds)
     #! format: on
 
     started = time_ns()
@@ -502,6 +516,7 @@ function newton_solve!(
     status === :ok || return result(status, 0, NaN)
     initial = _residual_norm(ws, ws.residual)
     reuse = ws.linear && solver.reuse_linear_matrix
+    polished = false
     for iteration in 1:solver.max_iterations
         # the stored Jacobian of a system linear in the state changes with the step alone
         # (its end time and, through the start state, its length), and so does the Newton
@@ -601,6 +616,13 @@ function newton_solve!(
                            linear_tolerance(ws.cache) <= solver.floor_linear_tolerance &&
                            ws.exact_jacobian
         if update_converged && (residual_small || residual_stalled)
+            # one more iteration when a kinetic unknown has negative entries (the docstring
+            # of NewtonSolver, `polish_negatives`)
+            if solver.polish_negatives && !polished && iteration < solver.max_iterations &&
+               any(i -> u[i] < 0, ws.kinetic_rows)
+                polished = true
+                continue
+            end
             status = _below_lower_limit(ws, u) ? :below_lower_limit : :converged
             return result(status, iteration, initial; residual_floor = !residual_small)
         end

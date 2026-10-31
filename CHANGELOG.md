@@ -8,6 +8,9 @@ Until the first release, every change is listed under "Unreleased", with the sub
 
 ### Added
 
+- `NewtonSolver(polish_negatives = true)`: one more Newton iteration when an accepted iterate has negative entries in a kinetic unknown ([#163](https://github.com/osrep/Runes2P.jl/pull/163)).
+  It removes the negative entries that an unconverged positivity-preserving limiter leaves near zero in the tail.
+  The step statistics count such steps in `polished_for_negatives`, and `OUTPUT_FORMAT_VERSION` is 0.0.3 for the new statistic and setting.
 - `validate`, `has_plasma_columns`, `plasma_column_sparsity!` and `add_plasma_columns!`, the functions that a new term implements and the system calls, are declared `public` ([#126](https://github.com/osrep/Runes2P.jl/pull/126)).
 
 ### Changed
