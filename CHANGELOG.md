@@ -12,9 +12,6 @@ Until the first release, every change is listed under "Unreleased", with the sub
 
 ### Changed
 
-- The residual test of `NewtonSolver` weights the rows of a kinetic unknown by the larger of the row scale and the entry at the start of the step ([#163](https://github.com/osrep/Runes2P.jl/pull/163)).
-  The collision fluxes of the bulk cancel in these rows, and the round-off of that cancellation held a step of the disruption case at the residual floor, with one or two extra iterations.
-  The accepted states move by at most 2e-8 of the scale of the unknown in that case.
 - `radial_values(u, layout, id)`, the view of a radial unknown over the radii, is renamed `unknown_values(u, layout, id)` ([#123](https://github.com/osrep/Runes2P.jl/pull/123)).
   `radial_values(profile, points)`, the evaluation of a radial profile, keeps its name.
 - `FreeElectronEnergyTransferTerm` is renamed `free_electron_energy_transfer_term`, and `PrescribedFokkerPlanckTerm` is renamed `prescribed_fokker_planck_term`, since both are functions that build a term ([#124](https://github.com/osrep/Runes2P.jl/pull/124)).
@@ -41,6 +38,9 @@ Until the first release, every change is listed under "Unreleased", with the sub
   `KnockOnCutoffUpdate` takes the same keyword for its default ceiling, and its settings record has the new key `"coulomb_logarithm"`.
   A run refuses its default `:thermal` next to a Fokker-Planck term whose collisions take another model.
   `OUTPUT_FORMAT_VERSION` is 0.0.2 for the new key.
+- The residual test of `NewtonSolver` weights the rows of a kinetic unknown by the larger of the row scale and the entry at the start of the step ([#163](https://github.com/osrep/Runes2P.jl/pull/163)).
+  The collision fluxes of the bulk cancel in these rows, and the round-off of that cancellation held a step of the disruption case at the residual floor, with one or two extra iterations.
+  The accepted states move by at most 2e-8 of the scale of the unknown in that case.
 
 ### Removed
 

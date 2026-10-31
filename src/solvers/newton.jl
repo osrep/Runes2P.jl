@@ -471,7 +471,7 @@ function newton_solve!(
         ws.row_weights[i] = (system.mass[i] == 0 ? one(dt) : dt) / system.row_scales[i]
     end
     # a kinetic row takes the size of its entry at the start of the step where that exceeds
-    # its row scale (the docstring of NewtonSolver); the start state, not `reference`
+    # its row scale (the docstring of NewtonSolver), from the start state `u_old`
     @inbounds for i in ws.kinetic_rows
         size_at_start = abs(u_old[system.mass_columns[i]])
         if size_at_start > system.row_scales[i]
@@ -586,7 +586,8 @@ function newton_solve!(
         end
         # The residual of a stiff step has a round-off floor: F = M(u - u_old)/dt - rhs
         # cancels two terms of size dt‖L‖ times the unknown, so the scaled residual cannot
-        # fall below about eps dt‖L‖/scale, which exceeds `residual_tolerance` at large dt.
+        # fall below about eps dt‖L‖/s, with s the scale of the row's weight, which exceeds
+        # `residual_tolerance` at large dt.
         # Once the update is within tolerance and the residual has stopped decreasing, the
         # iteration has converged as far as the arithmetic allows.
         # An inexact linear solve converges linearly, with a small update that understates
