@@ -8,6 +8,7 @@ Until the first release, every change is listed under "Unreleased", with the sub
 
 ### Added
 
+- `fill_maxwellian!` fills a distribution of the state with a Maxwellian from profiles of the density and the temperature, rescaled to the density on the grid as DREAM starts a fully kinetic run ([#162](https://github.com/osrep/Runes2P.jl/pull/162)).
 - `NewtonSolver(polish_negatives = true)`: one more Newton iteration when an accepted iterate has negative entries in a kinetic unknown ([#163](https://github.com/osrep/Runes2P.jl/pull/163)).
   It removes the negative entries that an unconverged positivity-preserving limiter leaves near zero in the tail.
   The step statistics count such steps in `polished_for_negatives`, and `OUTPUT_FORMAT_VERSION` is 0.0.3 for the new statistic and setting.
