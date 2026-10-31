@@ -501,6 +501,7 @@ function newton_solve!(
     residual_seconds = 0.0
     factorization_seconds = 0.0
     solve_seconds = 0.0
+    polished = false
     #! format: off
     result(status, iterations, initial; residual_floor=false, linear_step=false) =
         NewtonResult(status, iterations, initial, isempty(ws.residual_norms) ? initial : last(ws.residual_norms),
@@ -516,7 +517,6 @@ function newton_solve!(
     status === :ok || return result(status, 0, NaN)
     initial = _residual_norm(ws, ws.residual)
     reuse = ws.linear && solver.reuse_linear_matrix
-    polished = false
     for iteration in 1:solver.max_iterations
         # the stored Jacobian of a system linear in the state changes with the step alone
         # (its end time and, through the start state, its length), and so does the Newton
