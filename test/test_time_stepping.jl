@@ -418,10 +418,13 @@ end
     @test maximum(f) > 1e24
     dt = 1e-4
     u = copy(u_old)
-    ws = NewtonWorkspace(system)
+    # without the acceptance of a linear step, so that the iteration goes through the test of
+    # the residual: with the weight dt/scale it stalls at the floor and takes a third iteration
+    ws = NewtonWorkspace(system, NewtonSolver(linear_acceptance = false))
     result = newton_solve!(u, u_old, ws, dt, dt)
     @test result.status === :converged
     @test !result.residual_floor
+    @test result.iterations == 2
     @test result.residual_norm <= NewtonSolver().residual_tolerance
     # the bulk row is weighted by its entry, the tail row by the scale of the unknown
     @test ws.row_weights[1] == dt / abs(u_old[1])

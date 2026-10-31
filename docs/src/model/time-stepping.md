@@ -46,7 +46,7 @@ A = W \left(\frac{M}{h} - J\right) S, \qquad A\,\tilde\delta = -W F, \qquad \del
 
 with ``J`` the Jacobian of the implicit terms, ``S`` the scales of the unknowns and ``W`` the row weights.
 A row with a time derivative has the weight ``h/s_i``, an algebraic row ``1/s_i``, with ``s_i`` the scale of the row.
-On a row of a kinetic unknown ``s_i`` is the larger of the scale of the row and the entry at the start of the step, ``|u_{n,i}|``.
+On a row of a kinetic unknown with a time derivative, ``s_i`` is the larger of the scale of the row and the entry whose time derivative the row holds, taken at the start of the step.
 The collision fluxes of the bulk cancel in its rows, and the round-off of that cancellation grows with the entry, not with the scale of the tail.
 On a row with a time derivative the scaled residual ``|W F|`` is then the change that the residual causes in one step relative to ``s_i``.
 On an algebraic row it is the residual relative to ``s_i``.

@@ -16,14 +16,15 @@ Settings of the Newton iteration of a backward-Euler step.
   satisfies `|δ| ≤ absolute + relative |u|` with the unknown's Newton [`Tolerance`](@ref),
   and the residual, measured as the change it causes in one step relative to the unknown's
   scale (`dt |F|/scale` on differential rows, `|F|/scale` on algebraic rows), is at most
-  `residual_tolerance` everywhere. On the rows of a kinetic unknown the scale is the larger
-  of the row scale and the entry at the start of the step, `|u_old|`: the collision fluxes
-  of the bulk cancel to a net term hundreds of times smaller, and the round-off of that
-  cancellation grows with the entry, which exceeds the scale of the unknown by orders of
-  magnitude in the bulk. The tail, below the scale, keeps it. In a bulk cell the residual
-  test is then looser by `|u_old|/scale` in absolute terms, as the update test is relative
-  to `|u|` there; a bulk that grows by orders of magnitude within one step can still reach
-  the round-off floor below. An infinite absolute tolerance excludes an unknown from
+  `residual_tolerance` everywhere. On the differential rows of a kinetic unknown the scale
+  is the larger of the row scale and the entry whose time derivative the row holds, at the
+  start of the step (`|u_old|`): the collision fluxes of the bulk cancel to a net term
+  orders of magnitude smaller, and the round-off of that cancellation grows with the entry,
+  which exceeds the scale of the unknown by orders of magnitude in the bulk. The tail,
+  below the scale, keeps the row scale. In a bulk cell the residual test is then looser by
+  `|u_old|/scale` in absolute terms, as the update test is relative to `|u|` there. A bulk
+  that grows by orders of magnitude within one step can still meet the round-off floor of a
+  stiff step, the exception at the end of this item. An infinite absolute tolerance excludes an unknown from
   both tests; the merit function of the line search keeps all rows. The unknown of a
   [`Constraint`](@ref) is a rate: the system fixes the change `dt u` that it causes over the
   step, and round-off of the constrained quantity divided by `dt` is the accuracy it can
@@ -470,12 +471,14 @@ function newton_solve!(
     @inbounds for i in eachindex(ws.row_weights)
         ws.row_weights[i] = (system.mass[i] == 0 ? one(dt) : dt) / system.row_scales[i]
     end
-    # a kinetic row takes the size of its entry at the start of the step where that exceeds
-    # its row scale (the docstring of NewtonSolver), from the start state `u_old`
+    # a differential kinetic row takes the size of its entry at the start of the step where
+    # that exceeds its row scale (the docstring of NewtonSolver), from the start state
+    # `u_old`; an algebraic row may balance a quantity in other units and keeps its scale
     @inbounds for i in ws.kinetic_rows
+        system.mass[i] == 0 && continue
         size_at_start = abs(u_old[system.mass_columns[i]])
         if size_at_start > system.row_scales[i]
-            ws.row_weights[i] = (system.mass[i] == 0 ? one(dt) : dt) / size_at_start
+            ws.row_weights[i] = dt / size_at_start
         end
     end
     krylov = 0
