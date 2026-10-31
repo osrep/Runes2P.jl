@@ -72,7 +72,8 @@ Both waivers need an exact Newton matrix and a linear solve accurate to `floor_l
 An inexact solve or an approximate Jacobian block ([`jacobian_kind`](@ref)) converges linearly, with an update that understates the error.
 Such a quasi-Newton iteration is held by the residual test alone.
 
-An iterate that passes both tests but has negative entries in a kinetic unknown takes one more iteration, `polish_negatives` of [`NewtonSolver`](@ref), flagged as `polished` and `polished_for_negatives`.
+An iterate that passes both tests but has negative entries in a kinetic unknown is not accepted (`polish_negatives` of [`NewtonSolver`](@ref)).
+Newton takes one more iteration and accepts the next iterate that passes them, flagged as `polished` and `polished_for_negatives`.
 A limiter has then converged further in the tail cells near zero ([Positivity](positivity.md#Convergence-of-the-limiter)).
 
 For a system linear in the state the stored Jacobian depends only on the end time and the length of the step.

@@ -78,7 +78,7 @@ Settings of the Newton iteration of a backward-Euler step.
   has no floor.
 - `polish_negatives = true` (a choice of this package; see the docs page *Choices of this
   package*) takes one more iteration when an iterate that passes both tests
-  has negative entries in a kinetic unknown, and accepts the iterate after it. A limiter
+  has negative entries in a kinetic unknown, and accepts the next iterate that passes them. A limiter
   that keeps the converged discrete solution non-negative (TCDF, OSPRE, van Albada) leaves
   negative entries near zero in the tail as long as Newton has not converged the limiter
   there; the residual test does not see them, since their size is far below the tolerance
@@ -190,7 +190,7 @@ struct NewtonWorkspace{T, S <: EquationSystem, L, C}
     limit_reference::Vector{UnitRange{Int}}  # the entries whose magnitudes sum to the reference, empty for the own scale
     group_tolerance::Vector{T}     # the group part of the tolerance per entry, 0 outside groups
     group_ranges::Vector{UnitRange{Int}}     # the entries of the group of each entry with a group part
-    kinetic_rows::Vector{Int}      # the rows of the kinetic unknowns, weighted by their entry
+    kinetic_rows::Vector{Int}      # the rows of the kinetic unknowns; the differential ones are weighted by their entry
     cache::C
     residual_norms::Vector{Float64}
     update_norms::Vector{Float64}
@@ -522,7 +522,8 @@ function newton_solve!(
     for iteration in 1:solver.max_iterations
         # the stored Jacobian of a system linear in the state changes with the step alone
         # (its end time and, through the start state, its length), and so does the Newton
-        # matrix
+        # matrix, whose kinetic row weights follow the start state: no call repeats an end
+        # time and a length from another start state
         same_matrix = reuse && ws.assembled_time[] == t && ws.assembled_step[] == dt
         if !same_matrix
             invalidate_jacobian!(ws)

@@ -29,7 +29,7 @@ time array:
   `residual_tolerance`, at the round-off floor of a stiff step (see [`NewtonSolver`](@ref));
 - `accepted_as_linear`: the step was accepted as a linear system, on the update test
   alone at the second Newton iteration (see [`NewtonSolver`](@ref));
-- `polished_for_negatives`: the Newton iteration took one more iteration for negative
+- `polished_for_negatives`: the step converged after one more Newton iteration for negative
   entries of a kinetic unknown (`polish_negatives` of [`NewtonSolver`](@ref));
 - `wall_time`: seconds spent in the step, of which `jacobian_time` in the assembly of the
   stored Jacobian blocks, `residual_time` in residual evaluations (line search included),
@@ -97,7 +97,7 @@ function _record!(
     push!(stats.accepted_at_residual_floor, result.status === :converged &&
         result.residual_floor)
     push!(stats.accepted_as_linear, result.status === :converged && result.linear_step)
-    push!(stats.polished_for_negatives, result.polished)
+    push!(stats.polished_for_negatives, result.status === :converged && result.polished)
     push!(stats.wall_time, wall)
     push!(stats.jacobian_time, result.jacobian_time)
     push!(stats.residual_time, result.residual_time)

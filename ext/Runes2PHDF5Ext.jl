@@ -207,9 +207,23 @@ function _write_statistics(group, stats::SolverStatistics)
 end
 
 function _read_statistics(group)
-    values = map(field -> _read_statistics_field(group, field), fieldnames(SolverStatistics))
+    fields = fieldnames(SolverStatistics)
+    values = Any[_read_statistics_field(group, field) for field in fields]
+    attempts = length(values[findfirst(==(:time), fields)])
+    # a column of the attempts that a file of an older format does not have: its default for
+    # every attempt, so that the columns keep one length
+    for (k, field) in enumerate(fields)
+        startswith(String(field), "iteration_") && continue
+        haskey(group, String(field)) && continue
+        values[k] = _missing_statistics_column(eltype(fieldtype(SolverStatistics, field)), attempts)
+    end
     return SolverStatistics(values...)
 end
+
+_missing_statistics_column(::Type{Bool}, attempts) = fill(false, attempts)
+_missing_statistics_column(::Type{Float64}, attempts) = fill(NaN, attempts)
+_missing_statistics_column(::Type{Int}, attempts) = fill(0, attempts)
+_missing_statistics_column(::Type{Symbol}, attempts) = fill(:unknown, attempts)
 
 # the field `field` of `SolverStatistics` from the group `group`; empty when absent
 function _read_statistics_field(group, field::Symbol)
