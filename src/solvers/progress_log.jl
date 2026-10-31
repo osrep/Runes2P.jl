@@ -48,8 +48,9 @@ appends to `file`, which the segments of a run share.
   Julia still prints its notice and a stack trace of about 45 lines to the error stream
   and profiles for a second, so the file is the quiet way.
 
-Warnings of `integrate` (a resume with changed settings) go to the log as well. With a
-terminal as `io`, warnings and errors are coloured.
+Warnings of `integrate` (a resume with changed settings) go to the log as well, and a message
+with `maxlog = n` is written at most `n` times. With a terminal as `io`, warnings and errors
+are coloured.
 """
 mutable struct ProgressLog <: Logging.AbstractLogger
     io::IO
@@ -71,6 +72,7 @@ mutable struct ProgressLog <: Logging.AbstractLogger
     event_counts::Dict{String, Int}
     requested::Threads.Atomic{Bool}
     entries::Int
+    message_limits::Dict{Any, Int}  # per message id: the times it may still be written (`maxlog`)
 end
 
 function ProgressLog(; file::Union{Nothing, AbstractString} = nothing, io::IO = stdout,
@@ -98,7 +100,8 @@ function ProgressLog(; file::Union{Nothing, AbstractString} = nothing, io::IO = 
     return ProgressLog(
         io, file !== nothing, color, milestones, 60.0 .* collect(Float64, guard_minutes),
         Int(events_shown), state, on_signal, request_path,
-        1, 1, time(), time(), 0, 0, Dict{String, Int}(), Threads.Atomic{Bool}(false), 0)
+        1, 1, time(), time(), 0, 0, Dict{String, Int}(), Threads.Atomic{Bool}(false), 0,
+        Dict{Any, Int}())
 end
 
 function describe(log::ProgressLog)
@@ -230,10 +233,18 @@ Logging.catch_exceptions(::ProgressLog) = true
 function Logging.handle_message(
         log::ProgressLog, level::Logging.LogLevel, message, _module, group, id, file,
         line; kwargs...)
-    details = if isempty(kwargs)
+    # `maxlog = n` writes a message of one id at most n times, as Julia's loggers do
+    maxlog = get(kwargs, :maxlog, nothing)
+    if maxlog isa Integer
+        remaining = get!(log.message_limits, id, Int(maxlog))
+        log.message_limits[id] = remaining - 1
+        remaining > 0 || return nothing
+    end
+    shown = [(key, value) for (key, value) in kwargs if key !== :maxlog]
+    details = if isempty(shown)
         ""
     else
-        " (" * join(("$key = $(_text(value))" for (key, value) in kwargs), ", ") * ")"
+        " (" * join(("$key = $(_text(value))" for (key, value) in shown), ", ") * ")"
     end
     _write_line(log, level, string(message) * details)
     return nothing

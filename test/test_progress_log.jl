@@ -94,6 +94,23 @@ _count(pattern, text) = length(collect(eachmatch(pattern, text)))
         @test Runes2P._values(["a", "b"]) == "a, b"
     end
 
+    @testset "a message with maxlog" begin
+        # written at most maxlog times per message id, and maxlog is not printed
+        io = IOBuffer()
+        with_logger(ProgressLog(; io)) do
+            for _ in 1:3
+                @info "written once" maxlog=1 step=2
+            end
+            @info "written every time"
+            @info "written every time"
+        end
+        text = String(take!(io))
+        @test _count(r"written once", text) == 1
+        @test occursin("(step = 2)", text)
+        @test !occursin("maxlog", text)
+        @test _count(r"written every time", text) == 2
+    end
+
     @testset "header and entries of a run" begin
         case = _checkpoint_case()
         io = IOBuffer()
