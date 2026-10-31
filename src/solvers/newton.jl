@@ -7,7 +7,7 @@
     NewtonSolver(; linear_solver=SparseLU(), max_iterations=30, max_reduction=0.9,
                  residual_tolerance=1e-8, floor_linear_tolerance=1e-8, line_search=false,
                  sufficient_decrease=1e-4, max_backtracks=20, linear_acceptance=true,
-                 reuse_linear_matrix=true)
+                 reuse_linear_matrix=true, polish_negatives=:auto)
 
 Settings of the Newton iteration of a backward-Euler step.
 
@@ -16,24 +16,33 @@ Settings of the Newton iteration of a backward-Euler step.
   satisfies `|δ| ≤ absolute + relative |u|` with the unknown's Newton [`Tolerance`](@ref),
   and the residual, measured as the change it causes in one step relative to the unknown's
   scale (`dt |F|/scale` on differential rows, `|F|/scale` on algebraic rows), is at most
-  `residual_tolerance` everywhere. An infinite absolute tolerance excludes an unknown from
-  both tests; the merit function of the line search keeps all rows. The unknown of a
-  [`Constraint`](@ref) is a rate: the system fixes the change `dt u` that it causes over the
-  step, and round-off of the constrained quantity divided by `dt` is the accuracy it can
-  reach. Its update test is `|δ| ≤ absolute + relative |u| + relative scale/dt`, with the
-  scale of its equation, which bounds the error of the change over the step as the
-  tolerances bound the other unknowns (such as the particle source at steps below 1e-6 s,
-  where the round-off of the density divided by `dt` exceeds a tolerance on the source
-  itself). A stiff step is an exception: when the transient and the right-hand side cancel
-  to many digits, round-off holds the residual above `residual_tolerance` whatever the
-  iterate, so a converged update is accepted once the residual stops decreasing (it grew, or
-  fell by less than 10%, in the last iteration). Such a step is flagged (`residual_floor` in
-  [`NewtonResult`](@ref)), since the same waiver would also accept a linearly converging
-  iteration whose small update understates its error (an inexact Jacobian or linear solve).
-  An inexact linear solve with relative residual `η` contracts the error by about `η` per
-  iteration, so the waiver applies only when the last linear solve was accurate to
-  `floor_linear_tolerance` (always true for direct solvers; for [`GMRES`](@ref) its
-  `relative_tolerance`), and never when the Newton matrix is itself approximate (a term with
+  `residual_tolerance` everywhere. On the differential rows of a kinetic unknown the scale
+  is the larger of the row scale and the entry whose time derivative the row holds, at the
+  start of the step (`|u_old|`): the collision fluxes of the bulk cancel to a net term
+  orders of magnitude smaller, and the round-off of that cancellation grows with the
+  entry, which exceeds the scale of the unknown by orders of magnitude in the bulk. The
+  tail, below the scale, keeps the row scale. In a bulk cell the residual test is then
+  looser by `|u_old|/scale` in absolute terms, as the update test is relative to `|u|`
+  there. A bulk that grows by orders of magnitude within one step can still meet the
+  round-off floor of a stiff step, the exception at the end of this item. An infinite
+  absolute tolerance excludes an unknown from both tests; the merit function of the line
+  search keeps all rows. The unknown of a [`Constraint`](@ref) is a rate: the system fixes
+  the change `dt u` that it causes over the step, and round-off of the constrained
+  quantity divided by `dt` is the accuracy it can reach. Its update test is `|δ| ≤
+  absolute + relative |u| + relative scale/dt`, with the scale of its equation, which
+  bounds the error of the change over the step as the tolerances bound the other unknowns
+  (such as the particle source at steps below 1e-6 s, where the round-off of the density
+  divided by `dt` exceeds a tolerance on the source itself). A stiff step is an exception:
+  when the transient and the right-hand side cancel to many digits, round-off holds the
+  residual above `residual_tolerance` whatever the iterate, so a converged update is
+  accepted once the residual stops decreasing (it grew, or fell by less than 10%, in the
+  last iteration). Such a step is flagged (`residual_floor` in [`NewtonResult`](@ref)),
+  since the same waiver would also accept a linearly converging iteration whose small
+  update understates its error (an inexact Jacobian or linear solve). An inexact linear
+  solve with relative residual `η` contracts the error by about `η` per iteration, so the
+  waiver applies only when the last linear solve was accurate to `floor_linear_tolerance`
+  (always true for direct solvers; for [`GMRES`](@ref) its `relative_tolerance`), and
+  never when the Newton matrix is itself approximate (a term with
   [`jacobian_kind`](@ref)`(term) === :approximate` solved on the stored matrix): such a
   quasi-Newton iteration converges linearly by design, its residual falls by a constant
   factor per iteration that the stall test would mistake for the floor, and only the
@@ -67,6 +76,22 @@ Settings of the Newton iteration of a backward-Euler step.
   is refused. A temperature that only fluid terms read, with no declared limit, takes the
   default floor of 0.5 eV ([`fluid_temperature_floors`](@ref)). DREAM damps towards zero and
   has no floor.
+- `polish_negatives` takes one more iteration when an iterate that passes both tests has
+  negative entries in a polished kinetic unknown, and accepts the next iterate that passes
+  them; at most once per step, and never on a linear step. A scheme whose converged discrete
+  solution stays non-negative leaves negative entries near zero in the tail as long as
+  Newton has not converged it there; the residual test does not see them, since their size
+  is far below the tolerance of the unknown, and the extra iteration removes them. A scheme
+  whose converged solution has negative entries keeps them and pays the iteration.
+  - `:auto` (the default, a choice of this package; see the docs page *Choices of this
+    package*) polishes a kinetic unknown whose equation has Fokker-Planck terms that all use,
+    in p and ξ, a scheme of [`POLISHED_SCHEMES`](@ref). When the extra iteration leaves
+    negative entries of an unknown in [`POLISH_MISSES`](@ref) polished solves in a row, its
+    schemes do not keep that run non-negative: `:auto` stops polishing the unknown for the
+    rest of the run (a resumed segment starts again) and writes a warning to the log of the
+    run, or to the logger of Julia outside [`integrate`](@ref).
+  - `true` polishes every kinetic unknown, whatever its scheme, and never stops.
+  - `false` never polishes, as DREAM's nonlinear solver.
 - `line_search = true` adds backtracking on `½‖F‖²` of the scaled residual (Armijo condition
   with `sufficient_decrease`, at most `max_backtracks` reductions), starting from the step
   length the lower limits allow. Off by default; DREAM's nonlinear solver
@@ -87,6 +112,39 @@ Base.@kwdef struct NewtonSolver{L <: LinearSolver}
     max_backtracks::Int = 20
     linear_acceptance::Bool = true
     reuse_linear_matrix::Bool = true
+    polish_negatives::Union{Bool, Symbol} = :auto
+end
+
+"""
+    POLISHED_SCHEMES
+
+The schemes of the advection whose kinetic unknowns `polish_negatives = :auto` of
+[`NewtonSolver`](@ref) polishes, a choice of this package (see the docs page *Choices of
+this package*): `:upwind` and `:exponential_fitting`, whose step is an M-matrix as long as
+the central cross diffusion keeps the off-diagonal couplings non-negative (docs page
+*Positivity*), and the limiters `:tcdf`, `:ospre` and `:van_albada`, which stayed
+non-negative in the tests without such a guarantee.
+"""
+const POLISHED_SCHEMES = (:upwind, :exponential_fitting, :tcdf, :ospre, :van_albada)
+
+"""
+    POLISH_MISSES
+
+The number of polished Newton solves in a row whose extra iteration leaves negative entries
+of an unknown, after which `polish_negatives = :auto` of [`NewtonSolver`](@ref) stops
+polishing it; a choice of this package (see the docs page *Choices of this package*). An
+unconverged limiter is cleaned by one extra iteration, so a few misses in a row show a
+scheme whose converged solution is negative, and five bound the cost of finding out.
+"""
+const POLISH_MISSES = 5
+
+# a kinetic unknown that the Newton iteration polishes, with whether it still does and the
+# polished steps in a row that left negative entries
+struct NegativePolish
+    unknown::Symbol
+    rows::Vector{Int}
+    enabled::Base.RefValue{Bool}
+    misses::Base.RefValue{Int}
 end
 
 """
@@ -107,7 +165,9 @@ direct solvers), `residual_floor`,
 true when the step converged with the residual above `residual_tolerance` because the
 residual had stopped decreasing (or, for a linear step, was not checked against it), and
 `linear_step`, true when the step was accepted as a linear system, on the update test
-alone (at the second iteration, see [`NewtonSolver`](@ref)).
+alone (at the second iteration, see [`NewtonSolver`](@ref)), and `polished`, true when the
+iteration took one more iteration for negative entries of a kinetic unknown
+(`polish_negatives` of [`NewtonSolver`](@ref)).
 """
 struct NewtonResult
     status::Symbol
@@ -121,6 +181,7 @@ struct NewtonResult
     preconditioner_updates::Int
     residual_floor::Bool
     linear_step::Bool
+    polished::Bool
     jacobian_time::Float64        # seconds in jacobian! (assembly of the stored blocks)
     residual_time::Float64        # seconds in residual evaluations, line search included
     factorization_time::Float64   # seconds factorizing (LU, or the preconditioner blocks)
@@ -167,6 +228,9 @@ struct NewtonWorkspace{T, S <: EquationSystem, L, C}
     limit_reference::Vector{UnitRange{Int}}  # the entries whose magnitudes sum to the reference, empty for the own scale
     group_tolerance::Vector{T}     # the group part of the tolerance per entry, 0 outside groups
     group_ranges::Vector{UnitRange{Int}}     # the entries of the group of each entry with a group part
+    kinetic_rows::Vector{Int}      # the rows of the kinetic unknowns; the differential ones are weighted by their entry
+    polish::Vector{NegativePolish}  # the kinetic unknowns that `polish_negatives` polishes
+    polish_pending::Vector{Bool}    # per polished unknown: negative entries before the extra iteration
     cache::C
     residual_norms::Vector{Float64}
     update_norms::Vector{Float64}
@@ -305,14 +369,22 @@ function NewtonWorkspace(system::EquationSystem{T}, solver::NewtonSolver = Newto
     matrix.nzval[diagonal_positions] .= one(T)
     cache = linear_solver_cache(solver.linear_solver, matrix, system, row_weights, scales)
     exact_jacobian = system.stored_jacobian_exact || newton_operator_exact(cache)
+    kinetic_rows = Int[]
+    for id in eachindex(layout.unknowns)
+        layout.kinds[id] === :kinetic || continue
+        for range in _unknown_ranges(layout, id)
+            append!(kinetic_rows, range)
+        end
+    end
+    polish = _negative_polish(system, solver.polish_negatives)
     return NewtonWorkspace(
         system, solver, exact_jacobian, system.linear && exact_jacobian, zeros(T, n),
         zeros(T, n), zeros(T, n), zeros(T, n),
         zeros(T, n), zeros(T, n), row_weights, scales, absolute, relative, rate_tolerance,
         jacobian,
         matrix, diagonal_positions, limited, limit_value, limit_tolerance, limit_reference,
-        group_tolerance, group_ranges, cache,
-        Float64[], Float64[], Float64[], Ref(NaN), Ref(NaN), Ref(0))
+        group_tolerance, group_ranges, kinetic_rows, polish, fill(false, length(polish)),
+        cache, Float64[], Float64[], Float64[], Ref(NaN), Ref(NaN), Ref(0))
 end
 
 # residual with the errors of evaluation outside the physical domain turned into a status
@@ -433,6 +505,78 @@ function _convergence_order(norms)
     return NaN
 end
 
+# the kinetic unknowns that `polish_negatives` polishes
+function _negative_polish(system::EquationSystem, mode)
+    mode === :auto || mode isa Bool ||
+        throw(ArgumentError("polish_negatives must be :auto, true or false, not $mode"))
+    layout = system.layout
+    polish = NegativePolish[]
+    mode === false && return polish
+    for id in eachindex(layout.unknowns)
+        layout.kinds[id] === :kinetic || continue
+        name = layout.unknowns[id].name
+        if mode === :auto && !_polished_schemes(system, name)
+            continue
+        end
+        rows = Int[]
+        for range in _unknown_ranges(layout, id)
+            append!(rows, range)
+        end
+        push!(polish, NegativePolish(name, rows, Ref(true), Ref(0)))
+    end
+    return polish
+end
+
+# whether the equation of `name` has Fokker-Planck terms, all with schemes of POLISHED_SCHEMES
+function _polished_schemes(system::EquationSystem, name::Symbol)
+    found = false
+    for equation in system.equations
+        equation.unknown === name || continue
+        for term in equation.terms
+            term isa FokkerPlanckTerm || continue
+            found = true
+            operator = term.operator
+            if !(operator.p_scheme in POLISHED_SCHEMES &&
+                 operator.xi_scheme in POLISHED_SCHEMES)
+                return false
+            end
+        end
+    end
+    return found
+end
+
+# whether a polished unknown has negative entries, marking each such unknown
+function _start_polish!(ws::NewtonWorkspace, u)
+    any_negative = false
+    for (k, group) in enumerate(ws.polish)
+        negative = group.enabled[] && any(i -> u[i] < 0, group.rows)
+        ws.polish_pending[k] = negative
+        any_negative |= negative
+    end
+    return any_negative
+end
+
+# after the extra iteration: an unknown it left negative counts a miss, and `:auto` stops
+# polishing it after POLISH_MISSES misses in a row
+function _finish_polish!(ws::NewtonWorkspace, solver::NewtonSolver, u, t)
+    for (k, group) in enumerate(ws.polish)
+        ws.polish_pending[k] || continue
+        if !any(i -> u[i] < 0, group.rows)
+            group.misses[] = 0
+            continue
+        end
+        group.misses[] += 1
+        if solver.polish_negatives === :auto && group.misses[] >= POLISH_MISSES
+            group.enabled[] = false
+            @warn "the extra Newton iteration for negative entries of $(group.unknown) left them " *
+                  "in $POLISH_MISSES polished solves in a row, the last ending at t = $t s: its " *
+                  "schemes in p and ξ do not keep the converged solution non-negative in this run, " *
+                  "and polish_negatives = :auto stops polishing $(group.unknown)"
+        end
+    end
+    return nothing
+end
+
 """
     newton_solve!(u, u_old, workspace::NewtonWorkspace, t, dt; reference=u_old)
 
@@ -455,6 +599,16 @@ function newton_solve!(
     @inbounds for i in eachindex(ws.row_weights)
         ws.row_weights[i] = (system.mass[i] == 0 ? one(dt) : dt) / system.row_scales[i]
     end
+    # a differential kinetic row takes the size of its entry at the start of the step where
+    # that exceeds its row scale (the docstring of NewtonSolver), from the start state
+    # `u_old`; an algebraic row may balance a quantity in other units and keeps its scale
+    @inbounds for i in ws.kinetic_rows
+        system.mass[i] == 0 && continue
+        size_at_start = abs(u_old[system.mass_columns[i]])
+        if size_at_start > system.row_scales[i]
+            ws.row_weights[i] = dt / size_at_start
+        end
+    end
     krylov = 0
     updates = 0
     smallest_step = 1.0
@@ -462,12 +616,14 @@ function newton_solve!(
     residual_seconds = 0.0
     factorization_seconds = 0.0
     solve_seconds = 0.0
+    polished = false
     #! format: off
     result(status, iterations, initial; residual_floor=false, linear_step=false) =
         NewtonResult(status, iterations, initial, isempty(ws.residual_norms) ? initial : last(ws.residual_norms),
                      isempty(ws.update_norms) ? NaN : last(ws.update_norms),
                      _convergence_order(ws.update_norms), smallest_step, krylov, updates, residual_floor,
-                     linear_step, jacobian_seconds, residual_seconds, factorization_seconds, solve_seconds)
+                     linear_step, polished, jacobian_seconds, residual_seconds, factorization_seconds,
+                     solve_seconds)
     #! format: on
 
     started = time_ns()
@@ -479,7 +635,8 @@ function newton_solve!(
     for iteration in 1:solver.max_iterations
         # the stored Jacobian of a system linear in the state changes with the step alone
         # (its end time and, through the start state, its length), and so does the Newton
-        # matrix
+        # matrix, whose kinetic row weights follow the start state: no call repeats an end
+        # time and a length from another start state
         same_matrix = reuse && ws.assembled_time[] == t && ws.assembled_step[] == dt
         if !same_matrix
             invalidate_jacobian!(ws)
@@ -563,7 +720,8 @@ function newton_solve!(
         end
         # The residual of a stiff step has a round-off floor: F = M(u - u_old)/dt - rhs
         # cancels two terms of size dt‖L‖ times the unknown, so the scaled residual cannot
-        # fall below about eps dt‖L‖/scale, which exceeds `residual_tolerance` at large dt.
+        # fall below about eps dt‖L‖/s, with s the scale of the row's weight, which exceeds
+        # `residual_tolerance` at large dt.
         # Once the update is within tolerance and the residual has stopped decreasing, the
         # iteration has converged as far as the arithmetic allows.
         # An inexact linear solve converges linearly, with a small update that understates
@@ -574,6 +732,16 @@ function newton_solve!(
                            linear_tolerance(ws.cache) <= solver.floor_linear_tolerance &&
                            ws.exact_jacobian
         if update_converged && (residual_small || residual_stalled)
+            # one more iteration when a polished kinetic unknown has negative entries (the
+            # docstring of NewtonSolver, `polish_negatives`)
+            if polished
+                _finish_polish!(ws, solver, u, t)
+            elseif iteration < solver.max_iterations
+                if _start_polish!(ws, u)
+                    polished = true
+                    continue
+                end
+            end
             status = _below_lower_limit(ws, u) ? :below_lower_limit : :converged
             return result(status, iteration, initial; residual_floor = !residual_small)
         end

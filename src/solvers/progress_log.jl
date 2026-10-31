@@ -533,7 +533,8 @@ function write_entry(log::ProgressLog, reason::AbstractString,
         println(io, "  steps   ", accepted, " accepted of ", length(attempts), " attempted since the last entry (",
                 failed, " failed, ", rejected, " rejected, ", half, " half steps, ",
                 count(@view stats.accepted_at_residual_floor[attempts]), " at the residual floor, ",
-                count(@view stats.accepted_as_linear[attempts]), " as a linear system), last time step ",
+                count(@view stats.accepted_as_linear[attempts]), " as a linear system, ",
+                count(@view stats.polished_for_negatives[attempts]), " polished for negatives), last time step ",
                 _number(time_step), " s")
         function share(field)
             if wall > 0

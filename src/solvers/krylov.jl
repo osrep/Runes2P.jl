@@ -38,11 +38,14 @@ terms the two are the same.
   relative `refresh_step_change`, or when the last solve needed more than
   `refresh_count_growth` times the Krylov iterations of the first solve after the
   factorization. The Newton matrix `W (M/dt - J) S` changes with the step through the mass
-  term alone, and the factors of a nearby step precondition it well; the count rule catches
-  coefficients that drift in time and the factors of a longer step applied at a shorter one.
+  term and through the row weights `W` of a kinetic unknown, which follow its entries at the
+  start of the step ([`NewtonSolver`](@ref)); the factors of a nearby step precondition it
+  well, and the count rule catches coefficients and entries that drift in time and the
+  factors of a longer step applied at a shorter one.
   A halved step is a change of exactly 0.5 and keeps the factors with the default; a doubled
-  step refreshes. The stored matrix of a system with prescribed coefficients and a constant
-  time step is the same in every step, so one factorization then serves the whole run. Under
+  step refreshes. The stored matrix of a system with prescribed coefficients, a constant
+  time step and no kinetic unknown is the same in every step, so one factorization then serves
+  the whole run. Under
   a step controller that grows the step at its cap of 2 per step, the default
   `refresh_step_change` factorizes at every such step, and `:on_demand` pays off where the
   step changes by less.

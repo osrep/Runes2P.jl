@@ -125,6 +125,27 @@ With [`GMRES`](@ref)`(operator = :exact)` the approximate block only preconditio
 A linear scheme with coefficients fixed within the step (no electric field or plasma read from unknowns) makes the term linear in ``f`` ([`is_linear`](@ref)).
 Its stored Jacobian is then exact, and [`NewtonSolver`](@ref) accepts the step on the update test alone (`linear_acceptance`).
 
+## Convergence of the limiter
+
+A positivity-preserving limiter keeps the converged discrete solution non-negative, not every Newton iterate.
+In the tail, where ``f`` is near zero, an iterate that passes both tests of [`NewtonSolver`](@ref) can still hold small negative entries.
+They lie far inside the tolerance of the unknown, so the residual and the update do not see them.
+In the relaxation run of `test/test_flux_limiters.jl`, TCDF leaves 5 such entries, down to ``10^{-25}`` of the maximum.
+`polish_negatives` of [`NewtonSolver`](@ref) takes one more Newton iteration when an iterate that passes both tests has negative entries in a polished kinetic unknown, at most once per step, and that removes them there.
+A scheme whose converged solution has negative entries, such as central interpolation or SMART, keeps them; with `polish_negatives = true` it pays the iteration on each such step.
+The step statistics count the steps that took it (`polished_for_negatives` of [`SolverStatistics`](@ref)).
+
+| `polish_negatives` | Polished unknowns | Cost |
+|---|---|---|
+| `:auto`, the default | those whose Fokker-Planck terms all use, in p and ξ, a scheme of [`POLISHED_SCHEMES`](@ref): upwind, exponential fitting, TCDF, OSPRE, van Albada | one iteration on a solve that leaves negative entries; after [`POLISH_MISSES`](@ref) solves in a row whose extra iteration left them, the unknown is no longer polished for the rest of the run and the log has a warning |
+| `true` | every kinetic unknown | one iteration on every step with negative entries, for the whole run |
+| `false` | none, as DREAM | none |
+
+Upwind and exponential fitting give an M-matrix and keep a non-negative distribution non-negative, as long as the central cross diffusion keeps the off-diagonal couplings non-negative (above).
+TCDF, OSPRE and van Albada stayed non-negative in the tests, without such a guarantee; a run in which one of them does not is the one in which `:auto` turns itself off.
+For results free of negative entries that the iteration leaves, keep the polish on with one of these schemes.
+`true` polishes the other schemes too, at the cost of an iteration on almost every step: in the relaxation run of `test/test_flux_limiters.jl` SMART takes 98 Newton iterations instead of 57 over 40 steps.
+
 ## Lower limits of the Newton step
 
 A [`LowerLimit`](@ref) declared on an unknown bounds every entry ``u_k`` from below by
@@ -166,7 +187,8 @@ The charge states have no limit of their own there (see [Comparison with DREAM](
 ## Tests
 
 - `test/test_exponential_fitting.jl`: no negative off-diagonal coupling of exponential fitting at any Péclet number, against the negative couplings of the central scheme, and the collisional Maxwellian as a steady state.
-- `test/test_flux_limiters.jl`: the orders of the four-point schemes by manufactured solutions, their Jacobian against dense forward-mode AD, the frozen limiter, and the sign of ``f`` in a relaxation run.
+- `test/test_flux_limiters.jl`: the orders of the four-point schemes by manufactured solutions, their Jacobian against dense forward-mode AD, and the frozen limiter.
+  It checks the sign of ``f`` in a relaxation run converged to a residual of ``10^{-10}``, and the extra iteration that removes the negative entries of TCDF at the default tolerance.
 - `test/test_pitch_accuracy.jl`: the pitch equilibrium per scheme and the sign of ``f`` in ``\xi``.
 - `test/test_cooling_dream.jl`: a cooling plasma with a slide-away field against DREAM, for central interpolation and TCDF, comparing the distribution and the number of cells where it is negative.
   The test requires that number to be zero with TCDF.

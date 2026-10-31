@@ -185,9 +185,9 @@ function report(solution, grid; wall = NaN)
         @printf("; Krylov iterations per Newton iteration %.2f; factorizations per step %.2f",
             sum(st.krylov_iterations) / max(newton, 1),
             sum(st.preconditioner_updates) / max(steps, 1))
-    @printf("; steps accepted at the residual floor %d, as a linear system %d",
+    @printf("; steps accepted at the residual floor %d, as a linear system %d, polished for negatives %d",
         count(st.accepted_at_residual_floor .& .!st.accepted_as_linear),
-        count(st.accepted_as_linear))
+        count(st.accepted_as_linear), count(st.polished_for_negatives))
     isnan(wall) || @printf("; wall time %.2f s", wall)
     println()
     @printf("time per step: %.1f ms, of which Jacobian %.1f, residual %.1f, factorization %.1f, linear solve %.1f\n",

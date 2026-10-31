@@ -140,6 +140,7 @@ The group `solver_statistics` has one dataset per field of [`SolverStatistics`](
 Its `time` array has one entry per attempted step, rejected ones included, and is not the `time` of the saved states.
 The arrays of the Newton iterations have one entry per iteration and name their step by `iteration_attempt`.
 A field without entries has no dataset, and the reader takes it as empty.
+A field of one entry per attempted step that a file of an older format does not have reads as its default for every attempt: `false`, `NaN`, `0` or `:unknown`.
 
 The group `update_states` has one dataset per interval update, named by the update, of shape `(n, t)`, reversed for a C-order reader, with `n` the length of the update's state.
 Column `t` is the state of the update in force when saved state `t` was computed.
