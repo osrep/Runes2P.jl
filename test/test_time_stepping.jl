@@ -457,19 +457,25 @@ end
     @test isempty(polished(tcdf, false))
     @test_throws "polish_negatives must be" NewtonWorkspace(
         tcdf, NewtonSolver(polish_negatives = :always))
-    # `:auto` stops after POLISH_MISSES polished steps in a row that leave negative entries,
-    # and queues a warning for the log of the run; `true` never stops
+    # `:auto` stops after POLISH_MISSES polished solves in a row that leave negative entries,
+    # with a warning; `true` never stops
     for (mode, stops) in ((:auto, true), (true, false))
         solver = NewtonSolver(polish_negatives = mode)
         ws = NewtonWorkspace(tcdf, solver)
         u = ones(length(tcdf.layout))
         u[3] = -1.0
-        for step in 1:POLISH_MISSES
+        for step in 1:(POLISH_MISSES - 1)
             @test Runes2P._start_polish!(ws, u)
-            Runes2P._finish_polish!(ws, solver, u, 1e-3 * step)
+            @test_logs Runes2P._finish_polish!(ws, solver, u, 1e-3 * step)
+        end
+        @test Runes2P._start_polish!(ws, u)
+        if stops
+            @test_logs (:warn, r"polish_negatives = :auto stops polishing f") Runes2P._finish_polish!(
+                ws, solver, u, 1.0)
+        else
+            @test_logs Runes2P._finish_polish!(ws, solver, u, 1.0)
         end
         @test ws.polish[1].enabled[] == !stops
-        @test length(ws.polish_warnings) == (stops ? 1 : 0)
         @test Runes2P._start_polish!(ws, u) == !stops
     end
     # an extra iteration that removes the negative entries resets the count
@@ -485,15 +491,6 @@ end
     Runes2P._finish_polish!(ws, solver, clean, 0.0)
     @test ws.polish[1].misses[] == 0
     @test ws.polish[1].enabled[]
-    # the warning goes to the log of the run, or to the logger of Julia without one
-    warning = "the extra Newton iteration for negative entries of f left them"
-    io = IOBuffer()
-    push!(ws.polish_warnings, warning)
-    Runes2P._log_polish_warnings!(ProgressLog(; io), ws)
-    @test occursin(warning, String(take!(io)))
-    @test isempty(ws.polish_warnings)
-    push!(ws.polish_warnings, warning)
-    @test_logs (:warn, warning) Runes2P._log_polish_warnings!(nothing, ws)
 end
 
 @testset "a stiff step converges at the residual floor" begin

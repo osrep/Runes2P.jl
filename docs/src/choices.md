@@ -141,6 +141,8 @@ When that error is zero, DREAM's next step is unbounded; halving the step tried 
 DREAM has no finite behaviour to reproduce there, so no option gives DREAM's.
 
 A positivity-preserving limiter keeps the converged discrete solution non-negative, and the extra iteration converges it further where an accepted iterate still has negative entries ([Positivity](model/positivity.md#Convergence-of-the-limiter)).
+The schemes of [`POLISHED_SCHEMES`](@ref) are those whose converged solution stayed non-negative in the tests; the extra iteration is wasted on the others.
+An unconverged limiter is cleaned by one extra iteration, so [`POLISH_MISSES`](@ref), five misses in a row, shows a scheme that does not keep the run non-negative and bounds the cost of finding out.
 DREAM takes no such iteration: `polish_negatives = false`.
 
 ## Examples

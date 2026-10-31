@@ -84,13 +84,12 @@ Settings of the Newton iteration of a backward-Euler step.
   is far below the tolerance of the unknown, and the extra iteration removes them. A scheme
   whose converged solution has negative entries keeps them and pays the iteration.
   - `:auto` (the default, a choice of this package; see the docs page *Choices of this
-    package*) polishes a kinetic unknown whose Fokker-Planck terms all use, in p and ξ, a
-    scheme of `POLISHED_SCHEMES`: upwind and exponential fitting, whose step is an
-    M-matrix, and the limiters TCDF, OSPRE and van Albada, which stayed non-negative in the
-    tests without a guarantee. When the extra iteration leaves negative entries of an
-    unknown in `POLISH_MISSES` (5) polished steps in a row, the scheme does not keep that
-    run non-negative: `:auto` stops polishing the unknown for the rest of the workspace and
-    writes a warning to the log of the run.
+    package*) polishes a kinetic unknown whose equation has Fokker-Planck terms that all use,
+    in p and ξ, a scheme of [`POLISHED_SCHEMES`](@ref). When the extra iteration leaves
+    negative entries of an unknown in [`POLISH_MISSES`](@ref) polished solves in a row, its
+    schemes do not keep that run non-negative: `:auto` stops polishing the unknown for the
+    rest of the run (a resumed segment starts again) and writes a warning to the log of the
+    run, or to the logger of Julia outside [`integrate`](@ref).
   - `true` polishes every kinetic unknown, whatever its scheme, and never stops.
   - `false` never polishes, as DREAM's nonlinear solver.
 - `line_search = true` adds backtracking on `½‖F‖²` of the scaled residual (Armijo condition
@@ -120,18 +119,22 @@ end
     POLISHED_SCHEMES
 
 The schemes of the advection whose kinetic unknowns `polish_negatives = :auto` of
-[`NewtonSolver`](@ref) polishes: `:upwind` and `:exponential_fitting`, whose step is an
-M-matrix and keeps a non-negative distribution non-negative, and the limiters `:tcdf`,
-`:ospre` and `:van_albada`, which stayed non-negative in the tests (docs page *Positivity*)
-without such a guarantee.
+[`NewtonSolver`](@ref) polishes, a choice of this package (see the docs page *Choices of
+this package*): `:upwind` and `:exponential_fitting`, whose step is an M-matrix as long as
+the central cross diffusion keeps the off-diagonal couplings non-negative (docs page
+*Positivity*), and the limiters `:tcdf`, `:ospre` and `:van_albada`, which stayed
+non-negative in the tests without such a guarantee.
 """
 const POLISHED_SCHEMES = (:upwind, :exponential_fitting, :tcdf, :ospre, :van_albada)
 
 """
     POLISH_MISSES
 
-The number of polished steps in a row whose extra iteration leaves negative entries of an
-unknown, after which `polish_negatives = :auto` of [`NewtonSolver`](@ref) stops polishing it.
+The number of polished Newton solves in a row whose extra iteration leaves negative entries
+of an unknown, after which `polish_negatives = :auto` of [`NewtonSolver`](@ref) stops
+polishing it; a choice of this package (see the docs page *Choices of this package*). An
+unconverged limiter is cleaned by one extra iteration, so a few misses in a row show a
+scheme whose converged solution is negative, and five bound the cost of finding out.
 """
 const POLISH_MISSES = 5
 
@@ -228,7 +231,6 @@ struct NewtonWorkspace{T, S <: EquationSystem, L, C}
     kinetic_rows::Vector{Int}      # the rows of the kinetic unknowns; the differential ones are weighted by their entry
     polish::Vector{NegativePolish}  # the kinetic unknowns that `polish_negatives` polishes
     polish_pending::Vector{Bool}    # per polished unknown: negative entries before the extra iteration
-    polish_warnings::Vector{String} # the warnings of a polish turned off, for the log of the run
     cache::C
     residual_norms::Vector{Float64}
     update_norms::Vector{Float64}
@@ -382,7 +384,7 @@ function NewtonWorkspace(system::EquationSystem{T}, solver::NewtonSolver = Newto
         jacobian,
         matrix, diagonal_positions, limited, limit_value, limit_tolerance, limit_reference,
         group_tolerance, group_ranges, kinetic_rows, polish, fill(false, length(polish)),
-        String[], cache, Float64[], Float64[], Float64[], Ref(NaN), Ref(NaN), Ref(0))
+        cache, Float64[], Float64[], Float64[], Ref(NaN), Ref(NaN), Ref(0))
 end
 
 # residual with the errors of evaluation outside the physical domain turned into a status
@@ -566,11 +568,10 @@ function _finish_polish!(ws::NewtonWorkspace, solver::NewtonSolver, u, t)
         group.misses[] += 1
         if solver.polish_negatives === :auto && group.misses[] >= POLISH_MISSES
             group.enabled[] = false
-            push!(ws.polish_warnings,
-                "the extra Newton iteration for negative entries of $(group.unknown) left them in " *
-                "$POLISH_MISSES steps in a row, the last ending at t = $t s: its scheme does not keep " *
-                "the converged solution non-negative in this run, and polish_negatives = :auto stops " *
-                "polishing $(group.unknown)")
+            @warn "the extra Newton iteration for negative entries of $(group.unknown) left them " *
+                  "in $POLISH_MISSES polished solves in a row, the last ending at t = $t s: its " *
+                  "schemes in p and ξ do not keep the converged solution non-negative in this run, " *
+                  "and polish_negatives = :auto stops polishing $(group.unknown)"
         end
     end
     return nothing
