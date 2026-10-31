@@ -174,7 +174,8 @@ export jacobian_sparsity, jacobian_prototype, jacobian_operator, jacobian_colors
        residual_scales, ode_function
 export FluidSchurLU
 export LinearSolver, SparseLU, GMRES, RadiusBlockLU, RadiusBlockILU, NewtonSolver,
-       NewtonWorkspace, NewtonResult, newton_solve!, invalidate_jacobian!
+       NewtonWorkspace, NewtonResult, newton_solve!, invalidate_jacobian!, POLISHED_SCHEMES,
+       POLISH_MISSES
 export SolverStatistics, TimeSolution, TimeStepFailure, integrate, write_output
 export RunOptions, TimeStepper, FixedSteps, StepDoubling, StepController, Leg, time_points
 export OUTPUT_FORMAT_VERSION, DescriptionContext, run_settings, read_settings,

@@ -938,5 +938,20 @@ using HDF5
         end
         @test_throws "older than this Runes2P reads" read_state(older)
         rm(older)
+
+        # a file of an older format without a column of the statistics reads it as its
+        # default for every attempt
+        solution = integrate(case.system, case.u0, case.times[1:3])
+        file = tempname() * ".h5"
+        write_output(file, solution)
+        h5open(file, "r+") do h5
+            delete_object(h5["solver_statistics"], "polished_for_negatives")
+            delete_attribute(h5, "format_version")
+            attributes(h5)["format_version"] = "0.0.2"
+        end
+        stats = read_output(file).statistics
+        @test length(stats.polished_for_negatives) == length(stats.time) > 0
+        @test !any(stats.polished_for_negatives)
+        rm(file)
     end
 end

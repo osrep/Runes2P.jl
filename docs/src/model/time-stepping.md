@@ -46,8 +46,10 @@ A = W \left(\frac{M}{h} - J\right) S, \qquad A\,\tilde\delta = -W F, \qquad \del
 
 with ``J`` the Jacobian of the implicit terms, ``S`` the scales of the unknowns and ``W`` the row weights.
 A row with a time derivative has the weight ``h/s_i``, an algebraic row ``1/s_i``, with ``s_i`` the scale of the row.
-On a row with a time derivative the scaled residual ``|W F|`` is then the change that the residual causes in one step relative to the scale of the unknown.
-On an algebraic row it is the residual relative to the scale of the row.
+On a row of a kinetic unknown with a time derivative, ``s_i`` is the larger of the scale of the row and the entry whose time derivative the row holds, taken at the start of the step.
+The collision fluxes of the bulk cancel in its rows, and the round-off of that cancellation grows with the entry, not with the scale of the tail.
+On a row with a time derivative the scaled residual ``|W F|`` is then the change that the residual causes in one step relative to ``s_i``.
+On an algebraic row it is the residual relative to ``s_i``.
 
 ### Convergence
 
@@ -69,6 +71,10 @@ Two waivers of the residual test exist, each flagged in the [`NewtonResult`](@re
 Both waivers need an exact Newton matrix and a linear solve accurate to `floor_linear_tolerance`.
 An inexact solve or an approximate Jacobian block ([`jacobian_kind`](@ref)) converges linearly, with an update that understates the error.
 Such a quasi-Newton iteration is held by the residual test alone.
+
+An iterate that passes both tests but has negative entries in a polished kinetic unknown is not accepted (`polish_negatives` of [`NewtonSolver`](@ref), by default for the schemes of [`POLISHED_SCHEMES`](@ref)).
+Newton takes one more iteration and accepts the next iterate that passes them, flagged as `polished` and `polished_for_negatives`.
+A limiter has then converged further in the tail cells near zero ([Positivity](positivity.md#Convergence-of-the-limiter)).
 
 For a system linear in the state the stored Jacobian depends only on the end time and the length of the step.
 With `reuse_linear_matrix` it is assembled and factorized once per step and kept for the later iterations and for a repeated step.
