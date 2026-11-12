@@ -414,7 +414,7 @@ The start of the controller:
 | | `relative_tolerance = 1e-3` | `relative_tolerance = 1e-4` |
 |---|---|---|
 | Initial step | 3.11875e-6 s, rejected | 3.11875e-6 s, rejected |
-| Steps rejected on the error estimate | 3 | 3 |
+| Steps rejected on the error estimate, the initial step among them | 3 | 3 |
 | Steps repeated after a Newton failure | 1, at 1.03e-3 s | 0 |
 | First accepted step | 4.05e-7 s | 9.4e-8 s |
 | Smallest accepted step | 2.7e-7 s | 7.2e-8 s |
