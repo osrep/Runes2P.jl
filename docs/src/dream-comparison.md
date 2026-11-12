@@ -281,24 +281,29 @@ With fixed steps the first step solves the source: from DREAM's source the diffe
 
 - The default `diffusivity` of `build` and `run_window` of `test/example_disruption.jl` is that of scenario 1, so the run of scenario 4 needs `diffusivity = 1000.0`.
   To repeat it, `read_dream_state` reads DREAM's output of run 4, `run_window(start, :dream; diffusivity = 1000.0, solver)` runs the quench with a [`NewtonSolver`](@ref) on [`MKLPardiso`](@ref), and `phase_differences` returns the largest difference of each quantity.
-- Both codes take the 1600 steps of 3.11875e-6 s with MKL PARDISO.
+  Its values of `n_re`, `j_re` and `f_re` (2.23e-2, 3.35e-2 and 18.0 for this run) are those of the outer radii below DREAM's tolerances.
+  The numbers below for these three take the radii 1 to 11, and for `f_re` the cells where DREAM's largest value at the radius and step is above 1e5.
+- Both codes take the 1600 steps of 3.11875e-6 s with MKL PARDISO on one thread.
   DREAM v26.5 takes 7899 Newton iterations, at most 14 in a step.
-  Runes2P accepts all 1600 steps with 6356 Newton iterations, at most 6 in a step.
+  Runes2P, at `-O2` with one Julia thread, accepts all 1600 steps with 6356 Newton iterations, at most 6 in a step.
 - Relative to DREAM's largest value over the radii at each step, the radial quantities agree to 2.80e-6 in `j_hot`, 1.55e-6 in `j_ohm` and 9.31e-7 in `E_field`.
   They agree to 4.77e-7 in `n_hot`, 3.48e-7 in `T_cold`, 2.95e-7 in `j_tot` and 3.44e-8 in `n_cold`.
 - `I_p` agrees to 6.67e-8 of DREAM's value.
   At 4.99e-3 s it is 2.543120e5 A in both codes.
-- `n_re` and `j_re` agree at radii 1 to 13 to at most 5.6e-7, relative to DREAM's largest value at each radius over the quench.
-  The radii 14 and 15 hold `n_re` below 2e-3 m⁻³, under DREAM's absolute tolerance of `n_re`, 1e5 m⁻³, and are not compared.
+- `n_re` and `j_re` are compared relative to DREAM's largest value at each radius over the quench.
+  At radii 1 to 11, where DREAM's `n_re` exceeds its absolute tolerance of 1e5 m⁻³, they agree to 4.3e-7 and 4.4e-7, the largest at radius 4.
+  Below that tolerance, radii 12 and 13, where DREAM's largest `n_re` is 4.9e3 and 8.8 m⁻³, still agree to 5.6e-7.
+  At radii 14 and 15, where `n_re` stays below 2e-3 m⁻³, they differ by up to 2.2e-2 in `n_re` and 3.4e-2 in `j_re`.
 - `f_re` agrees to 1.91e-6 of DREAM's largest value at each radius and step, wherever that value is above 1e5, the absolute tolerance of `f_re` in DREAM's runs of the case ([Choices](choices.md#Reference-cases)).
 - `f_hot` differs by 1.12e-5 of DREAM's largest value at its radius and step, in the first step and the lowest momentum cell.
-  The difference falls to 1.5e-8 by step 20, and it is the same at equal times with 3200 steps.
-  Its 2-norm is 3.8e-7 of that of `f_hot`, inside DREAM's relative tolerance of 2e-6 on the update; its cause is not established.
+  The difference falls to 1.5e-8 by step 20.
+  At the time of the first step the run of 3200 steps differs by 1.10e-5.
+  The 2-norm of the difference is 3.8e-7 of that of `f_hot`; its cause is not established.
 - At 4.99e-3 s the share of `n_re` above the runaway grid is 4.0e-5 to 4.1e-5 at radii 1 to 11, equal in both codes to four digits.
 - The negative cells are counted over the 1601 saved states, at the radii where DREAM's peak is above its absolute tolerance.
-  DREAM's state at the start already holds 2411 negative cells.
+  DREAM's state at the start, at all radii and in `f_hot` and `f_re` together, already holds 2411 negative cells.
 - `f_re` has 77146 negative cells over the steps in Runes2P and 77762 in DREAM, and every one of Runes2P's is negative in DREAM.
-  The most negative is −3.9e-6 of the peak of its radius in both codes, in the first cell of the runaway grid.
+  The most negative is −3.9e-6 of the peak of its radius in both codes, in the first momentum cell of the runaway grid.
 - `f_hot` has 947945 negative cells over the steps in Runes2P and 1034261 in DREAM, 947620 of them in both, all at round-off.
   The most negative is −1.2e-16 of the peak of its radius, in the same cell in both codes.
   A cell negative in one code only holds at most 3.3e-26 of the peak.
@@ -316,13 +321,15 @@ Runes2P's runs with fixed steps and the runaway grid to `p_max = 200` give `I_p`
 
 - The observed order is 0.98 in `I_p` and 0.89 in the field.
   An extrapolation of order 1 gives 1.268 V/m for the field.
-- At 3200 steps, compared at 1613 of the 3201 saved times, the radial quantities agree with DREAM to at most 6.8e-7 relative to DREAM's largest value over the radii at each step.
-  `I_p` agrees to 4.0e-8, and `n_re` and `j_re` at radii 1 to 13 to at most 2.5e-7.
-- At 6400 steps, with `p_max = 60` in both codes and at all 6400 times, the same measures are 2.4e-6, 6.6e-8 and 3.9e-7.
+- At 3200 steps the radial quantities agree with DREAM to at most 6.8e-7 relative to DREAM's largest value over the radii at each step.
+  The run of Runes2P saved every second step and the steps around 4e-3 s, so the comparison covers 1613 of DREAM's 3201 saved times.
+  `I_p` agrees to 4.0e-8, and `n_re` and `j_re` at radii 1 to 11 to at most 2.5e-7, the largest at radius 4.
+- At 6400 steps, with `p_max = 60` in both codes and at all 6400 times, the same measures are 2.4e-6, 6.6e-8 and 3.9e-7, the last again at radius 4.
 - DREAM has no run of 6400 steps with `p_max = 200`, so the limit is Runes2P's.
 
 [`StepController`](@ref) runs from the same start of `initial_state`, with the source from DREAM's `S_particle`.
-Its first step is 3.11875e-6 s, its `relative_tolerance` 1e-3 (the default) or 1e-4, and its other settings are the defaults.
+Its initial step is 3.11875e-6 s, its `relative_tolerance` 1e-3 (the default) or 1e-4, and its other settings are the defaults.
+The initial step is rejected; the first accepted step is 4.05e-7 s at 1e-3 and 9.4e-8 s at 1e-4.
 The runs save only at 4.00135625e-3 s and 4.99e-3 s, where a step ends.
 
 | Run | Accepted steps | Newton iterations | `I_p` relative to the limit | `E_field` relative to the limit |

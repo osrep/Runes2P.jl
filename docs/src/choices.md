@@ -218,7 +218,7 @@ With 500 steps phase 1 converges, and phase 2 runs its 1500 steps.
 The step of 4e-8 s is also that of the case at the size of a test in `test/test_disruption_dream.jl`.
 
 The measurement of scenario 4 at full size takes the runaway grid to `p_max = 200` ([The whole quench of scenario 4](dream-comparison.md#The-whole-quench-of-scenario-4)).
-At the end of the quench of scenario 4, DREAM v26.5 with the grid of scenario 1 to `p_max = 20` holds only 0.44 of `n_re` in `f_re` at the centre.
+At the end of the quench of scenario 4, DREAM v26.5 with the case script's default runaway grid to `p_max = 20` holds only 0.44 of `n_re` in `f_re` at the centre.
 To `p_max = 200` the share of `n_re` above the grid is 4e-5 at radii 1 to 11.
 DREAM v26.5 at 3200 steps gives `I_p` at 4.99e-3 s with `p_max = 60` 4.5e-5 below that with `p_max = 200`, 2.5305347e5 against 2.5306492e5 A.
 

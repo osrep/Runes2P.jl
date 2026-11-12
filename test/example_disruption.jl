@@ -23,7 +23,7 @@ using Runes2P, HDF5
 
 const WALL_RADIUS = 0.55            # ASDEXU.py:24
 # the heat diffusivity Drr of scenario 1, as of scenarios 0 to 3 (generate.py:502); scenario 4
-# takes 1000 m²/s, `build(start; diffusivity = 1000.0)`
+# takes 1000 m²/s (generate.py:508), `build(start; diffusivity = 1000.0)`
 const DIFFUSIVITY = 4000.0          # m²/s
 const P_CUT = 0.01                  # generate.py:329
 const THRESHOLD = 5.0               # generate.py:234
@@ -545,9 +545,9 @@ end
 # for DREAM's fully kinetic mode, `:superthermal` for its superthermal mode (the header of this
 # file), `compat` and `diffusivity` of the heat transport as in the header. The default
 # `diffusivity` is that of scenario 1 (`DIFFUSIVITY`); a start from scenario 4 of generate.py
-# passes `diffusivity = 1000.0`. Returns the layout, the
-# equations, the grids, the radius count, the mode and the labels of the channels of the row of
-# W_cold; `budgets` and `phase_differences` take it.
+# passes `diffusivity = 1000.0` (generate.py:508). Returns the layout, the equations, the grids,
+# the radius count, the mode and the labels of the channels of the row of W_cold; `budgets` and
+# `phase_differences` take it.
 #
 # `runaway = true`, by default when `start` holds DREAM's runaway grid, adds the runaway grid
 # above the hot-tail grid as DREAM v26.5 builds it, on the momentum faces `runaway_p_faces` (the
@@ -1042,8 +1042,8 @@ const WINDOW_TOLERANCES = Dict("f_hot" => 5e-8,      # 4.9e-9
 
 # the window of DREAM's states `start` (a window of `read_dream_state`) from its first state, at
 # `compat`, on DREAM's times with the Newton solver `solver` and the heat diffusivity
-# `diffusivity` of `build` (that of scenario 1 by default, 1000.0 for scenario 4); used by
-# test_disruption_runaway_dream.jl and test_mkl_pardiso.jl
+# `diffusivity` of `build` (that of scenario 1 by default, 1000.0 for scenario 4,
+# generate.py:508); used by test_disruption_runaway_dream.jl and test_mkl_pardiso.jl
 function run_window(start, compat; solver = NewtonSolver(), diffusivity::Real = DIFFUSIVITY)
     case = build(start; compat, diffusivity)
     u0 = initial_state(case, start)
