@@ -199,6 +199,7 @@ The reference case `reference/dream/cases/disruption_kinetic.py` runs the disrup
 | runaway grid (`--runaway-grid`) | 12 momentum cells of 0.1 from the hot-tail `p_max` 0.8 to 2, 20 geometric cells to `p_max` 20 (the first of them also 0.1 wide, from 2.0 to 2.1), 8 pitch cells biuniform in θ (5 below θ = 0.5) |
 | advection scheme of `f_re` | that of `f_hot` (`--scheme`) in both phases, not DREAM's default centred scheme |
 | absolute tolerance of `f_re` | 1e5 from run 1 on, that of `f_hot` in the phases |
+| runaway grid of the measurement of scenario 4 at full size | `--re-pmax 200 --re-np-coarse 40`: the 12 fine cells, then 40 geometric cells to `p_max` 200; 15 pitch cells (`--re-nxi 15 --re-nxi-sep 10`) |
 | window of phase 2 of the test (`--window-start`, `--window-steps`) | `--window-start 170 --window-steps 10`: steps 170 to 180 of the 429 steps of phase 2 on the reduced grid of the tests with the scenario's step (`--nt-quench 429 --t-quench 3e-4`); the default of `--window-steps` is 10 |
 
 The DREAM paper runs scenarios 1 and 4, and `generate.py` runs scenario 0 by default, which `--scenario 0` reproduces.
@@ -208,6 +209,9 @@ The default of the script stays the scenario's count.
 The example runs no runaway grid; the defaults of `--runaway-grid` serve scenario 1 at the reduced size of the tests.
 A grid to `p_max = 60` held 3e-5 of the density of `f_re` above `p = 20` at 300 µs of the scenario.
 The avalanche source keeps a small population up to the last cell, so a few cells more do not change the result.
+Scenario 4 at full size takes the runaway grid to `p_max = 200` ([The whole quench of scenario 4](dream-comparison.md#The-whole-quench-of-scenario-4)).
+DREAM v26.5 completes the quench of scenario 4 with this grid at the default step.
+At equal steps the runs with `p_max` 60 and 200 differ by 4.5e-5 in `I_p`.
 The 8 pitch cells of the runaway grid, fine near `ξ = 1`, differ from the 4 uniform cells of the hot-tail grid, so that a test crosses DREAM's mapping between the two pitch grids.
 The scheme of `f_hot` on `f_re`, with its switch to upwind in phase 2 where `generate.py` makes it, keeps one scheme across the interface.
 DREAM's own default for `f_re` is centred.
