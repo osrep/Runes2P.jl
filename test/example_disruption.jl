@@ -22,8 +22,8 @@
 using Runes2P, HDF5
 
 const WALL_RADIUS = 0.55            # ASDEXU.py:24
-# the heat diffusivity Drr of scenario 1, as of scenarios 0 to 3 (generate.py:502); scenario 4
-# takes 1000 m²/s (generate.py:508), `build(start; diffusivity = 1000.0)`
+# the heat diffusivity Drr of scenario 1, as of scenarios 0 to 3 (generate.py:502). Scenario 4
+# takes 1000 m²/s (generate.py:508), `build(start; diffusivity = 1000.0)`.
 const DIFFUSIVITY = 4000.0          # m²/s
 const P_CUT = 0.01                  # generate.py:329
 const THRESHOLD = 5.0               # generate.py:234
@@ -451,8 +451,8 @@ end
 
 # DREAM's output of a run, an HDF5 file or group with DREAM's groups eqsys and grid: (name =>
 # array) with the time last, as HDF5 gives DREAM's arrays to Julia; with the runaway grid also
-# f_re and its faces (p1_f_re, p2_f_re); the particle source S_particle where the file holds it
-# (DREAM's output does, the comparison files of the reference sets do not)
+# f_re and its faces (p1_f_re, p2_f_re). Also the particle source S_particle where the file holds
+# it: DREAM's output does, the comparison files of the reference sets do not.
 function read_dream_state(h5)
     data = Dict{String, Any}()
     for name in ("T_cold", "n_cold", "n_hot", "n_re", "n_tot",
@@ -544,9 +544,9 @@ end
 # the system of a phase of the case on the grids of `start` (`read_dream_state`): `mode = :kinetic`
 # for DREAM's fully kinetic mode, `:superthermal` for its superthermal mode (the header of this
 # file), `compat` and `diffusivity` of the heat transport as in the header. The default
-# `diffusivity` is that of scenario 1 (`DIFFUSIVITY`); a start from scenario 4 of generate.py
+# `diffusivity` is that of scenario 1 (`DIFFUSIVITY`). A start from scenario 4 of generate.py
 # passes `diffusivity = 1000.0` (generate.py:508). Returns the layout, the equations, the grids,
-# the radius count, the mode and the labels of the channels of the row of W_cold; `budgets` and
+# the radius count, the mode and the labels of the channels of the row of W_cold. `budgets` and
 # `phase_differences` take it.
 #
 # `runaway = true`, by default when `start` holds DREAM's runaway grid, adds the runaway grid
@@ -791,9 +791,9 @@ function build(start; scheme::Symbol = :tcdf, compat::Symbol = :dream,
 end
 
 # DREAM's first state of the phase as the initial state of Runes2P; f_re, with a runaway grid,
-# from `start` when it holds f_re, and zero otherwise. The particle source, in the fully kinetic
-# mode, from `start` when it holds S_particle, and zero otherwise: a run with fixed steps solves
-# it in its first step, but the first error estimate of a step controller extrapolates from it
+# from `start` when it holds f_re, and zero otherwise. The particle source of the fully kinetic
+# mode from `start` when it holds S_particle, and zero otherwise. A run with fixed steps solves the
+# source in its first step. The first error estimate of a step controller extrapolates from it.
 function initial_state(case, start)
     layout = case.layout
     u = zeros(length(layout))
@@ -1042,8 +1042,8 @@ const WINDOW_TOLERANCES = Dict("f_hot" => 5e-8,      # 4.9e-9
 
 # the window of DREAM's states `start` (a window of `read_dream_state`) from its first state, at
 # `compat`, on DREAM's times with the Newton solver `solver` and the heat diffusivity
-# `diffusivity` of `build` (that of scenario 1 by default, 1000.0 for scenario 4,
-# generate.py:508); used by test_disruption_runaway_dream.jl and test_mkl_pardiso.jl
+# `diffusivity` of `build`: that of scenario 1 by default, 1000.0 for scenario 4
+# (generate.py:508). Used by test_disruption_runaway_dream.jl and test_mkl_pardiso.jl.
 function run_window(start, compat; solver = NewtonSolver(), diffusivity::Real = DIFFUSIVITY)
     case = build(start; compat, diffusivity)
     u0 = initial_state(case, start)

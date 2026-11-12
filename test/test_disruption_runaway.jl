@@ -56,9 +56,9 @@ const RUNAWAY_BUDGETS = (interface = 2e-14,   # 2.0e-16 / 1.8e-16
         end
 
         @testset "the particle source of the start" begin
-            # the comparison files of the reference sets hold no S_particle, so the start state
-            # takes a source of distinct values per radius and time, written as DREAM's output
-            # holds it and read back by read_dream_state
+            # the comparison files of the reference sets hold no S_particle. So the start state
+            # takes a source of distinct values per radius and time. It is written in the layout
+            # of DREAM's output and read back by read_dream_state.
             @test !haskey(start, "S_particle")
             case = build(start; runaway = true)
             source_id = unknown_id(case.layout, :particle_source)
