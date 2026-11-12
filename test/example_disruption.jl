@@ -544,8 +544,8 @@ end
 # the system of a phase of the case on the grids of `start` (`read_dream_state`): `mode = :kinetic`
 # for DREAM's fully kinetic mode, `:superthermal` for its superthermal mode (the header of this
 # file), `compat` and `diffusivity` of the heat transport as in the header. The default
-# `diffusivity` is that of scenario 1 (`DIFFUSIVITY`); a start from another scenario of
-# generate.py passes its own, `diffusivity = 1000.0` for scenario 4. Returns the layout, the
+# `diffusivity` is that of scenario 1 (`DIFFUSIVITY`); a start from scenario 4 of generate.py
+# passes `diffusivity = 1000.0`. Returns the layout, the
 # equations, the grids, the radius count, the mode and the labels of the channels of the row of
 # W_cold; `budgets` and `phase_differences` take it.
 #
@@ -831,7 +831,8 @@ function initial_state(case, start)
     end
     if any(unknown -> unknown.name === :particle_source, layout.unknowns) &&
        haskey(start, "S_particle")
-        unknown_values(u, layout, unknown_id(layout, :particle_source)) .= first_of(start["S_particle"])
+        source_id = unknown_id(layout, :particle_source)
+        unknown_values(u, layout, source_id) .= first_of(start["S_particle"])
     end
     unknown_values(u,
         layout,
@@ -1040,10 +1041,11 @@ const WINDOW_TOLERANCES = Dict("f_hot" => 5e-8,      # 4.9e-9
 #! format: on
 
 # the window of DREAM's states `start` (a window of `read_dream_state`) from its first state, at
-# `compat`, on DREAM's times with the Newton solver `solver`; used by
+# `compat`, on DREAM's times with the Newton solver `solver` and the heat diffusivity
+# `diffusivity` of `build` (that of scenario 1 by default, 1000.0 for scenario 4); used by
 # test_disruption_runaway_dream.jl and test_mkl_pardiso.jl
-function run_window(start, compat; solver = NewtonSolver())
-    case = build(start; compat)
+function run_window(start, compat; solver = NewtonSolver(), diffusivity::Real = DIFFUSIVITY)
+    case = build(start; compat, diffusivity)
     u0 = initial_state(case, start)
     times = collect(start["t"])
     system = EquationSystem(case.layout, case.equations;
