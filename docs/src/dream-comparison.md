@@ -381,7 +381,7 @@ The limits of the two codes agree:
 
 | Quantity | Runes2P limit | DREAM limit | Observed order (both) | (DREAM − Runes2P) / Runes2P limit |
 |---|---|---|---|---|
-| `I_p` at 4.99e-3 s | 2.5179047e5 A | 2.5179052e5 A | 0.98 | +1.9e-7 |
+| `I_p` at 4.99e-3 s | 2.5179047e5 A | 2.5179052e5 A | 0.98 | +1.7e-7 |
 | `E_field` at the first radius at 4.00135625e-3 s | 1.2713809 V/m | 1.2713786 V/m | 0.89 | −1.8e-6 |
 
 The table of the runs above uses Runes2P's limit.
