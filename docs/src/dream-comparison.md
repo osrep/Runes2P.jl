@@ -375,18 +375,36 @@ The limit is the Richardson extrapolation of these three runs.
 
 - The observed order is 0.98 in `I_p` and 0.89 in the field.
 - An extrapolation of order 1 gives 1.268 V/m for the field.
-- DREAM has no run of 6400 steps with `p_max = 200`, so the limit is Runes2P's.
 
-DREAM was also run at 3200 and 6400 steps.
-The references are those of the agreement table.
+DREAM v26.5 was run with the same three step counts and `p_max = 200`.
+The limits of the two codes agree:
+
+| Quantity | Runes2P limit | DREAM limit | Observed order (both) | (DREAM − Runes2P) / Runes2P limit |
+|---|---|---|---|---|
+| `I_p` at 4.99e-3 s | 2.5179047e5 A | 2.5179052e5 A | 0.98 | +1.9e-7 |
+| `E_field` at the first radius at 4.00135625e-3 s | 1.2713809 V/m | 1.2713786 V/m | 0.89 | −1.8e-6 |
+
+The table of the runs above uses Runes2P's limit.
+
+At 6400 steps and `p_max = 200`, DREAM's values at the times of that table are close to Runes2P's:
+
+| Quantity | DREAM | (DREAM − Runes2P) / Runes2P |
+|---|---|---|
+| `I_p` at 4.99e-3 s | 2.5243461e5 A | +6.6e-8 |
+| `E_field` at the first radius at 4.00135625e-3 s | 1.2447333 V/m | −5.5e-7 |
+
+The agreement at the other step counts takes the references of the agreement table.
 
 | Steps | `p_max` | Compared times | Radial quantities | `I_p` | `n_re` and `j_re`, radii 1 to 11 |
 |---|---|---|---|---|---|
 | 3200 | 200 in both codes | 1613 of DREAM's 3201 | 6.8e-7 | 4.0e-8 | 2.5e-7, at radius 4 |
+| 6400 | 200 in both codes | 1639 of DREAM's 6401 | 1.1e-6, largest in `j_ohm` | 6.6e-8 | 3.9e-7, at radius 4 |
 | 6400 | 60 in both codes | all 6400 | 2.4e-6 | 6.6e-8 | 3.9e-7, at radius 4 |
 
-The run of Runes2P with 3200 steps saved every second step and the steps around 4e-3 s.
-That gives the 1613 compared times.
+- The run of Runes2P with 3200 steps saved every second step and the steps around 4e-3 s.
+  That gives the 1613 compared times.
+- The run of Runes2P with 6400 steps and `p_max = 200` saved every fourth step and the steps around 4e-3 s.
+  That gives the 1639 compared times.
 
 #### The step controller against fixed steps
 
@@ -408,6 +426,8 @@ The Newton iterations count every attempt.
 - At 1e-4 it is closer than 6400 fixed steps, with fewer Newton iterations.
 - In `T_cold` it is further off than the fixed steps.
   The runs with fixed steps differ there by at most 2.1e-5 of the value at 6400 fixed steps.
+- At 6400 fixed steps with `p_max = 200`, DREAM v26.5 takes 25809 Newton iterations, at most 14 in a step.
+  Runes2P takes 20743, at most 5 in a step.
 
 The start of the controller:
 
