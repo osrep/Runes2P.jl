@@ -22,7 +22,9 @@
 using Runes2P, HDF5
 
 const WALL_RADIUS = 0.55            # ASDEXU.py:24
-const DIFFUSIVITY = 4000.0          # m²/s, generate.py:502 (scenario 1)
+# the heat diffusivity Drr of scenario 1, as of scenarios 0 to 3 (generate.py:502). Scenario 4
+# takes 1000 m²/s (generate.py:508), `build(start; diffusivity = 1000.0)`.
+const DIFFUSIVITY = 4000.0          # m²/s
 const P_CUT = 0.01                  # generate.py:329
 const THRESHOLD = 5.0               # generate.py:234
 const COMPOSITION = IonComposition(["D" => 1, "D_inj" => 1, "Ar" => 18])
@@ -449,12 +451,13 @@ end
 
 # DREAM's output of a run, an HDF5 file or group with DREAM's groups eqsys and grid: (name =>
 # array) with the time last, as HDF5 gives DREAM's arrays to Julia; with the runaway grid also
-# f_re and its faces (p1_f_re, p2_f_re)
+# f_re and its faces (p1_f_re, p2_f_re). Also the particle source S_particle where the file holds
+# it: DREAM's output does, the comparison files of the reference sets do not.
 function read_dream_state(h5)
     data = Dict{String, Any}()
     for name in ("T_cold", "n_cold", "n_hot", "n_re", "n_tot",
         "E_field", "psi_p", "psi_edge", "psi_wall", "I_p",
-        "j_ohm", "j_hot", "j_re", "j_tot", "W_cold", "n_i", "W_i", "f_hot", "f_re")
+        "j_ohm", "j_hot", "j_re", "j_tot", "W_cold", "n_i", "W_i", "f_hot", "f_re", "S_particle")
         haskey(h5["eqsys"], name) && (data[name] = read(h5["eqsys"][name]))
     end
     data["t"] = read(h5["grid/t"])
@@ -540,9 +543,11 @@ end
 
 # the system of a phase of the case on the grids of `start` (`read_dream_state`): `mode = :kinetic`
 # for DREAM's fully kinetic mode, `:superthermal` for its superthermal mode (the header of this
-# file), `compat` and `diffusivity` of the heat transport as in the header. Returns the layout, the
-# equations, the grids, the radius count, the mode and the labels of the channels of the row of
-# W_cold; `budgets` and `phase_differences` take it.
+# file), `compat` and `diffusivity` of the heat transport as in the header. The default
+# `diffusivity` is that of scenario 1 (`DIFFUSIVITY`). A start from scenario 4 of generate.py
+# passes `diffusivity = 1000.0` (generate.py:508). Returns the layout, the equations, the grids,
+# the radius count, the mode and the labels of the channels of the row of W_cold. `budgets` and
+# `phase_differences` take it.
 #
 # `runaway = true`, by default when `start` holds DREAM's runaway grid, adds the runaway grid
 # above the hot-tail grid as DREAM v26.5 builds it, on the momentum faces `runaway_p_faces` (the
@@ -786,7 +791,9 @@ function build(start; scheme::Symbol = :tcdf, compat::Symbol = :dream,
 end
 
 # DREAM's first state of the phase as the initial state of Runes2P; f_re, with a runaway grid,
-# from `start` when it holds f_re, and zero otherwise
+# from `start` when it holds f_re, and zero otherwise. The particle source of the fully kinetic
+# mode from `start` when it holds S_particle, and zero otherwise. A run with fixed steps solves the
+# source in its first step. The first error estimate of a step controller extrapolates from it.
 function initial_state(case, start)
     layout = case.layout
     u = zeros(length(layout))
@@ -821,6 +828,11 @@ function initial_state(case, start)
             kinetic_view(u, layout, unknown_id(layout, :f_re), ir) .= start["f_re"][
                 :, :, ir, 1]
         end
+    end
+    if any(unknown -> unknown.name === :particle_source, layout.unknowns) &&
+       haskey(start, "S_particle")
+        source_id = unknown_id(layout, :particle_source)
+        unknown_values(u, layout, source_id) .= first_of(start["S_particle"])
     end
     unknown_values(u,
         layout,
@@ -1029,10 +1041,11 @@ const WINDOW_TOLERANCES = Dict("f_hot" => 5e-8,      # 4.9e-9
 #! format: on
 
 # the window of DREAM's states `start` (a window of `read_dream_state`) from its first state, at
-# `compat`, on DREAM's times with the Newton solver `solver`; used by
-# test_disruption_runaway_dream.jl and test_mkl_pardiso.jl
-function run_window(start, compat; solver = NewtonSolver())
-    case = build(start; compat)
+# `compat`, on DREAM's times with the Newton solver `solver` and the heat diffusivity
+# `diffusivity` of `build`: that of scenario 1 by default, 1000.0 for scenario 4
+# (generate.py:508). Used by test_disruption_runaway_dream.jl and test_mkl_pardiso.jl.
+function run_window(start, compat; solver = NewtonSolver(), diffusivity::Real = DIFFUSIVITY)
+    case = build(start; compat, diffusivity)
     u0 = initial_state(case, start)
     times = collect(start["t"])
     system = EquationSystem(case.layout, case.equations;

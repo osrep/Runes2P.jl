@@ -12,7 +12,8 @@
 # interface takes from f are those it gives to f_re and to the row of n_re, and n_re − ∫f_re grows
 # by the avalanche beyond f_re's p_max and the outflow there (`runaway_budgets`). Without a runaway
 # grid the builder gives the unknowns and the channels of the row of W_cold of the case as before.
-# Needs the ADF11 cache.
+# The start state takes the particle source S_particle of a DREAM output that holds it
+# (`initial_state`). Needs the ADF11 cache.
 using HDF5
 include(joinpath(@__DIR__, "example_disruption.jl"))
 
@@ -52,6 +53,41 @@ const RUNAWAY_BUDGETS = (interface = 2e-14,   # 2.0e-16 / 1.8e-16
             # the runaway grid adds f_re alone to the unknowns
             with_grid = build(start; runaway = true)
             @test unknown_names(with_grid) == vcat(unknown_names(plain), :f_re)
+        end
+
+        @testset "the particle source of the start" begin
+            # the comparison files of the reference sets hold no S_particle. So the start state
+            # takes a source of distinct values per radius and time. It is written in the layout
+            # of DREAM's output and read back by read_dream_state.
+            @test !haskey(start, "S_particle")
+            case = build(start; runaway = true)
+            source_id = unknown_id(case.layout, :particle_source)
+            without = initial_state(case, start)
+            @test all(iszero, unknown_values(without, case.layout, source_id))
+            source = [1e24 * (ir + 0.1 * it)
+                      for ir in 1:(case.nr), it in eachindex(start["t"])]
+            file = tempname() * ".h5"
+            h5open(reference_file("dream_disruption_small.h5"), "r") do h5
+                h5open(file, "w") do out
+                    copy_object(h5["quench"], out, "quench")
+                    out["quench/eqsys/S_particle"] = source
+                end
+            end
+            with_source = h5open(h5 -> read_dream_state(h5["quench"]), file, "r")
+            rm(file)
+            @test with_source["S_particle"] == source
+            with = initial_state(case, with_source)
+            @test unknown_values(with, case.layout, source_id) == source[:, 1]
+            others = trues(length(with))
+            for ir in 1:(case.nr)
+                others[unknown_range(case.layout, source_id, ir)] .= false
+            end
+            @test with[others] == without[others]
+            # the superthermal mode has no particle source and ignores S_particle
+            superthermal = build(with_source; mode = :superthermal, runaway = true)
+            @test :particle_source ∉ unknown_names(superthermal)
+            @test initial_state(superthermal, with_source) ==
+                  initial_state(superthermal, start)
         end
 
         @testset "compat = $compat" for compat in (:dream, :runes2p)

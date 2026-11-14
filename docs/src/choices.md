@@ -197,6 +197,7 @@ The reference case `reference/dream/cases/disruption_kinetic.py` runs the disrup
 | elongation of the radial grid | `--elongation 1`, a cylinder without shaping |
 | steps of phase 1 | `--nt-ioniz 500`, steps of 4e-8 s, passed with `--elongation 1` (the default is the 200 of scenario 1) |
 | runaway grid (`--runaway-grid`) | 12 momentum cells of 0.1 from the hot-tail `p_max` 0.8 to 2, 20 geometric cells to `p_max` 20 (the first of them also 0.1 wide, from 2.0 to 2.1), 8 pitch cells biuniform in θ (5 below θ = 0.5) |
+| runaway grid of the measurement of scenario 4 at full size | `--re-pmax 200 --re-np-coarse 40`: the 12 fine cells, then 40 geometric cells to `p_max` 200, and 15 pitch cells (`--re-nxi 15 --re-nxi-sep 10`) |
 | advection scheme of `f_re` | that of `f_hot` (`--scheme`) in both phases, not DREAM's default centred scheme |
 | absolute tolerance of `f_re` | 1e5 from run 1 on, that of `f_hot` in the phases |
 | window of phase 2 of the test (`--window-start`, `--window-steps`) | `--window-start 170 --window-steps 10`: steps 170 to 180 of the 429 steps of phase 2 on the reduced grid of the tests with the scenario's step (`--nt-quench 429 --t-quench 3e-4`); the default of `--window-steps` is 10 |
@@ -215,6 +216,14 @@ DREAM's own default for `f_re` is centred.
 In DREAM runs with `--linear-solver mkl`, with 200 steps the first step fails: its Newton iteration meets a non-finite value (`brent.c:69: computed function value is infinite or NaN`), also in the retry of the step.
 With 500 steps phase 1 converges, and phase 2 runs its 1500 steps.
 The step of 4e-8 s is also that of the case at the size of a test in `test/test_disruption_dream.jl`.
+
+The measurement of scenario 4 at full size takes the runaway grid to `p_max = 200` ([The whole quench of scenario 4](dream-comparison.md#The-whole-quench-of-scenario-4)).
+The case script's default runaway grid ends at `p_max = 20`.
+With it, DREAM v26.5 holds only 0.44 of `n_re` in `f_re` at the centre at the end of the quench of scenario 4.
+With the grid to `p_max = 200`, the share of `n_re` above the grid is 4e-5 at radii 1 to 11 at that time.
+DREAM v26.5 was also run at 3200 steps with the grid to `p_max = 60` and to `p_max = 200`.
+Its `I_p` at 4.99e-3 s with `p_max = 60` lies 4.5e-5 below that with `p_max = 200`, relative to the latter.
+The two values are 2.5305347e5 A and 2.5306492e5 A.
 
 The window runs on the reduced grid of the tests with the scenario's step, unlike the short phases of `DISRUPTION_ARGS` in `reference/dream/run_all.sh` (`--nt-quench 10 --t-quench 1.4e-6`).
 With `--nt-quench 429 --t-quench 3e-4` a step of phase 2 is 6.527e-7 s.
