@@ -109,12 +109,13 @@ Read from its curve, the frequency without screening keeps only the free electro
 The paper's text (p. 12) counts the bound electrons among these targets.
 `screening = :none` counts the bound electrons among these targets, as DREAM's `NON_SCREENED` does.
 
-The test compares with the readings of Fig. 3(b), for Ar⁺ at 10 eV.
-The densities are ``n_e = n_\mathrm{Ar} = 10^{20}`` m⁻³.
+The test compares with the readings of Fig. 3(b), for Ar⁺ at 10 eV with ``n_e = n_\mathrm{Ar} = 10^{20}`` m⁻³.
 The readings are at four momenta, from ``p = 0.1`` to ``p = 100``.
-With the frequency of `screening = :none` in the denominator, the ratio lies 4.3 to 5.0 % below the readings.
+The readings fit the frequency without screening that keeps only the free electrons, to 0.4 %.
+
+`screening = :none`, which counts the bound electrons, gives values 4.3 to 5.0 % below the readings.
 Each difference is relative to the reading at the same momentum.
-The difference is that of the two denominators, with and without the bound electrons among the targets.
+The difference is a measured value that no assertion of the test covers.
 
 With `screening_window = :excitation_energy` (the default) the bound-electron parts are weighted by ``w_j``, which is a cubic smooth step in the kinetic energy ``E_k = (γ - 1) m_e c^2``:
 
@@ -285,8 +286,11 @@ The docstring of [`IonEnergyExchangeTerm`](@ref) gives examples of the logarithm
 ### The Dreicer rate with a self-consistent bulk
 
 `test/test_populations.jl` compares the Dreicer rate under two models of the thermal bulk.
-[`MaxwellianSourceTerm`](@ref) restores the density below ``p = 0.12`` to its initial value at each step, so that the bulk stays fixed.
+[`MaxwellianSourceTerm`](@ref) drives the density below ``p = 0.12`` back to its initial value.
+It restores at each step what the previous step lost, so that the bulk stays near its initial density.
+This model is the fixed bulk.
 The published Dreicer rates assume such a fixed bulk.
+
 [`ParticleSourceTerm`](@ref) holds the density on the grid at ``n_\mathrm{cold} + n_\mathrm{hot}``, with ``n_\mathrm{cold} = n_\mathrm{free} - n_\mathrm{hot} - n_\mathrm{re}``.
 With it, as in DREAM, the electrons that ran away are missing from the self-consistent bulk.
 
@@ -349,11 +353,11 @@ The field of that step balances the friction of the collisions.
 
 The reference field is ``E_B = m_e j/(n e^2 τ_e)`` of S. I. Braginskii, Rev. Plasma Phys. 1, 205 (1965), eqs. (2.5e), (2.7) and (4.6).
 Here ``τ_e`` is Braginskii's electron collision time, his eq. (2.5e).
-At 120 eV, ``τ_e`` is 6.89e-7 s.
-At 120 eV, ``E_B`` is 1.030 V/m.
+At 120 eV, ``τ_e`` is 6.89e-7 s and ``E_B`` is 1.030 V/m.
 
 The extrapolated rows of the ion scattering alone compare with ``E_B (1 + 13Θ/8)``, with ``Θ = T/(m_e c^2)``.
-The test derives the relativistic correction ``1 + 13Θ/8`` to first order in ``Θ`` and checks it by quadrature.
+The header of the test derives the relativistic correction ``1 + 13Θ/8`` to first order in ``Θ``.
+The test asserts the extrapolated field against ``E_B (1 + 13Θ/8)`` within the bound of the table.
 
 In the nonrelativistic limit, the test-particle ratio is ``1 + 1/(\sqrt{2} Z)``, which is ``1 + 1/\sqrt{2}`` at ``Z = 1``.
 The test derives that factor from the slowing-down frequencies.
@@ -367,7 +371,7 @@ Terms of the table:
 
 | Term | Meaning |
 |---|---|
-| first-order shift | ``f^0 (1 + m_e \mathbf{U} \cdot \mathbf{v}/T)``, the first-order expansion of a drifting Maxwellian ``f^0`` |
+| first-order shift | ``f^0 (1 + m_e \mathbf{U} \cdot \mathbf{v}/T)``, the expansion to first order in the drift, with ``f^0`` the Maxwellian at rest |
 | exact shift | the nonrelativistic Maxwellian shifted by the drift momentum, at 10 MA/m², where the drift is 0.19 of ``\sqrt{2T/m_e}`` |
 | ion scattering alone | a cold-electron density of 1e-10 of the density, so that the electron-electron terms, proportional to it, vanish |
 | test-particle term | the field with the ions and the test-particle electron-electron term, over the field with the ions alone |
