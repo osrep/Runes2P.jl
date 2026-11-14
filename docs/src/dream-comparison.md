@@ -15,12 +15,14 @@ The file and line citations of DREAM's source refer to commit `93d27e1` unless t
 | 75 | 17 | 47 | 139 |
 
 The tables follow the groups of DREAM's settings (`py/DREAM/Settings`).
-The column "DREAM" names the setting, class or unknown, the column "Runes2P" its state and the name that implements it.
+The column "DREAM" names the setting, class or unknown.
+The column "Runes2P" gives the state, the names that implement the feature and, for a partial feature, the part that is in the code.
+A cell that ends with "(note)" has a note under its table, which gives the detail.
 
 | State | Meaning |
 |---|---|
 | ✅ implemented | DREAM's feature is in the code, possibly next to other options |
-| 🚧 partial | a part of the feature is in the code; the entry names the part |
+| 🚧 partial | a part of the feature is in the code, and the cell names that part |
 | ➖ not implemented | the code has no counterpart |
 
 Runes2P is cylindrical: a straight magnetic field, constant on each flux surface, so no trapping and no flux-surface averages ([`cylindrical_grid`](@ref)).
@@ -34,18 +36,14 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | Mode | DREAM | Runes2P |
 |---|---|---|
 | fully kinetic | hot-tail grid with `COLLFREQ_MODE_FULL`, the bulk inside `f_hot` | ✅ `mode = :full` of [`CollisionSettings`](@ref), [`total_energy_equation`](@ref) |
-| superthermal | hot-tail grid with `COLLFREQ_MODE_SUPERTHERMAL`, a fluid cold population | ✅ `mode = :superthermal` of [`CollisionSettings`](@ref), [`ConductivityTerm`](@ref), [`FrictionEnergyTransferTerm`](@ref) |
-| isotropic | one pitch cell, the pitch-averaged equation | ➖ |
-| fluid | no kinetic grid | 🚧 the field, the cold electrons and the ions |
+| superthermal | hot-tail grid with `COLLFREQ_MODE_SUPERTHERMAL`, a fluid cold population | ✅ `mode = :superthermal` of [`CollisionSettings`](@ref), [`ConductivityTerm`](@ref), [`FrictionEnergyTransferTerm`](@ref) (note) |
+| isotropic | one pitch cell, the pitch-averaged equation | ➖ a grid of one pitch cell is refused by [`fokker_planck_operator`](@ref) |
+| fluid | no kinetic grid | 🚧 the field, the cold electrons and the ions, but no Dreicer or avalanche term that feeds ``n_\mathrm{re}`` |
 
 - **Superthermal.**
   [`ConductivityTerm`](@ref) is for Ohm's law of the cold electrons.
   [`FrictionEnergyTransferTerm`](@ref) is for their heating by ``f_\mathrm{hot}``.
   The disruption case in this mode is compared with DREAM end to end (below).
-- **Isotropic.**
-  A grid of one pitch cell is refused by [`fokker_planck_operator`](@ref).
-- **Fluid.**
-  Without a kinetic grid no Dreicer or avalanche term feeds ``n_\mathrm{re}``.
 
 ### Grids
 
@@ -53,8 +51,8 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 |---|---|---|
 | cylindrical radial grid, custom faces | `RadialGrid.TYPE_CYLINDRICAL`, `setCustomGridPoints` | ✅ [`RadialGrid`](@ref), [`uniform_r_faces`](@ref) |
 | minor radius | `setMinorRadius` | ✅ the last face of a [`RadialGrid`](@ref) |
-| major radius | `setMajorRadius` | ➖ |
-| inner radius | `setInnerRadius` | 🚧 [`RadialGrid`](@ref) |
+| major radius | `setMajorRadius` | ➖ (note) |
+| inner radius | `setInnerRadius` | 🚧 a [`RadialGrid`](@ref) may start above the axis, with no comparison with DREAM's inner boundary (note) |
 | magnetic field on the axis | `setB0` | ✅ the magnetic field of a [`PlasmaState`](@ref), one value per radius |
 | wall radius | `setWallRadius` | ✅ `wall_radius` of [`induction_equations`](@ref) |
 | analytic toroidal equilibrium, shaping | `TYPE_ANALYTIC_TOROIDAL`, `setShaping`, `setShapeParameter` | ➖ |
@@ -76,8 +74,7 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
   A cylinder has none, as in DREAM's cylindrical grid.
   `major_radius` is only an input of the Rechester–Rosenbluth coefficient ([`add_rechester_rosenbluth_diffusion!`](@ref), [`RechesterRosenbluthUpdate`](@ref), [`HeatTransportTerm`](@ref)).
 - **Inner radius.**
-  A [`RadialGrid`](@ref) may start above the axis, with no flux through its first face.
-  There is no comparison with DREAM's inner boundary.
+  A [`RadialGrid`](@ref) that starts above the axis has no flux through its first face.
 
 ### Collisions
 
@@ -89,11 +86,8 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | Coulomb logarithm | `LNLAMBDA_CONSTANT`, `ENERGY_DEPENDENT`, `THERMAL` | ✅ [`coulomb_logarithm`](@ref) (`:relativistic` is `CONSTANT`) |
 | energy diffusion with screening | `SCREENED_DIFFUSION_MODE_ZERO`, `MAXWELLIAN` | ✅ `screened_diffusion` |
 | bremsstrahlung stopping power | `BREMSSTRAHLUNG_MODE_NEGLECT`, `STOPPING_POWER` | ✅ `bremsstrahlung`, [`bremsstrahlung_cross_section`](@ref) |
-| critical momentum ``p_\star`` without and with trapping | `PSTAR_MODE_COLLISIONAL`, `COLLISIONLESS` | ✅ [`avalanche_critical_momentum`](@ref) |
+| critical momentum ``p_\star`` without and with trapping | `PSTAR_MODE_COLLISIONAL`, `COLLISIONLESS` | ✅ [`avalanche_critical_momentum`](@ref), the two modes coincide in a cylinder |
 | linearized test-particle operator | `SlowingDownTerm`, `PitchScatterTerm`, `EnergyDiffusionTerm` | ✅ [`fokker_planck_operator`](@ref) |
-
-- **Critical momentum ``p_\star``.**
-  The two modes coincide in a cylinder.
 
 ### Electric field and current
 
@@ -108,14 +102,11 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | transformer, initial wall current | `BC_TYPE_TRANSFORMER`, `setInitialWallCurrent` | ➖ |
 | hyperresistivity | `HYPERRESISTIVITY_MODE_PRESCRIBED`, `ADAPTIVE`, `ADAPTIVE_LOCAL` | ➖ |
 | Braams–Karney conductivity | `CONDUCTIVITY_MODE_BRAAMS` | ✅ [`braams_karney_conductivity`](@ref), [`ConductivityModel`](@ref) |
-| Sauter conductivity | `CONDUCTIVITY_MODE_SAUTER_COLLISIONLESS`, `SAUTER_COLLISIONAL` | ✅ in a cylinder |
+| Sauter conductivity | `CONDUCTIVITY_MODE_SAUTER_COLLISIONLESS`, `SAUTER_COLLISIONAL` | ✅ in a cylinder, where it is the Braams–Karney conductivity |
 | corrected conductivity of the fully kinetic mode | `CORRECTED_CONDUCTIVITY_ENABLED` | ✅ `kinetic = :dream_fit` of [`ConductivityModel`](@ref) |
 | current profile of a torus | `PROFILE_TYPE_J_PARALLEL`, `J_DOT_GRADPHI`, `JTOR_OVER_R`, `CORSICA` | ➖ |
 | bootstrap current | `BOOTSTRAP_MODE_REDL` | ➖ |
 | current of a distribution | unknowns `j_hot`, `j_re` | ✅ [`CurrentMomentTerm`](@ref), [`current_density`](@ref) |
-
-- **Sauter conductivity.**
-  In a cylinder it is the Braams–Karney conductivity.
 
 ### Temperature and energy
 
@@ -124,22 +115,20 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | prescribed cold temperature | `ColdElectronTemperature.TYPE_PRESCRIBED` | ✅ [`PrescribedPlasma`](@ref) |
 | self-consistent cold temperature | `TYPE_SELFCONSISTENT` | ✅ [`thermal_energy_equation`](@ref), [`PlasmaFromUnknowns`](@ref) |
 | ohmic heating | `Tcold_ohmic` | ✅ [`ohmic_heating_term`](@ref) |
-| collisional heating by ``f_\mathrm{hot}`` and ``f_\mathrm{re}`` | `Tcold_fhot_coll`, `Tcold_fre_coll` | ✅ [`FrictionEnergyTransferTerm`](@ref), [`free_electron_energy_transfer_term`](@ref) |
+| collisional heating by ``f_\mathrm{hot}`` and ``f_\mathrm{re}`` | `Tcold_fhot_coll`, `Tcold_fre_coll` | ✅ DREAM's moment, [`FrictionEnergyTransferTerm`](@ref) (note) |
 | collisional heating by fluid runaways | `CollisionalEnergyTransferREFluidTerm` | ✅ [`RunawayFluidEnergyTransferTerm`](@ref) |
 | line radiation, ionization energy, Gould's bremsstrahlung | `RECOMBINATION_RADIATION_NEGLECTED` | ✅ `radiation = :dream` of [`RadiatedPowerTerm`](@ref), with `bremsstrahlung_corrections = :dream` |
-| recombination radiation | `RECOMBINATION_RADIATION_INCLUDED` | ✅ `radiation = :recombination` of [`RadiatedPowerTerm`](@ref) |
+| recombination radiation | `RECOMBINATION_RADIATION_INCLUDED` | ✅ `radiation = :recombination` of [`RadiatedPowerTerm`](@ref), with the energy of the recombined state at every radius |
 | halo region losses | `HALO_REGION_LOSSES_INCLUDED` | ➖ |
 | neutral beam heating | `setNBI`, `NBI_PROFILE_*` | ➖ |
 | ion temperatures, energy exchange | `IONS_T_I_INCLUDE` | ✅ [`IonEnergyExchangeTerm`](@ref) |
 
-- **Collisional heating.**
-  For the hot tail, [`FrictionEnergyTransferTerm`](@ref) is DREAM's moment.
+- **Collisional heating by ``f_\mathrm{hot}`` and ``f_\mathrm{re}``.**
+  For the hot tail, Runes2P takes DREAM's moment.
   For the runaway grid, Runes2P's default is [`free_electron_energy_transfer_term`](@ref), the energy change of the electron-electron operator ([`KineticEnergyLossTerm`](@ref)).
   DREAM's moment is the option for the runaway grid ([Defaults that differ](#Defaults-that-differ)).
   The moment is compared with DREAM's saved heating of both grids (`test_collisional_heating_dream.jl`).
   It is also compared in a run of the runaway grid with the cold temperature self-consistent against DREAM's run (`test_runaway_heating_dream.jl`).
-- **Recombination radiation.**
-  The term takes the energy of the recombined state at every radius.
 
 ### Ions and ionization
 
@@ -148,13 +137,13 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | prescribed charge states | `IONS_PRESCRIBED`, `_NEUTRAL`, `_FULLY_IONIZED` | ✅ the ions of a [`PlasmaState`](@ref) |
 | dynamic charge states | `IONS_DYNAMIC` | ✅ [`IonRateTerm`](@ref), [`ion_densities_unknown`](@ref) |
 | dynamic, neutral or fully ionized at the start | `IONS_DYNAMIC_NEUTRAL`, `_FULLY_IONIZED` | ✅ [`deposit_neutrals!`](@ref), [`set_ion_densities!`](@ref) |
-| start in coronal equilibrium | `init_equil` | ✅ [`fill_coronal_equilibrium!`](@ref), [`coronal_equilibrium`](@ref) |
+| start in coronal equilibrium | `init_equil` | ✅ [`fill_coronal_equilibrium!`](@ref), [`coronal_equilibrium`](@ref) (note) |
 | charge states held in coronal equilibrium | `IONS_EQUILIBRIUM` | ➖ |
 | ADAS rate coefficients | `Atomics`, ADF11 | ✅ [`read_adas`](@ref), [`adas_coefficient`](@ref) |
 | ADAS interpolation | `ADAS_INTERP_BICUBIC`, `ADAS_INTERP_BILINEAR` | 🚧 the bicubic interpolation, DREAM's default |
 | fluid ionization | `IONIZATION_MODE_FLUID` | ✅ [`IonRateTerm`](@ref) |
 | kinetic ionization by ``f`` | `IONIZATION_MODE_KINETIC` | ✅ [`KineticIonizationTerm`](@ref) |
-| kinetic ionization with an approximate Jacobian | `IONIZATION_MODE_KINETIC_APPROX_JAC` | ➖ |
+| kinetic ionization with an approximate Jacobian | `IONIZATION_MODE_KINETIC_APPROX_JAC` | ➖ the Jacobian is exact |
 | ionization by fluid runaways | `IONIZATION_MODE_FLUID_RE`, `reioniz_scale` | ➖ |
 | DREAM's kinetic cross sections | `IonKineticIonizationTerm`, Burgess–Chidichimo fits | ✅ `form = :dream` of [`ionization_cross_section`](@ref) |
 | opacity to line radiation | `ION_OPACITY_MODE_GROUND_STATE_OPAQUE` | ➖ |
@@ -166,18 +155,16 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
   [`fill_coronal_equilibrium!`](@ref) is DREAM's fixed point of the free-electron density over the species started in equilibrium.
   It takes the charge states of [`coronal_equilibrium`](@ref).
   It is compared with DREAM's `examples/ionequil` (`test_initial_state_dream.jl`).
-- **Kinetic ionization with an approximate Jacobian.**
-  The Jacobian is exact.
 
 ### Runaway generation
 
 | Feature | DREAM | Runes2P |
 |---|---|---|
-| fluid runaway density | unknown `n_re` | 🚧 [`ExternalAvalancheTerm`](@ref), [`MomentumBoundaryFluxTerm`](@ref), [`InterfaceParticleFluxTerm`](@ref) |
-| Connor–Hastie Dreicer rate | `DREICER_RATE_CONNOR_HASTIE`, `_NOCORR` | 🚧 [`connor_hastie_rate`](@ref) |
+| fluid runaway density | unknown `n_re` | 🚧 a radial unknown, fed by [`ExternalAvalancheTerm`](@ref), [`MomentumBoundaryFluxTerm`](@ref) or [`InterfaceParticleFluxTerm`](@ref) (note) |
+| Connor–Hastie Dreicer rate | `DREICER_RATE_CONNOR_HASTIE`, `_NOCORR` | 🚧 the rate as a function ([`connor_hastie_rate`](@ref)), no source term |
 | Dreicer rate of the neural network | `DREICER_RATE_NEURAL_NETWORK` | ➖ |
 | extrapolation of the Dreicer rate | `setExtrapolateDreicer` | ➖ |
-| fluid avalanche | `AVALANCHE_MODE_FLUID` | 🚧 [`fluid_avalanche_growth_rate`](@ref), [`avalanche_growth_rate`](@ref), [`ExternalAvalancheTerm`](@ref) |
+| fluid avalanche | `AVALANCHE_MODE_FLUID` | 🚧 the rates as functions ([`fluid_avalanche_growth_rate`](@ref), [`avalanche_growth_rate`](@ref)), no term in a run without a kinetic grid (note) |
 | fluid avalanche with DREAM's alternative ``p_\star`` | `AVALANCHE_MODE_FLUID_HESSLOW`, `pStarFunctionAlt` | ➖ |
 | kinetic Rosenbluth–Putvinski source, external avalanche | `AVALANCHE_MODE_KINETIC`, `pCutAvalanche` | ✅ [`RosenbluthPutvinskiSourceTerm`](@ref), [`ExternalAvalancheTerm`](@ref) |
 | Boltzmann knock-on operator | `AVALANCHE_MODE_BOLTZMANN_KNOCK_ON` (`boltzmann-eqterm`) | ✅ [`KnockOnOperator`](@ref), [`KnockOnTerm`](@ref) |
@@ -185,34 +172,28 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | Compton source | `COMPTON_MODE_FLUID`, `KINETIC`, `COMPTON_RATE_ITER_DMS` | ➖ |
 | tritium source | `TRITIUM_MODE_FLUID`, `KINETIC` | ➖ |
 | hot-tail rate | `HOTTAIL_MODE_ANALYTIC`, `ANALYTIC_ALT_PC` | ➖ |
-| losses through the last closed flux surface | `LCFS_LOSS_MODE_FLUID`, `KINETIC`, `setLCFSLossTime`, `setPsiEdgeFromOutput` | 🚧 [`LossRateTerm`](@ref) |
+| losses through the last closed flux surface | `LCFS_LOSS_MODE_FLUID`, `KINETIC`, `setLCFSLossTime`, `setPsiEdgeFromOutput` | 🚧 a prescribed loss rate of ``f`` ([`LossRateTerm`](@ref)), not the edge flux from an output file (`setPsiEdgeFromOutput`) |
 | negative runaway density | `setNegativeRunaways` | ➖ |
 
 - **Fluid runaway density.**
   Above a hot-tail grid without a runaway grid, it is a radial unknown fed by [`ExternalAvalancheTerm`](@ref) and the flux through ``p_\mathrm{max}`` ([`MomentumBoundaryFluxTerm`](@ref)).
   With a runaway grid, it is fed by the particle flux through the interface ([`InterfaceParticleFluxTerm`](@ref)).
-- **Connor–Hastie Dreicer rate.**
-  There is no source term.
 - **Fluid avalanche.**
-  [`fluid_avalanche_growth_rate`](@ref) and the Rosenbluth–Putvinski rate [`avalanche_growth_rate`](@ref) are functions.
+  [`avalanche_growth_rate`](@ref) is the Rosenbluth–Putvinski rate.
   The fluid rate enters ``n_\mathrm{re}`` only above a hot-tail grid, through [`ExternalAvalancheTerm`](@ref).
-  There is no term in a run without a kinetic grid.
-- **Losses through the last closed flux surface.**
-  [`LossRateTerm`](@ref) is a prescribed loss rate of ``f``.
-  The edge flux from an output file (`setPsiEdgeFromOutput`) is not implemented.
 
 ### Transport
 
 | Feature | DREAM | Runes2P |
 |---|---|---|
 | Rechester–Rosenbluth transport of ``f`` | `TRANSPORT_RECHESTER_ROSENBLUTH` | ✅ [`add_rechester_rosenbluth_diffusion!`](@ref), [`RechesterRosenbluthUpdate`](@ref) |
-| prescribed transport coefficients of ``f`` | `TRANSPORT_PRESCRIBED` | 🚧 `advection_r` and `diffusion_r_r` of [`AdvectionDiffusion`](@ref) |
+| prescribed transport coefficients of ``f`` | `TRANSPORT_PRESCRIBED` | 🚧 `advection_r` and `diffusion_r_r` of [`AdvectionDiffusion`](@ref), constant in time (note) |
 | Svensson transport | `TRANSPORT_SVENSSON` | ➖ |
 | MHD-like transport | `TRANSPORT_MHD_LIKE`, `MHD_LIKE_LOCAL` | ➖ |
 | frozen-current transport | `TRANSPORT_FROZEN_CURRENT` | ➖ |
-| interpolation of the coefficients in time | `INTERP1D_*`, `INTERP3D_*` | 🚧 [`PiecewiseConstant`](@ref) or a function of time |
+| interpolation of the coefficients in time | `INTERP1D_*`, `INTERP3D_*` | 🚧 the coefficients at the start of each step, from a [`PiecewiseConstant`](@ref) or a function of time |
 | boundary of the transport of ``f`` | `BC_CONSERVATIVE`, `BC_F_0` | ✅ `r_boundary = :zero_flux`, `:absorbing_dream` |
-| boundary with a constant gradient | `BC_DF_CONST` | 🚧 `edge = :constant_gradient_dream` of [`HeatTransportTerm`](@ref) |
+| boundary with a constant gradient | `BC_DF_CONST` | 🚧 for the heat transport alone, `edge = :constant_gradient_dream` of [`HeatTransportTerm`](@ref) |
 | Kiramov boundary | `BC_KIRAMOV` | ➖ |
 | heat transport of the cold electrons | `ColdElectronTemperature.transport` | ✅ [`HeatTransportTerm`](@ref) |
 | transport of the fluid runaways | `RunawayElectrons.transport` | ➖ |
@@ -220,12 +201,8 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | advection of the charge states | `ION_CHARGED_ADVECTION_MODE_PRESCRIBED`, `ION_NEUTRAL_ADVECTION_MODE_PRESCRIBED` | ➖ |
 
 - **Prescribed transport coefficients of ``f``.**
-  The caller sets them on the faces of the grid, constant in time.
+  The caller sets them on the faces of the grid.
   There are no coefficients given in time, radius and momentum and interpolated to the grid.
-- **Interpolation of the coefficients in time.**
-  The level is taken at the start of each step.
-- **Boundary with a constant gradient.**
-  It is implemented for the heat transport alone.
 
 ### Kinetic options
 
@@ -238,7 +215,7 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | boundary at ``p_\mathrm{max}`` | `BC_F_0`, `BC_PHI_CONST`, `BC_DPHI_CONST` | ✅ `p_upper_boundary` of [`AdvectionDiffusion`](@ref) |
 | boundary at ``p = 0`` | `AD_BC_MIRRORED` with the internal boundary condition of ``f_\mathrm{hot}``, `AD_BC_DIRICHLET` on ``f_\mathrm{re}`` | ✅ `p_zero_boundary` of [`AdvectionDiffusion`](@ref), `:outflow` and `:zero_flux` |
 | threshold of the hot region | `HOT_REGION_P_MODE_THERMAL`, `THERMAL_SMOOTH`, `MC` | ✅ [`ThermalMomentum`](@ref), [`MomentumRegion`](@ref) |
-| particle source | `PARTICLE_SOURCE_ZERO`, `IMPLICIT`, `EXPLICIT` | 🚧 [`ParticleSourceTerm`](@ref) with a [`Constraint`](@ref) |
+| particle source | `PARTICLE_SOURCE_ZERO`, `IMPLICIT`, `EXPLICIT` | 🚧 zero and implicit, [`ParticleSourceTerm`](@ref) with a [`Constraint`](@ref) (note) |
 | shape of the particle source | `PARTICLE_SOURCE_SHAPE_MAXWELLIAN`, `DELTA` | ✅ `shape` of [`ParticleSourceTerm`](@ref) |
 | synchrotron loss | `SYNCHROTRON_MODE_INCLUDE` | ✅ [`add_synchrotron!`](@ref) |
 | ion columns in the Jacobian of ``f`` | `enableIonJacobian` | ✅ `lagged` of [`FokkerPlanckTerm`](@ref) |
@@ -246,20 +223,18 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | time-varying magnetic field | `TIME_VARYING_B_MODE_INCLUDE` | ➖ |
 | analytic or prescribed distribution | `DISTRIBUTION_MODE_ANALYTICAL`, `PRESCRIBED` | ➖ |
 | non-relativistic hot-tail equation | `F_HOT_DIST_MODE_NONREL` | ➖ |
-| initial distribution | `setInitialProfiles`, `setInitialValue` | 🚧 [`fill_maxwellian!`](@ref) |
-| initial runaway distributions | `INIT_FORWARD`, `XI_NEGATIVE`, `XI_POSITIVE`, `ISOTROPIC`, `AVALANCHE`, `PRESCRIBED` | 🚧 [`fill_runaway_distribution!`](@ref) |
+| initial distribution | `setInitialProfiles`, `setInitialValue` | 🚧 a state array of the caller or DREAM's Maxwellian ([`fill_maxwellian!`](@ref)), no interpolation from another grid (note) |
+| initial runaway distributions | `INIT_FORWARD`, `XI_NEGATIVE`, `XI_POSITIVE`, `ISOTROPIC`, `AVALANCHE`, `PRESCRIBED` | 🚧 four of DREAM's shapes ([`fill_runaway_distribution!`](@ref)) or a state array of the caller, not the analytic avalanche shape (note) |
 
 - **Particle source.**
-  The zero and the implicit source are implemented.
   The explicit source has no packaged form.
   The disruption case builds it from an unknown of the source with its own row (`test/example_disruption.jl`).
 - **Initial distribution.**
-  A run starts from any state array of the caller on the grid of the run, or from DREAM's Maxwellian from profiles of ``n`` and ``T`` ([`fill_maxwellian!`](@ref)).
-  There is no interpolation from another grid.
+  A run takes any state array of the caller on the grid of the run.
+  DREAM's Maxwellian is built from profiles of ``n`` and ``T``.
 - **Initial runaway distributions.**
-  [`fill_runaway_distribution!`](@ref) gives the four shapes in the first momentum cell, compared with DREAM's (`test_initial_state_dream.jl`).
-  A run also takes any state array of the caller.
-  The analytic avalanche shape is not implemented.
+  [`fill_runaway_distribution!`](@ref) gives the four shapes in the first momentum cell.
+  They are compared with DREAM's (`test_initial_state_dream.jl`).
 
 ### Solver and time stepping
 
@@ -268,31 +243,25 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | linearly implicit solver | `Solver.LINEAR_IMPLICIT` | ➖ |
 | Newton solver | `Solver.NONLINEAR`, `setMaxIterations` | ✅ [`NewtonSolver`](@ref) |
 | tolerances per unknown | `ToleranceSettings` | ✅ [`Tolerance`](@ref) |
-| residual check | `setCheckResidual` | ✅ as a convergence criterion |
+| residual check | `setCheckResidual` | ✅ as a convergence criterion, with two exceptions (note) |
 | damped Newton step | `MaximalPhysicalStepLength` | ✅ [`LowerLimit`](@ref), `max_reduction` |
-| direct linear solvers | `LINEAR_SOLVER_LU`, `MUMPS`, `MKL`, `SUPERLU` | 🚧 [`SparseLU`](@ref), [`MKLPardiso`](@ref) |
+| direct linear solvers | `LINEAR_SOLVER_LU`, `MUMPS`, `MKL`, `SUPERLU` | 🚧 UMFPACK ([`SparseLU`](@ref)) and MKL PARDISO ([`MKLPardiso`](@ref) with `using Pardiso`) |
 | GMRES | `LINEAR_SOLVER_GMRES` | ✅ [`GMRES`](@ref) |
 | backup solver | `setBackupSolver` | ➖ |
 | scaling of the unknowns | `Preconditioner` | ✅ [`unknown_scales`](@ref) |
 | constant time step | `TimeStepper.TYPE_CONSTANT`, `setNt`, `setDt` | ✅ [`FixedSteps`](@ref) |
 | saved steps | `setNumberOfSaveSteps` | ✅ `save_times` of [`RunOptions`](@ref) |
 | adaptive time step by step doubling | `TYPE_ADAPTIVE`, `checkevery` | ✅ [`StepDoubling`](@ref) |
-| smallest time between saved steps | `setMinSaveTimestep` | ➖ |
+| smallest time between saved steps | `setMinSaveTimestep` | ➖ the saved times are prescribed |
 | ionization time stepper | `TYPE_IONIZATION` | ➖ |
-| termination function | `setTerminationFunction` | ➖ |
+| termination function | `setTerminationFunction` | ➖ a segment stops only on a wall-time budget or a stop file ([`StopCondition`](@ref)) |
 | restart from an output file | `fromOutput` | ✅ [`read_state`](@ref), [`read_checkpoint`](@ref) |
 | solver statistics | `setSaveStatistics`, `setSaveConvergenceInfo` | ✅ [`SolverStatistics`](@ref) |
 | verbose output | `setVerbose` | ✅ [`ProgressLog`](@ref) |
 
 - **Residual check.**
-  The exceptions are the linear steps that `linear_acceptance` of [`NewtonSolver`](@ref) accepts on the update, and the steps at the round-off floor of the residual.
-- **Direct linear solvers.**
-  [`SparseLU`](@ref) is UMFPACK.
-  [`MKLPardiso`](@ref) is MKL PARDISO, with `using Pardiso`.
-- **Smallest time between saved steps.**
-  The saved times are prescribed.
-- **Termination function.**
-  A segment stops only on a wall-time budget or a stop file ([`StopCondition`](@ref)).
+  The residual is a convergence criterion except for the linear steps that `linear_acceptance` of [`NewtonSolver`](@ref) accepts on the update.
+  The steps at the round-off floor of the residual are the other exception.
 
 ### Output
 
@@ -301,14 +270,9 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 | HDF5 output of the unknowns | `Output.setFilename` | ✅ [`write_output`](@ref), [`read_output`](@ref) |
 | settings in the output | `setSaveSettings` | ✅ [`run_settings`](@ref) |
 | timing | `setTiming` | ✅ the wall times of [`SolverStatistics`](@ref) |
-| other quantities | `OtherQuantities` | 🚧 [`radiated_power`](@ref), [`interface_flux`](@ref) |
+| other quantities | `OtherQuantities` | 🚧 computed from a saved state, such as [`radiated_power`](@ref) and [`interface_flux`](@ref) |
 | DREAM's settings files | `DREAMSettings` | ➖ |
-| Python interface and plotting | `py/DREAM` | ➖ |
-
-- **Other quantities.**
-  They are computed from a saved state, such as [`radiated_power`](@ref) and [`interface_flux`](@ref).
-- **Python interface and plotting.**
-  Runes2P has the Julia API in their place.
+| Python interface and plotting | `py/DREAM` | ➖ the Julia API |
 
 ## The disruption case
 
@@ -580,6 +544,9 @@ It takes `f_re` only where DREAM's largest value at the radius and step is above
 
 ## Departures from DREAM
 
+The sections below list the defaults that differ from DREAM's and the behaviour without an option for DREAM's.
+The last three give the details of the extrapolated flux at the highest momentum, the approximate Jacobians and the line search.
+
 ### Defaults that differ
 
 Each row names the default of Runes2P and the option that gives DREAM's behaviour.
@@ -592,17 +559,17 @@ The reasons of the defaults that are choices of this package are on [Choices of 
 | synchrotron loss | on | off | `synchrotron = false` |
 | bremsstrahlung stopping power | on | off | `bremsstrahlung = :neglect` |
 | bremsstrahlung in the energy diffusion | a pure drag | the whole ``ν_s`` diffused | `bremsstrahlung_diffusion = :dream` |
-| constant of the stopping power | ``4/3`` of the formula 4BN of H. W. Koch and J. W. Motz, Rev. Mod. Phys. 31, 920 (1959), [doi:10.1103/RevModPhys.31.920](https://doi.org/10.1103/RevModPhys.31.920) | ``1`` | `bremsstrahlung_constant = :dream` |
-| ion sizes of partial screening | Table 1 of Hesslow et al. | a lookup that shifts the sizes from Ar¹⁷⁺ on | `ion_size_table = :dream` |
+| constant of the stopping power | ``4/3`` of the formula 4BN of Koch and Motz | ``1`` | `bremsstrahlung_constant = :dream` |
+| ion sizes of partial screening | Table 1 of Hesslow et al. (note) | a lookup that shifts the sizes from Ar¹⁷⁺ on | `ion_size_table = :dream` |
 | momenta of partial screening | above the excitation energy of each charge state | all momenta | `screening_window = :dream` |
 | knock-on pitch | integrated over the cell pair, primary averaged over its cell | both at the cell centres | `dream_compatible = true` of [`KnockOnOperator`](@ref) |
 | current of a distribution | ``f`` linear across a pitch cell | ``f`` constant over a pitch cell | `pitch_rule = :cell_center` |
 | flux between the two grids | by the overlap cells of the pitch grids | interpolated in pitch | `pitch_mapping = :dream` |
-| flux through ``p = 0`` on a runaway grid from ``p = 0`` | `p_zero_boundary = :outflow` of [`fokker_planck_operator`](@ref) | none | `p_zero_boundary = :zero_flux`, set by the caller |
+| flux through ``p = 0`` on a runaway grid from ``p = 0`` | `p_zero_boundary = :outflow` of [`fokker_planck_operator`](@ref) (note) | none | `p_zero_boundary = :zero_flux`, set by the caller |
 | Rechester–Rosenbluth coefficient ``D = \pi q R_0 v_\parallel (\delta B/B)^2`` | safety factor and major radius as inputs | ``q = 1`` and ``R_0 = 1`` m in a cylinder | `safety_factor = 1`, `major_radius = 1` |
-| heating of the cold electrons by a runaway grid | [`free_electron_energy_transfer_term`](@ref) | the moment ``m_e c\, v p\, \nu_s f`` at the cell centres | [`FrictionEnergyTransferTerm`](@ref) |
-| radiated power of the ions | line and recombination radiation, the binding energy of ionization and recombination | line radiation, the ionization loss and Gould's bremsstrahlung | `radiation = :dream` of [`RadiatedPowerTerm`](@ref) |
-| relativistic corrections of Gould's bremsstrahlung, the coefficients of ``T/m_ec^2`` | [`GOULD_ION_CORRECTION`](@ref), [`GOULD_ELECTRON_CORRECTION`](@ref) | ``19/24`` and ``5(44 - 3\pi^2)/(8\sqrt{2})`` | `bremsstrahlung_corrections = :dream` |
+| heating of the cold electrons by a runaway grid | [`free_electron_energy_transfer_term`](@ref) (note) | the moment ``m_e c\, v p\, \nu_s f`` at the cell centres | [`FrictionEnergyTransferTerm`](@ref) in place of the default |
+| radiated power of the ions | line and recombination radiation, the binding energy of ionization and recombination | line radiation, the ionization loss and Gould's bremsstrahlung | `radiation = :dream` of [`RadiatedPowerTerm`](@ref), with `bremsstrahlung_corrections = :dream` for DREAM's corrections |
+| relativistic corrections of Gould's bremsstrahlung, the coefficients of ``T/m_ec^2`` | ``11/24`` and ``5(44 - 3\pi^2)/(24\sqrt{2})`` ([`GOULD_ION_CORRECTION`](@ref), [`GOULD_ELECTRON_CORRECTION`](@ref)) (note) | ``19/24`` and ``5(44 - 3\pi^2)/(8\sqrt{2})`` | `bremsstrahlung_corrections = :dream` |
 | cross sections of the kinetic ionization | CHIANTI's for H, D, T, Ne and Ar, DREAM's for the other elements | DREAM's fits | `form = :dream` |
 | ionization at the hot threshold | the fluid coefficient below the threshold, `kinetic_ionization` of [`IonRateTerm`](@ref) | the whole ADAS rate next to the kinetic term | [`IonRateTerm`](@ref) without `kinetic_ionization` |
 | Coulomb logarithm among the ions | the ion-ion logarithm of the NRL Plasma Formulary, with the temperature of each species | one logarithm with ``T_e`` | `ion_coulomb_logarithm = :dream` of [`IonEnergyExchangeTerm`](@ref) |
@@ -613,8 +580,17 @@ The reasons of the defaults that are choices of this package are on [Choices of 
 | iterative refinement of MKL PARDISO | none, `refinement_steps = 0` of [`MKLPardiso`](@ref) | up to 10 steps per solve (`fvm/Solvers/MIMKL.cpp`) | `MKLPardiso(refinement_steps = 10)` |
 | floor of a temperature unknown | [`DEFAULT_TEMPERATURE_FLOOR`](@ref) ([`fluid_temperature_floors`](@ref)) | damped towards zero | a lower floor of [`PlasmaFromUnknowns`](@ref) or a [`LowerLimit`](@ref) |
 
+The sources of the values of Runes2P in the table are these.
+
+| Row | Source |
+|---|---|
+| constant of the stopping power | the formula 4BN of H. W. Koch and J. W. Motz, Rev. Mod. Phys. 31, 920 (1959), [doi:10.1103/RevModPhys.31.920](https://doi.org/10.1103/RevModPhys.31.920) |
+| ion sizes of partial screening | Table 1 of L. Hesslow et al., J. Plasma Phys. 84, 905840605 (2018), [doi:10.1017/S0022377818001113](https://doi.org/10.1017/S0022377818001113) |
+| relativistic corrections of Gould's bremsstrahlung, electron-electron | the ratio of eqs. (22) and (18) of R. J. Gould, Astrophys. J. 238, 1026 (1980), [doi:10.1086/158068](https://doi.org/10.1086/158068) |
+| relativistic corrections of Gould's bremsstrahlung, electron-ion | the erratum of the paper of 1980, Astrophys. J. 243, 677 (1981), [doi:10.1086/158634](https://doi.org/10.1086/158634) |
+| Coulomb logarithm among the ions | the NRL Plasma Formulary, A. S. Richardson, NRL/PU/6770--19-652, Naval Research Laboratory, 2019 |
+
 **Ion sizes of partial screening.**
-Runes2P takes Table 1 of L. Hesslow et al., J. Plasma Phys. 84, 905840605 (2018), [doi:10.1017/S0022377818001113](https://doi.org/10.1017/S0022377818001113).
 DREAM's lookup has a list of nuclear charges with 17 argon entries for 18 charge states.
 This shifts the sizes from Ar¹⁷⁺ on.
 
@@ -622,34 +598,31 @@ This shifts the sizes from Ar¹⁷⁺ on.
 Runes2P takes the operator's default, `p_zero_boundary = :outflow` of [`fokker_planck_operator`](@ref), as DREAM's hot-tail grid.
 The friction carries electrons out by ``\lim_{p \to 0} p^3 ν_s`` ([`p3_slowing_down_frequency_at_zero`](@ref)).
 With it the runaway grid of the case `heating` of `reference/dream/cases/initial_state.py` loses 1.55e-4 of the density of ``f_\mathrm{re}`` in the first step, where DREAM's stays constant to round-off.
+
 The caller sets the option `p_zero_boundary = :zero_flux` for a runaway grid from ``p = 0``, as both `compat` values of `runaway_heating_example` do (`test_runaway_heating_dream.jl`).
 In DREAM's source:
 
 - ``f_\mathrm{re}`` has no internal boundary condition (`src/Settings/Equations/f_re.cpp:87`).
 - ``f_\mathrm{re}`` keeps the Dirichlet lower boundary of its advection in ``p`` (`fvm/Equation/AdvectionTerm.cpp:36`).
-- ``f_\mathrm{hot}`` has one (`src/Settings/Equations/f_hot.cpp:96`), which mirrors it (`src/Settings/Equations/distribution.cpp:234-237`).
+- Unlike ``f_\mathrm{re}``, ``f_\mathrm{hot}`` has an internal boundary condition (`src/Settings/Equations/f_hot.cpp:96`), which mirrors the lower boundary of its advection in ``p`` (`src/Settings/Equations/distribution.cpp:234-237`).
 
 **Heating of the cold electrons by a runaway grid.**
 Runes2P's default is the energy change of the electron-electron operator of the grid, with a linear scheme of the operator.
 DREAM's moment, [`FrictionEnergyTransferTerm`](@ref), also counts the energy that the friction carries out of the grid through ``p = 0`` where that flux is applied (`p_zero_boundary = :outflow`).
-The option is also `compat = dream` of the test case `runaway_heating_example` (`test/example_cases.jl`).
-That case is compared with DREAM's run in `test_runaway_heating_dream.jl`.
-
-**Radiated power of the ions.**
-With `bremsstrahlung_corrections = :dream`, the option takes DREAM's corrections.
+The test case `runaway_heating_example` (`test/example_cases.jl`) takes the option at `compat = dream`.
+It is compared with DREAM's run in `test_runaway_heating_dream.jl`.
 
 **Relativistic corrections of Gould's bremsstrahlung.**
 The coefficients of ``T/m_ec^2`` are these.
 
-| Coefficient | Runes2P | Source of Runes2P's value | DREAM |
-|---|---|---|---|
-| electron-ion | ``11/24`` ([`GOULD_ION_CORRECTION`](@ref)) | the erratum of R. J. Gould, Astrophys. J. 243, 677 (1981), [doi:10.1086/158634](https://doi.org/10.1086/158634) | ``19/24`` |
-| electron-electron | ``5(44 - 3\pi^2)/(24\sqrt{2})`` ([`GOULD_ELECTRON_CORRECTION`](@ref)) | the ratio of eqs. (22) and (18) of R. J. Gould, Astrophys. J. 238, 1026 (1980), [doi:10.1086/158068](https://doi.org/10.1086/158068) | ``5(44 - 3\pi^2)/(8\sqrt{2})`` |
-
-**Coulomb logarithm among the ions.**
-The NRL Plasma Formulary is A. S. Richardson, NRL/PU/6770--19-652, Naval Research Laboratory, 2019.
+| Coefficient | Runes2P | DREAM |
+|---|---|---|
+| electron-ion | ``11/24`` ([`GOULD_ION_CORRECTION`](@ref)) | ``19/24`` |
+| electron-electron | ``5(44 - 3\pi^2)/(24\sqrt{2})`` ([`GOULD_ELECTRON_CORRECTION`](@ref)) | ``5(44 - 3\pi^2)/(8\sqrt{2})`` |
 
 ### Behaviour without an option for DREAM's
+
+In these points Runes2P differs from DREAM, and no option gives DREAM's behaviour.
 
 - Newton's method converges on both the update and the scaled residual, except for the linear steps that `linear_acceptance` accepts on the update ([`NewtonSolver`](@ref)).
   A stiff step at the round-off floor of its residual is accepted on the update too, within the round-off bound of its rows or where the residual stopped decreasing.
@@ -658,13 +631,14 @@ The NRL Plasma Formulary is A. S. Richardson, NRL/PU/6770--19-652, Naval Researc
 - A failed Newton step is reported as a status of [`NewtonResult`](@ref).
   The time stepper retries it with a shorter step.
 - Each charge state has a lower limit relative to the density of its species ([`ion_densities_unknown`](@ref)).
-  In DREAM the charge states have no limit of their own.
+  In DREAM the charge states have no limit of their own (`src/Solver/SolverNonLinear.cpp:441-508`).
   DREAM's `MaximalPhysicalStepLength` damps these quantities (`src/Solver/SolverNonLinear.cpp:441-508`):
   - ``T_\mathrm{cold}``, ``n_\mathrm{tot}`` and ``n_\mathrm{cold}``.
   - ``W_\mathrm{cold}``, ``W_i`` and the species densities ``N_i``, where they are unknowns.
   - ``\sum Z_0^2 n`` per radius.
 - A lower limit shortens only steps towards the limit, never growth ([`LowerLimit`](@ref)).
-- A doubled step that an unknown at zero with no absolute tolerance fails, while every other unknown has no error, is retried with half its length ([`StepDoubling`](@ref)).
+- A doubled step can fail on an unknown at zero with no absolute tolerance while every other unknown has no error.
+  Such a step is retried with half its length ([`StepDoubling`](@ref)).
   DREAM's next step is unbounded there (`src/TimeStepper/TimeStepperAdaptive.cpp:458-482`).
 - The ion rows take the sign convention of every other row, so [`IonDiffusionTerm`](@ref) takes a positive coefficient (DREAM: `src/Equations/Fluid/IonTransientTerm.cpp:78`).
 - [`coronal_equilibrium`](@ref) multiplies the ratios of the rates in log space, where DREAM multiplies them directly (`src/Settings/IonEquilibrium.cpp:100-137`).
