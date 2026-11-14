@@ -109,8 +109,8 @@ The curve of the figure and the text of the paper (p. 12) differ in that denomin
 Read from its curve, the frequency without screening keeps only the free electrons among the targets of the electron-electron collisions.
 The text counts the bound electrons among these targets, as `screening = :none` and DREAM's `NON_SCREENED` do.
 
-`test/test_independent_references.jl` divides the package's frequency with partial screening by each of the two denominators.
-It compares each ratio with the readings of Fig. 3(b), for Ar⁺ at 10 eV with ``n_e = n_\mathrm{Ar} = 10^{20}`` m⁻³.
+`test/test_independent_references.jl` divides the package's frequency with partial screening by the denominator of the curve.
+It compares that ratio with the readings of Fig. 3(b), for Ar⁺ at 10 eV with ``n_e = n_\mathrm{Ar} = 10^{20}`` m⁻³.
 The readings are at four momenta, from ``p = 0.1`` to ``p = 100``.
 Each difference is relative to the reading at the same momentum.
 
