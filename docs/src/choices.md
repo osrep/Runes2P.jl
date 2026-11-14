@@ -24,7 +24,7 @@ The properties of exponential fitting are on the page [Positivity and flux limit
 DREAM's default is the central interpolation, `scheme = :central`.
 With `lagged = :ions` the charge-state densities enter the collisions of `f` at the start of the step, and the stored Jacobian has no columns of them.
 The lag makes the term first order in time under BDF2, and [`ode_function`](@ref) passes no Jacobian for a system with such a term ([`Runes2P.lags_in_ode_form`](@ref)).
-DREAM's default boundary at `p_max` is `BC_PHI_CONST`, which `p_upper_boundary = :constant_flux` reproduces.
+DREAM's default boundary at `p_max` for the hot-tail grid is `BC_PHI_CONST`, which `p_upper_boundary = :constant_flux` reproduces.
 
 ## Collision frequencies
 
@@ -50,13 +50,13 @@ Its weight in the friction rises in a cubic smooth step from ``(1 - w) p_0`` to 
 
 | Choice | Value |
 |---|---|
-| cross sections of [`ionization_cross_section`](@ref), [`KineticIonizationTerm`](@ref) and the friction of [`CollisionSettings`](@ref) | `form = :chianti`, and `ionization_cross_section_form = :chianti` of the term and of the settings ([`chianti_cross_section`](@ref)) |
+| cross sections of [`ionization_cross_section`](@ref), [`KineticIonizationTerm`](@ref) and the friction of [`CollisionSettings`](@ref) | `form = :chianti` of the forms `:chianti`, `:dream` and `:bethe`, and `ionization_cross_section_form = :chianti` of the term and of the settings ([`chianti_cross_section`](@ref)) |
 | energy above which CHIANTI's cross section follows the relativistic Bethe form | [`CHIANTI_MATCHING_ENERGY`](@ref) = 100 keV |
-| factor of the window of the weight between the continued fit and the Bethe form | [`CHIANTI_MATCHING_WIDTH`](@ref) = 2 |
+| factor by which the weight passes from the CHIANTI fit with its relativistic rise to the Bethe form, below and above the matching energy | [`CHIANTI_MATCHING_WIDTH`](@ref) = 2 |
 | weight of the relativistic rise of each shell and transition of [`chianti_cross_section`](@ref) | ``1 - 1/u``, ``u = \beta^2/\beta_I^2`` |
 | spectrum of the secondaries of [`SecondaryHeatingTerm`](@ref), [`ionization_energy_flows`](@ref) and the friction of [`CollisionSettings`](@ref) | `spectrum = :beb`, `secondary_spectrum = :beb` ([`beb_mean_secondary_energy`](@ref)) |
 | smallest threshold factor of the split of the ionization with a fluid term | [`MINIMUM_SPLIT_THRESHOLD_FACTORS`](@ref): 7 for `:chianti`, 5 for `:dream` and `:bethe` |
-| part of the Maxwellian below a threshold that lies in the first momentum cell, in the split of [`Runes2P.threshold_split`](@ref) | the weight of that cell, ``M_1 w_1 / \sum M w`` |
+| part of the Maxwellian below a threshold that lies in the first momentum cell, in the split of [`Runes2P.threshold_split`](@ref) | the share of that cell in the density of the Maxwellian, ``M_1 w_1 / \sum M w`` |
 
 The cross sections are the fits of the CHIANTI database, cited on [Home](index.md#Citing-and-acknowledgements), whose ionization data are those of K. P. Dere, Astronomy and Astrophysics 466, 771 (2007), [doi:10.1051/0004-6361:20066728](https://doi.org/10.1051/0004-6361:20066728).
 These fits are nonrelativistic.
@@ -64,9 +64,10 @@ These fits are nonrelativistic.
 The weight of the rise starts at zero at the threshold of each shell, with ``\beta_I`` the speed of an electron at the threshold energy.
 
 Above the matching energy ``E_m =`` [`CHIANTI_MATCHING_ENERGY`](@ref) the cross section is the relativistic Bethe form.
-A cubic weight in ``\ln E`` from ``E_m/2`` to ``2 E_m`` joins it to the continued fit.
+A cubic weight in ``\ln E`` from ``E_m/2`` to ``2 E_m`` joins it to the fit with its relativistic rise.
 The elements without CHIANTI data in [`CHIANTI_IONIZATION_FITS`](@ref) keep DREAM's form.
 `form = :dream` takes DREAM's form for every element.
+`form = :bethe` takes DREAM's form with the factor ``1/\beta^2`` ([Atomic data](model/atomic-data.md)).
 
 The spectrum of the secondaries is the binary-encounter-Bethe spectrum of Y.-K. Kim and M. E. Rudd, Physical Review A 50, 3954 (1994), [doi:10.1103/PhysRevA.50.3954](https://doi.org/10.1103/PhysRevA.50.3954).
 It takes the ionization energy of a charge state as its binding energy.
@@ -75,9 +76,14 @@ It takes the width of the neutral element in [`SECONDARY_SPECTRUM_WIDTHS`](@ref)
 
 The split at the threshold divides the ionization between the kinetic term and a fluid term.
 The fluid coefficient of the split ([`fluid_ionization_coefficient`](@ref)) has no floor, so with a Maxwellian `f` the kinetic and fluid rates add up to the ADAS rate.
-Where the threshold lies in the first momentum cell, [`Runes2P.threshold_split`](@ref) takes the part below it, ``1 - f_>``, as the weight of that cell.
-At the threshold factors of the split nearly the whole Maxwellian then lies in that cell, below the threshold, and the fluid coefficient stays finite.
-There the two rates add up to the ADAS rate only to within that part, and a warning names the radius and the temperature.
+In the split, ``f_>`` is the fraction of the density of the Maxwellian above the threshold.
+``M`` is the relativistic Maxwellian at the cell centres, and ``w`` are the cell weights of a density moment.
+
+Where the threshold lies in the first momentum cell, [`Runes2P.threshold_split`](@ref) takes the part of the Maxwellian below it, ``1 - f_>``, as the weight of that cell.
+At the threshold factors of the split, such a threshold leaves nearly the whole Maxwellian in the first cell, below the threshold.
+The weight keeps the fluid coefficient finite.
+With it the kinetic and fluid rates add up to the ADAS rate only to within that weight.
+A warning names the radius and the temperature.
 
 At a threshold factor below that of its form, [`IonRateTerm`](@ref) and [`RadiatedPowerTerm`](@ref) refuse the split.
 The factor 5 is the hot-region threshold of DREAM's disruption example.
@@ -92,7 +98,8 @@ The default hot region of [`ThermalMomentum`](@ref) takes 7 for every form.
 
 Inside the tables the interpolation is bicubic in ``\log_{10}`` of the coefficient over ``\log_{10} n`` and ``\log_{10} T``.
 `extrapolation = :dream` continues the bilinear interpolation of ``\log_{10}`` of the coefficient in ``\log_{10} n`` and ``\log_{10} T`` from the edge cell, as DREAM's `ADASRateInterpolator` does.
-`extrapolation = :clamp_density` clamps the density to the table and extrapolates in ``T`` alone; at low densities the coefficients are those of the lowest tabulated density, near the coronal limit.
+`extrapolation = :clamp_density` clamps the density to the table and extrapolates in ``T`` alone.
+At low densities the coefficients are those of the lowest tabulated density, near the coronal limit.
 The radiation takes the ADAS classes PLT (line radiation) and PRB (recombination radiation and bremsstrahlung).
 `radiation = :recombination` takes PLT + PRB and accounts for the binding energy of every ionization and recombination.
 `radiation = :dream` is DREAM's default: PLT, the ionization loss and the bremsstrahlung of R. J. Gould, The Astrophysical Journal 238, 1026 (1980), [doi:10.1086/158068](https://doi.org/10.1086/158068).
@@ -156,19 +163,17 @@ DREAM's MKL PARDISO solver allows 10 refinement steps (`fvm/Solvers/MIMKL.cpp`),
 PARDISO perturbs a small pivot instead of failing, so a singular or nearly singular matrix gives a finite solution whose residual is large.
 A solve of [`MKLPardiso`](@ref) whose relative residual exceeds `MAX_RELATIVE_RESIDUAL` fails with `:singular_matrix`, as a zero pivot does with [`SparseLU`](@ref).
 The step is then retried shorter at once.
-The table gives the relative residuals of PARDISO's solves that the bound separates.
+The table gives the relative residuals of PARDISO's solves on both sides of the bound of 1e-6.
 
 | Matrices | Relative residual of a solve |
 |---|---|
 | the Newton matrices of the disruption case | 1e-13 to 1e-9 |
-| the bound `MAX_RELATIVE_RESIDUAL` | 1e-6 |
 | singular matrices | 1e-2 to 10 |
 | a matrix of the pattern, solved with the ordering and the matching of another | just above the bound, or far above 1 |
 
-- The bound lies three orders of magnitude above the residuals of the disruption case.
-- It lies four or more orders of magnitude below the residuals of singular matrices.
-- A false failure costs a shorter step.
-- The solve after a failure computes a new ordering and matching.
+The bound lies three orders of magnitude above the residuals of the disruption case, and four or more below those of singular matrices.
+A false failure costs only a shorter step.
+The solve after a failure computes a new ordering and matching.
 
 ## Time stepping
 
@@ -180,7 +185,8 @@ The table gives the relative residuals of PARDISO's solves that the bound separa
 
 DREAM rejects a step in which an unknown with no absolute tolerance is zero after the full step and not after the two half steps.
 It takes the next step from the largest error of the other unknowns, as [`StepDoubling`](@ref) does.
-When that error is zero, DREAM's next step is unbounded; halving the step tried keeps the retry finite.
+When that error is zero, DREAM's next step is unbounded.
+Halving the step tried keeps the retry finite.
 DREAM has no finite behaviour to reproduce there, so no option gives DREAM's.
 
 The round-off bound counts each term of a residual row at its own size, one rounding error per term.
@@ -189,7 +195,8 @@ With `c = 1` the bound lies about 2.5 times above the largest residual measured 
 DREAM converges on the update alone and only warns about the residual ([Comparison with DREAM](dream-comparison.md)), so it has no residual test to waive.
 
 A positivity-preserving limiter keeps the converged discrete solution non-negative, and the extra iteration converges it further where an accepted iterate still has negative entries ([Positivity](model/positivity.md#Convergence-of-the-limiter)).
-The schemes of [`POLISHED_SCHEMES`](@ref) are those whose converged solution stayed non-negative in the tests; the extra iteration is wasted on the others.
+The schemes of [`POLISHED_SCHEMES`](@ref) are those whose converged solution stayed non-negative in the tests.
+On the others the extra iteration is wasted.
 An unconverged limiter is cleaned by one extra iteration, so [`POLISH_MISSES`](@ref), five misses in a row, shows a scheme that does not keep the run non-negative and bounds the cost of finding out.
 DREAM takes no such iteration: `polish_negatives = false`.
 
@@ -205,12 +212,11 @@ The parameter values of the scripts of `examples/` come from DREAM's examples or
 
 The `grid=biuniform_270` preset is a fully kinetic hot-tail grid.
 In `examples/relaxation.jl` ``E_c`` is the Connor–Hastie critical field ([`critical_field`](@ref)), and the field lies between the critical and the Dreicer field.
-The plasma of `examples/cooling.jl` is that of the reference case `reference/dream/cases/cooling_positivity.py`.
-Its radial values come from DREAM's SPI example.
+The radial values of the plasma of `examples/cooling.jl` come from DREAM's SPI example.
 
 ## Reference cases
 
-This section holds the choices of two reference cases: the disruption chain and the case `heating`.
+This section holds the choices of the disruption chain, of the window of its test and of the case `heating`.
 
 ### The disruption chain
 
@@ -223,34 +229,33 @@ Its options and their values are in the table, with one note per row below it.
 | elongation of the radial grid | `--elongation 1`, a cylinder without shaping |
 | steps of phase 1 | `--nt-ioniz 500`, steps of 4e-8 s |
 | runaway grid (`--runaway-grid`) | the default grid of the table of runaway grids below |
-| runaway grid of the measurement of scenario 4 at full size | `--re-pmax 200 --re-np-coarse 40 --re-nxi 15 --re-nxi-sep 10` |
+| runaway grid of the measurement of scenario 4 at full size ([The whole quench of scenario 4](dream-comparison.md#The-whole-quench-of-scenario-4)) | `--re-pmax 200 --re-np-coarse 40 --re-nxi 15 --re-nxi-sep 10` |
 | advection scheme of `f_re` | that of `f_hot` (`--scheme`) in both phases |
-| absolute tolerance of `f_re` | 1e5 from run 1 on, that of `f_hot` in the phases |
-| window of phase 2 of the test | `--window-start 170 --window-steps 10` |
+| absolute tolerance of `f_re` | 1e5 in every run after the conductivity, the absolute tolerance of `f_hot` in the ionization and the quench |
+| window of phase 2 of the test | `--window-start 170 --window-steps 10`, the default of `--window-steps` ([The window of the test](#The-window-of-the-test)) |
 
 - Scenario: the DREAM paper runs scenarios 1 and 4.
   `generate.py` runs scenario 0 by default, which `--scenario 0` reproduces.
 - Elongation: the cylinder of Runes2P has no shaping.
   `ASDEXU.py` takes an elongation linear from 1.0 to 1.15 in the radius, which `--elongation asdexu` reproduces.
-- Steps of phase 1: the 500 steps are passed with `--elongation 1`, and the default of the script stays the 200 steps of scenario 1.
+- Steps of phase 1: the case passes `--nt-ioniz 500` explicitly, together with `--elongation 1`.
+  The default of the script stays the 200 steps of scenario 1.
   Each step of phase 1 is then 4e-8 s instead of 1e-7 s.
   With 200 steps DREAM's first step fails in runs with `--linear-solver mkl`, also when retried, since its Newton iteration meets a non-finite value (`brent.c:69: computed function value is infinite or NaN`).
+  With 500 steps phase 1 converges.
   The step of 4e-8 s is also that of the case at the size of a test in `test/test_disruption_dream.jl`.
 - Runaway grid: DREAM's example runs no runaway grid.
   The defaults of `--runaway-grid` serve scenario 1 at the reduced size of the tests.
   At 300 µs of scenario 1, a grid to `p_max = 60` holds 3e-5 of the density of `f_re` above `p = 20`.
   The avalanche source keeps a small population up to the last cell, so a few cells more do not change the result.
-  The 8 pitch cells, fine near `ξ = 1`, differ from the 4 uniform cells of the hot-tail grid, so that a test crosses DREAM's mapping between the two pitch grids.
-- Runaway grid of scenario 4: the measurement of scenario 4 at full size ([The whole quench of scenario 4](dream-comparison.md#The-whole-quench-of-scenario-4)) takes the grid to `p_max = 200`.
-  The reason is in the table of `p_max` below.
+  The 8 pitch cells, fine near `ξ = 1`, differ from the 4 uniform cells of the reduced hot-tail grid of the tests, so that a test crosses DREAM's mapping between the two pitch grids.
+- Runaway grid of scenario 4: the measurement takes the grid to `p_max = 200`, for the reason given below the grids.
 - Advection scheme: the scheme of `f_hot` on `f_re`, with its switch to upwind in phase 2 where `generate.py` makes it, keeps one scheme across the interface.
   DREAM's own default for `f_re` is the centred scheme.
 - Absolute tolerance: `generate.py` sets no absolute tolerance for `f_re`, and DREAM sets none either (`ToleranceSettings.py`).
   The case gives `f_re` the 1e5 of `f_hot`.
-- Window: the window is described in [The window of the test](#The-window-of-the-test).
-  The default of `--window-steps` is 10.
 
-The runaway grids have a fine segment above the hot-tail `p_max` of 0.8 and a geometric segment above it.
+The runaway grids have a fine segment above the hot-tail `p_max` of 0.8 and a geometric segment above the fine one.
 The momenta are in units of ``m_e c``.
 
 | Grid | Segment | Momentum cells | From `p` | To `p` | Cell width |
@@ -264,13 +269,20 @@ The momenta are in units of ``m_e c``.
   5 of them lie below θ = 0.5.
 - The grid of scenario 4 has 15 pitch cells (`--re-nxi 15 --re-nxi-sep 10`).
 
-The table compares runs of DREAM v26.5 in scenario 4 with three values of the `p_max` of the runaway grid.
+Two measures from runs of DREAM v26.5 in scenario 4 compare the values of `p_max` of the runaway grid.
+The first is how much of `n_re` the grid holds.
 
-| `p_max` | `n_re` held in `f_re` at the centre at the end of the quench | `I_p` at 4.99e-3 s, 3200 steps | Relative difference of `I_p` |
-|---|---|---|---|
-| 20, the default of the case script | 0.44 of `n_re` | - | - |
-| 60 | - | 2.5305347e5 A | −4.5e-5 |
-| 200 | share above the grid: [Comparison with DREAM](dream-comparison.md#The-whole-quench-of-scenario-4) | 2.5306492e5 A | the reference |
+| `p_max` | Share of `n_re` | Where and when |
+|---|---|---|
+| 20, the default of the case script | 0.44 of `n_re` is held in `f_re` | at the centre, at the end of the quench |
+| 200 | 4.0e-5 to 4.1e-5 of `n_re` lies above the grid | at radii 1 to 11, at 4.99e-3 s ([Comparison with DREAM](dream-comparison.md#The-whole-quench-of-scenario-4)) |
+
+The second is the plasma current `I_p` at 4.99e-3 s, in runs of 3200 steps.
+
+| `p_max` | `I_p` | Relative difference from `p_max = 200` |
+|---|---|---|
+| 60 | 2.5305347e5 A | −4.5e-5 |
+| 200 | 2.5306492e5 A | - |
 
 - The relative difference is (`I_p` − `I_p` at `p_max = 200`) / `I_p` at `p_max = 200`.
 - The default grid holds too little of `n_re` in scenario 4, so the measurement takes the grid to `p_max = 200`.
@@ -278,25 +290,29 @@ The table compares runs of DREAM v26.5 in scenario 4 with three values of the `p
 ### The window of the test
 
 The window is the part of phase 2 that the test of the runaway grid runs from DREAM's state.
-It runs on the reduced grid of the tests with the step of the scenario.
+The test runs it on the reduced grid of the tests with the step of the scenario.
+The page [Performance and accuracy](performance.md#The-disruption-case) times the same window at full size.
 The table compares phase 2 of the case with that of scenario 1 and with the short phases of `DISRUPTION_ARGS` in `reference/dream/run_all.sh`.
 
 | Run | Options | Duration of phase 2 | Steps | Step |
 |---|---|---|---|---|
-| the case at the reduced size of the tests | `--nt-quench 429 --t-quench 3e-4` | 3e-4 s | 429 | 6.527e-7 s |
-| scenario 1 of `generate.py` | `t_TQ` 1e-3, `t_ioniz` 2e-5, `nt_TQ` 1500 | 9.8e-4 s | 1500 | 6.533e-7 s |
-| `DISRUPTION_ARGS` of `reference/dream/run_all.sh` | `--nt-quench 10 --t-quench 1.4e-6` | 1.4e-6 s | 10 | - |
+| the case at the reduced size of the tests | `--t-ioniz 2e-5 --nt-quench 429 --t-quench 3e-4` | 2.8e-4 s | 429 | 6.527e-7 s |
+| scenario 1 of `generate.py` | `t_ioniz` 2e-5, `t_TQ` 1e-3, `nt_TQ` 1500 | 9.8e-4 s | 1500 | 6.533e-7 s |
+| `DISRUPTION_ARGS` of `reference/dream/run_all.sh` | `--t-ioniz 4e-7 --nt-quench 10 --t-quench 1.4e-6` | 1.0e-6 s | 10 | - |
 
-- The step of the case is that of scenario 1.
-- Phase 2 of the case ends at 300 µs, the end of the benchmark of scenario 1.
+- `--t-quench` is the end time of phase 2, counted from the start of phase 1, so it includes the length of phase 1 (`--t-ioniz`).
+- The step of the case equals that of scenario 1 within 1e-3, relative.
+- Phase 2 of the case ends at 300 µs of the scenario, the end of the benchmark of scenario 1.
+
+The table gives the window of the test at the reduced size.
 
 | Quantity | Window | Criterion |
 |---|---|---|
-| first step | 170 | - |
-| time of the scenario at the first step | 131.0 µs | 130 to 150 µs |
-| runaway share of the plasma current at the first step | 5.9 % | 1 to 10 % |
+| step whose state the window starts from | 170 | - |
+| time of the scenario at that step | 131.0 µs | 130 to 150 µs |
+| runaway share of the plasma current at that step | 5.9 % | 1 to 10 % |
 | steps | 10 | - |
-| run time of the whole chain | 10.5 s | - |
+| DREAM's wall time of the whole chain at the reduced size | 10.5 s | - |
 | test data of the window | 95.9 kB | - |
 
 - The window starts where `f_re` carries part of the current.
@@ -305,8 +321,8 @@ The table compares phase 2 of the case with that of scenario 1 and with the shor
 
 ### The case `heating`
 
-The case `heating` of the reference case `reference/dream/cases/initial_state.py` runs the runaway grid of DREAM's `examples/init_f_re/generate.py`.
-The test case `runaway_heating_example` (`test/example_cases.jl`) builds it.
+The reference case `reference/dream/cases/initial_state.py` has a case `heating`, which runs the runaway grid of DREAM's `examples/init_f_re/generate.py`.
+The test case `runaway_heating_example` (`test/example_cases.jl`) builds it in Runes2P.
 The table holds the choices of that case.
 
 | Choice | Value |
