@@ -226,48 +226,77 @@ A run is an [`EquationSystem`](@ref) of the terms the caller chooses, so a mode 
 
 ## The disruption case
 
-The coupled reference case is DREAM's disruption of `examples/Disruptions/generate.py`, scenario 1, in a cylinder.
-The tests run it at a reduced size, fully kinetic and in DREAM's superthermal mode.
+The reference case is DREAM's disruption of `examples/Disruptions/generate.py`, scenario 1, in a cylinder.
 Its case script is `reference/dream/cases/disruption_kinetic.py` ([Reference data](reference-data.md)).
-Each part below is a test, except the whole quenches of scenarios 1 and 4 at full size.
-These two are measurements that no test repeats.
+The tests run the case at a reduced size, fully kinetic and in DREAM's superthermal mode.
+The whole quenches of scenarios 1 and 4 at full size are measurements that no test repeats.
+
+### The runs of the case script
+
+The case script runs DREAM's chain of `generate.py` as six numbered runs.
+
+| Run | What it does |
+|---|---|
+| 0 | one step: the conductivity of the initial plasma and the field of the prescribed current profile |
+| 1 | 1 s in 3 steps from the Maxwellian with that field |
+| 2 | run 1 again, with the field rescaled to the plasma current |
+| 3 | the ionization phase (phase 1): the ionization of the injected D and Ar |
+| 4 | the thermal and current quench (phase 2) |
+| 5 | a window of phase 2: run 4 stops at a saved step, and run 5 takes the next steps from DREAM's state there |
+
+Runs 0 to 2 are the initialization.
+Run 5 exists only with the option `--window-start`.
 
 ### Parts of the comparison
 
-The table lists each part of the comparison with DREAM's runs and its test.
+The builder of the case is `build` of `test/example_disruption.jl`.
+Its keyword `compat = :dream` takes DREAM's settings of the case where the codes differ, and `compat = :runes2p` takes Runes2P's defaults ([Defaults that differ](#Defaults-that-differ)).
+The synchrotron loss is off at both values.
 
 | Part | DREAM runs | Runes2P starts from or builds | Test |
 |---|---|---|---|
 | initialization | runs 0 to 2 | the same runs (notes below) | `test_disruption_initialization_dream.jl` |
-| ionization phase | run 3: the ionization of the injected D and Ar | DREAM's state at the start of the phase | `test_disruption_dream.jl` |
+| ionization phase | run 3 | DREAM's state at the start of the phase | `test_disruption_dream.jl` |
 | thermal and current quench | run 4 | DREAM's state at the start of the phase | `test_disruption_dream.jl` |
-| the chain end to end | runs 0 to 4 | its own initialization, then each phase from its own end state of the run before | `test_disruption_chain_dream.jl` |
-| the chain end to end in the superthermal mode | runs 0 to 4 of `generate.py --superthermal` | the same with `mode = :superthermal`, and each phase also from DREAM's state at its start | `test_disruption_superthermal_dream.jl` |
-| quench with a runaway grid | runs 1 to 4 with the runaway grid to step 170 of the quench, then a window of 10 steps (run 5) | DREAM's state at the start of the window | `test_disruption_runaway_dream.jl` |
-| the same from `f_re` zero | not compared: the start comes from run 4, which has no runaway grid | the start of the quench, with `f_re` zero | `test_disruption_runaway.jl` |
-| whole quench of scenario 1 at full size | runs 0 to 4, the runaway grid in runs 1 to 4 | DREAM's state at the start of the quench, 429 steps in one run | none: a measurement |
-| the same in scenario 4 | runs 0 to 4 of scenario 4, the runaway grid in runs 1 to 4 | DREAM's state at the start of the quench, 1600 steps in one run | none: a measurement |
+| the chain end to end | runs 0 to 4 | Runes2P's own initialization, then each phase from Runes2P's end state of the run before | `test_disruption_chain_dream.jl` |
+| the chain end to end in the superthermal mode | runs 0 to 4 with the case script's `--mode superthermal` (DREAM's `generate.py --superthermal`) | the same with `mode = :superthermal`, and, separately, each phase from DREAM's state | `test_disruption_superthermal_dream.jl` |
+| quench with a runaway grid | runs 1 to 4 with the runaway grid to step 170 of 429 of phase 2, then 10 steps (run 5) | DREAM's state at the start of run 5 | `test_disruption_runaway_dream.jl` |
+| the same from `f_re` zero | not compared with DREAM | the start of phase 2, with `f_re` zero | `test_disruption_runaway.jl` |
+| whole quench of scenario 1 at full size | runs 0 to 4, the runaway grid in runs 1 to 4 | DREAM's state at the start of phase 2, 429 steps in one run | none: a measurement |
+| the same in scenario 4 | runs 0 to 4 of scenario 4, the runaway grid in runs 1 to 4 | DREAM's state at the start of phase 2, 1600 steps in one run | none: a measurement |
 
-The initialization:
+The reduced sizes of the tests, as momentum × pitch cells:
 
-- Run 0 gives the conductivity of the initial plasma and the field of the prescribed current profile.
-- Run 1 takes 1 s in 3 steps from the Maxwellian with that field.
-- Run 2 repeats run 1 with the field rescaled to the plasma current.
-- Runes2P holds the field and the temperature by algebraic rows in these runs.
-- It builds the state at the start of the ionization phase from the end of run 2 and the ions of the settings.
+| Test | Radii | Hot-tail grid | Runaway grid | Steps |
+|---|---|---|---|---|
+| initialization, phases, chain | 2 | 30 × 4 | none | phase 1: 10 of 4e-8 s, phase 2: 10 of 1e-7 s |
+| superthermal mode | 2 | 20 × 4, without the fine region | none | as above |
+| quench with a runaway grid | 2 | 30 × 4 | 32 × 8, from `p_max` 0.8 to 20 | 10 of 6.53e-7 s, from step 170 of 429 of phase 2 |
+| the same from `f_re` zero | 2 | 30 × 4 | 32 × 8 | 3 of 1e-7 s |
+
+The initialization in Runes2P:
+
+- Runes2P runs the initialization itself, as runs 0 to 2.
+- The field and the cold temperature stay at their prescribed values in runs 1 and 2.
+- Runes2P builds the state at the start of phase 1 from the end of run 2 and the ions of the settings.
 
 The runaway grid:
 
 - The runaway grid is the case script's `--runaway-grid` ([Choices](choices.md#Reference-cases)).
-  The builder of the case adds it with `runaway = true`.
-- The flux of `f_hot` through `p_max` enters `f_re` and `n_re` ([`MomentumInterfaceTerm`](@ref), [`InterfaceParticleFluxTerm`](@ref)).
-- Above that `p_max` the avalanche is kinetic on `f_re` and fluid in `n_re`.
+  `build` adds it with `runaway = true`.
+- The flux of `f_hot` through the hot-tail `p_max` enters `f_re` and `n_re` ([`MomentumInterfaceTerm`](@ref), [`InterfaceParticleFluxTerm`](@ref)).
+- The kinetic avalanche source acts on `f_re`, on the runaway grid.
+- The fluid avalanche acts in `n_re`, which counts every electron above the hot-tail `p_max`.
+  On the runaway grid it equals the kinetic source of `f_re`, and `n_re` adds the tail beyond the runaway grid's `p_max`.
 - `f_re` carries the runaway current, ionizes the ions and heats the cold electrons.
-- In the window of the test, `f_re` carries part of the current.
-- The tests with the runaway grid check the budgets of its closures at both `compat` values.
-  From `f_re` zero, these budgets are all that the test checks.
+- In the window of run 5, the runaway current is 5.9 % of the plasma current at the start.
+- DREAM's run 4 without the runaway grid holds no `f_re`.
+  So the test from `f_re` zero has no DREAM values to compare with.
+- That test checks that the steps are accepted and that the balances below hold.
+  It also checks that the case without a runaway grid keeps its unknowns and energy channels, and that the start takes DREAM's particle source.
 
-DREAM's runs of the two measurements at full size take the case script's default sizes and these options:
+DREAM's runs of the two measurements take the case script's default sizes.
+These are the full size of DREAM's example: 15 radii and a hot-tail grid of 140 × 15.
 
 ```sh
 # scenario 1
@@ -276,77 +305,146 @@ disruption_kinetic.py --nt-ioniz 500 --t-ioniz 2e-5 --nt-quench 429 --t-quench 3
 disruption_kinetic.py --scenario 4 --linear-solver mkl --runaway-grid --re-pmax 200 --re-np-coarse 40 --re-nxi 15 --re-nxi-sep 10
 ```
 
+### Balances checked without DREAM
+
+The tests of the phases, of the chains and of the runaway grid also check balances of the assembled system that do not need DREAM.
+They check them at both `compat` values.
+The test of the initialization checks none.
+Each value is relative, and its bound holds over every step of the run.
+
+| Balance | What is checked | Bound |
+|---|---|---|
+| `species` | the density of each ion species stays fixed, since the case has no ion transport | 1e-13 |
+| `exchange` | the energy that the electrons give the ions is the energy the ions take | 1e-13 |
+| `diffusion` | the heat diffusion has no net flux, since no heat leaves at the edge | 1e-13 |
+| `closure` | the change of `W_cold` equals the sum of its energy channels | 1e-12 |
+| `field` | the change of the poloidal field energy equals the work of the field on the currents | 1e-8 |
+| `drift` | the particle source keeps ∫f − n_cold − n_hot fixed, fully kinetic mode only | 1e-6 in phase 1, 1e-13 in phase 2 |
+| `interface` | the electrons the interface takes from `f_hot` are those it gives to `f_re` and to `n_re` | 2e-14 |
+| `avalanche` | n_re − ∫f_re grows by the avalanche beyond the runaway grid and the outflow there | 1e-11 in the window, 1e-9 from `f_re` zero |
+
+- The last two rows hold for the tests with the runaway grid.
+- These are the functions `budgets` and `runaway_budgets` of `test/example_disruption.jl`.
+  Their docstrings define the reference of each value.
+- In phase 1 the deposition moves the drift at the level of the Newton tolerance of the particle source, so its bound is larger.
+
 ### Agreement at the size of the tests
 
+This section gives the largest differences against DREAM in the tests, all at `compat = :dream`.
 Each difference is relative: |Runes2P − DREAM| divided by a reference value of DREAM.
+Each number is the largest such difference over the saved steps after the first.
 `phase_differences` of `test/example_disruption.jl` takes the reference by the kind of quantity:
 
-| Kind of quantity | Reference | Short name below |
+| Short name | Reference | Used for |
 |---|---|---|
-| radial quantities, such as `E_field`, the currents, `n_hot` and `psi_p` | DREAM's largest value over the radii at the same step | over the radii |
-| `f_hot`, `f_re`, `n_i` and `W_i` | DREAM's largest value over the cells, charge states or species at the same radius and step | per radius and step |
+| over the radii | DREAM's largest value over the radii at the same step | the radial quantities, such as `E_field`, the currents, `n_hot` and `psi_p` |
+| per radius and step | DREAM's largest value over the cells, charge states or species at the same radius and step | `f_hot`, `f_re`, `n_i`, `W_i` |
 | `I_p` | DREAM's `I_p` at the same step | `I_p` |
-| `n_re` and `j_re`, compared per radius | DREAM's largest value at the same radius over the run | per radius over the run |
+| per radius over the run | DREAM's largest value at the same radius over the run | `n_re` and `j_re`, where a test compares them per radius |
+| per unknown | DREAM's largest entry of the unknown in its first state of phase 1 | the hand-over from the initialization to phase 1 |
 
-Each number is the largest such difference over the saved steps after the first.
-The hand-over is a single state and has a reference of its own.
+The initialization and the chains compare `n_re` and `j_re` over the radii as well.
+The chain measures `n_re` at the first radius with a function of its own test, `runaways_at`, in the same measure "per radius over the run".
+The values are the tests' measurements at Julia's default optimisation level, except `n_re` from DREAM's state, measured at `-O0`.
+The functions `phase_differences`, `read_dream_state` and `run_window` belong to `test/example_disruption.jl`, not to the package's API.
 
-| Comparison | Quantities | Largest difference | Reference | Test |
-|---|---|---|---|---|
-| initialization, runs 1 and 2 | `E_field`, `j_ohm`, `j_hot`, `j_tot`, `psi_p` | 8e-10 | over the radii | `test_disruption_initialization_dream.jl` |
-| initialization, runs 1 and 2 | `I_p` | 8e-10 | `I_p` | `test_disruption_initialization_dream.jl` |
-| initialization, runs 1 and 2 | `n_hot` | 3e-11 | over the radii | `test_disruption_initialization_dream.jl` |
-| initialization, runs 1 and 2 | `f_hot` | 3e-11 | per radius and step | `test_disruption_initialization_dream.jl` |
-| hand-over to the ionization phase | every unknown | 8e-10 | DREAM's largest entry of the unknown in its first state of the phase | `test_disruption_initialization_dream.jl` |
-| phases from DREAM's state | `f_hot` | 4e-5 | per radius and step | `test_disruption_dream.jl` |
-| phases from DREAM's state | `E_field` | 4e-7 | over the radii | `test_disruption_dream.jl` |
-| phases from DREAM's state | `psi_p` | 7e-13 | over the radii | `test_disruption_dream.jl` |
-| phases from DREAM's state | `I_p` | 1e-12 | `I_p` | `test_disruption_dream.jl` |
-| phases from DREAM's state | `n_re` at the first radius | 6e-12 | per radius over the run | `test_disruption_dream.jl` |
-| the chain end to end | `f_hot` | 4e-5 | per radius and step | `test_disruption_chain_dream.jl` |
-| the chain end to end | `E_field` | 4e-7 | over the radii | `test_disruption_chain_dream.jl` |
-| the chain end to end | `psi_p` | 3e-10 | over the radii | `test_disruption_chain_dream.jl` |
-| the chain end to end | `I_p` | 1e-11 | `I_p` | `test_disruption_chain_dream.jl` |
-| the chain end to end | `n_re` at the first radius | 4e-11 | per radius over the run | `test_disruption_chain_dream.jl` |
-| superthermal mode, initialization | every quantity | 2e-9 | that of its kind, `n_re` and `j_re` over the radii | `test_disruption_superthermal_dream.jl` |
-| superthermal mode, phases | every quantity, the largest in `n_i`, `n_cold` and `W_cold` | 4e-6 | that of its kind, `n_re` and `j_re` over the radii in the chain | `test_disruption_superthermal_dream.jl` |
-| window with the runaway grid | `f_re` | 1.2e-9 | per radius and step | `test_disruption_runaway_dream.jl` |
-| window with the runaway grid | `n_re`, `j_re` | 1.2e-9 | per radius over the run | `test_disruption_runaway_dream.jl` |
-| window with the runaway grid | every other quantity, the largest in `n_i` | 2.2e-8 | that of its kind | `test_disruption_runaway_dream.jl` |
+#### The initialization
 
-- DREAM's Newton tolerance of the runs of the initialization is 1e-7.
+`test_disruption_initialization_dream.jl` compares runs 1 and 2, and the state that they hand to phase 1.
+
+| Quantity | Largest relative difference | Reference |
+|---|---|---|
+| `j_hot` | 7.9e-10 | over the radii |
+| `I_p` | 7.8e-10 | `I_p` |
+| `E_field` | 7.7e-10 | over the radii |
+| `j_ohm` | 7.5e-10 | over the radii |
+| `j_tot` | 7.5e-10 | over the radii |
+| `psi_p` | 4.9e-10 | over the radii |
+| `f_hot` | 2.7e-11 | per radius and step |
+| `n_hot` | 1.7e-11 | over the radii |
+| every unknown, at the hand-over to phase 1 | 7.7e-10 | per unknown |
+
+DREAM's Newton tolerance of these runs is 1e-7, so the differences lie far below it.
+
+#### The phases
+
+`test_disruption_dream.jl` starts each phase from DREAM's state.
+`test_disruption_chain_dream.jl` runs the chain end to end from Runes2P's own initialization.
+
+| Quantity | From DREAM's state | The chain end to end | Reference |
+|---|---|---|---|
+| `f_hot` | 4.4e-5 | 4.4e-5 | per radius and step |
+| `E_field` | 4.1e-7 | 4.1e-7 | over the radii |
+| `psi_p` | 6.8e-13 | 2.8e-10 | over the radii |
+| `I_p` | 1.3e-12 | 1.3e-11 | `I_p` |
+| `n_re` at the first radius | 5.5e-12, at `-O0` | 3.6e-11 | per radius over the run |
+
 - In the chain, `psi_p`, `I_p` and `n_re` carry the differences of the initialization.
-  In `f_hot` and the field the chain agrees as closely as the phases from DREAM's state.
-- In the superthermal chain, `n_re` and `j_re` per radius differ by up to 3.8e-4 at the second radius, from the initialization.
-- With Runes2P's defaults (`compat = :runes2p`) the chain runs end to end as well, with the synchrotron loss off as in DREAM's case.
-  The budgets of its closures hold within the bounds of the phases started from DREAM's state.
-- In the window the runaway current is 5.9 % of the plasma current at the start.
-- At that start, DREAM's `j_re` equals the moment of its `f_re` on Runes2P's grid to 1e-15.
+- The table gives `n_re` at the first radius only.
+  At the second radius `n_re` is 2e-15 of the first.
+- From DREAM's state the test bounds `n_re` per radius at the second radius too, where it differs by 1.5e-11.
+- In the chain the second radius starts from Runes2P's own initialization.
+  DREAM's state there holds `n_re` = 7/1024 m⁻³, with three to four significant bits.
+  The chain therefore compares the growth of `n_re` over phase 2 at that radius, which differs by 1.9e-3 of DREAM's largest growth.
+
+#### The superthermal mode
+
+`test_disruption_superthermal_dream.jl` runs the chain in the superthermal mode, and each phase from DREAM's state.
+
+| Comparison | Quantity | Largest relative difference | Reference |
+|---|---|---|---|
+| initialization, runs 1 and 2 only | `j_tot`, `j_ohm`, `j_hot`, the largest of all | 1.5e-9 | over the radii |
+| hand-over to phase 1 | every unknown, the largest in `n_cold` | 1.3e-8 | per unknown |
+| phases of the chain | `n_i`, the largest with `n_re` and `j_re` over the radii | 3.5e-6 | per radius and step |
+| phases from DREAM's state | `n_i`, the largest of all | 3.2e-6 | per radius and step |
+| phases of the chain | `n_re` and `j_re` at the second radius | 3.8e-4 | per radius over the run |
+
+- `n_cold` and `W_cold` come next to `n_i`, at 2.9e-6 and 2.8e-6 in both kinds of run.
+- The row of 3.8e-4 uses a different reference than the rows above it.
+  Over the radii, `n_re` and `j_re` of the chain differ by far less.
+- The 3.8e-4 comes from the initialization.
+  At the second radius `n_re` is 4e-7 of the first radius, fed by the far tail of f.
+
+#### The window with the runaway grid
+
+`test_disruption_runaway_dream.jl` starts from DREAM's state at the start of run 5 and takes its 10 steps.
+
+| Quantity | Largest relative difference | Reference |
+|---|---|---|
+| `f_re` | 1.1e-9 | per radius and step |
+| `n_re` | 1.1e-9 | per radius over the run |
+| `j_re` | 1.2e-9 | per radius over the run |
+| `n_i`, the largest of the other quantities | 2.2e-8 | per radius and step |
+
+- Every other quantity differs by less than 2.2e-8 in its own reference.
+- At the start, DREAM's `j_re` equals the moment of its `f_re` on Runes2P's grid to 1.1e-15.
   This is a check of DREAM's state, not a difference between the codes.
 
 ### The whole quench of scenario 1
 
-This measurement runs the quench of scenario 1 at the full size of DREAM's example, in 429 steps of 6.53e-7 s.
-It is a measurement that no test repeats.
+This measurement runs phase 2 of scenario 1 at the full size of DREAM's example, in 429 steps of 6.53e-7 s.
 
 #### The run
+
+The table gives the set-up of the measurement.
+The grid sizes are momentum × pitch cells.
+The page [Performance and accuracy](performance.md#The-disruption-case) gives the same case in more detail.
 
 | | |
 |---|---|
 | Case | scenario 1 of DREAM's `examples/Disruptions/generate.py`, thermal and current quench |
 | DREAM | runs 0 to 4 of the case script (the row and the command line above) |
-| Size | DREAM's example: 15 radii, hot-tail grid 140 × 15 |
-| Runaway grid | the case script's with `--re-nxi 15 --re-nxi-sep 10`, 32 × 15 ([Performance and accuracy](performance.md#The-disruption-case)) |
-| Start | DREAM's state at the start of the quench, not Runes2P's own chain |
+| Size | 15 radii, hot-tail grid 140 × 15, runaway grid 32 × 15 (`--re-nxi 15 --re-nxi-sep 10`) |
+| Start | DREAM's state at the start of phase 2, not Runes2P's own chain |
 | Steps | DREAM's 429 fixed steps of 6.53e-7 s |
-| Settings of Runes2P | `runaway = true` and `compat = :dream` of the builder of the case |
+| Settings of Runes2P | `runaway = true` and `compat = :dream` of `build` |
 | Solver | Runes2P's default direct solver at Julia's default optimisation level, DREAM with `--linear-solver mkl` |
-
-The grid sizes are momentum × pitch cells.
 
 #### Newton iterations
 
-| Code | Accepted steps | Newton iterations |
+The table counts the Newton iterations of each code over the whole quench.
+
+| Code | Accepted steps | Newton iterations, total over the 429 steps |
 |---|---|---|
 | Runes2P | 429 of 429 | 1822 |
 | DREAM | 429 fixed steps | 1935 |
@@ -366,36 +464,41 @@ Each number is the largest such difference over the 429 steps of the quench.
 | `j_tot` | 2.2e-7 | DREAM's largest value over the radii at the same step |
 | `f_hot` | 5.3e-8 | DREAM's largest `f_hot` at the same radius and step |
 | `I_p` | 5.0e-9 | DREAM's `I_p` at the same step |
-| `f_re`, where DREAM's `n_re` is above 1e5 m⁻³ | 1.3e-5 or less | DREAM's largest `f_re` at the same radius and step |
+| `f_re`, where DREAM's `n_re` is above 1e5 m⁻³ | at most 1.3e-5 | DREAM's largest `f_re` at the same radius and step |
 | every other quantity | 5e-8 | that of its kind in `phase_differences` |
 
-- 1e5 m⁻³ is DREAM's absolute tolerance of `n_re`.
-- Over all radii and steps, `phase_differences` gives 0.51 for `f_re`.
-- The larger values of `f_re` are at the two outermost radii.
-  They are in steps where DREAM's `n_re` is at most 6.1e-7 m⁻³.
-- At 0.45 m the difference of `f_re` reaches 0.51, in steps 1 to 4.
-- At 0.48 m it reaches 4.6e-2, in steps 15 to 25.
-- At the end of the quench the runaway current is 67.8 % of the plasma current in both codes.
+1e5 m⁻³ is DREAM's absolute tolerance of `n_re`.
+Over all radii and steps, `phase_differences` gives a larger value for `f_re`.
+The larger differences of `f_re` are at the two outermost radii:
+
+| Radius | Steps | Largest relative difference of `f_re` | DREAM's `n_re` there |
+|---|---|---|---|
+| 0.45 m | 1 to 4 | 0.51 | at most 6.1e-7 m⁻³ |
+| 0.48 m | 15 to 25 | 4.6e-2 | at most 6.1e-7 m⁻³ |
+
+These cells hold almost no runaways: DREAM's `n_re` there lies far below its absolute tolerance.
+
+At the end of the quench the runaway current is 67.8 % of the plasma current in both codes.
 
 #### How to repeat it
 
 1. DREAM runs the case script with the command line of scenario 1 above.
-2. `read_dream_state` of `test/example_disruption.jl` reads DREAM's output of run 4.
-3. `run_window` of that file runs the quench.
+2. `read_dream_state` reads DREAM's output of run 4.
+3. `run_window` runs Runes2P over the saved times of a DREAM run, here all 429 steps of the quench.
 4. `phase_differences` returns the largest difference of each quantity.
 
 ### The whole quench of scenario 4
 
 Scenario 4 of `generate.py` has a quench of 4.99e-3 s in 1600 steps.
 Its heat diffusivity is 1000 m²/s, against the 4000 m²/s of scenario 1.
-The quench was compared once at full size, as a measurement that no test repeats.
+The quench is a measurement at full size.
 
 #### The run
 
 | | |
 |---|---|
 | Case | scenario 4 of DREAM's `examples/Disruptions/generate.py`, thermal and current quench |
-| DREAM | v26.5, runs 0 to 4 of the case script (the row in the table above) |
+| DREAM | v26.5, runs 0 to 4 of the case script (the row and the command line above) |
 | Size | 15 radii, hot-tail grid 140 × 15, runaway grid 52 × 15 to `p_max = 200` (12 fine and 40 coarse momentum cells), 43803 unknowns of Runes2P |
 | Start | DREAM's state at the start of the quench |
 | Steps | DREAM's 1600 fixed steps of 3.11875e-6 s, to 4.99e-3 s |
