@@ -161,13 +161,17 @@ With the closure ``n_{\mathrm{cold}} = n_M (1 - f_>)`` and the kinetic rate ``n_
 
 The fluid coefficient has no floor, since a floor would break that sum.
 The fluid coefficient is negative where the cross sections give more ionization above the threshold than ADAS gives for the whole Maxwellian.
-It can turn negative when the threshold lies below the ionization energy of a populated state: then all of the ionization of that state lies above the threshold.
+One such case is a threshold below the ionization energy of a populated state: then all of the ionization of that state lies above the threshold.
 
-The denominator ``1 - f_>`` of the fluid coefficient has a guard, set by the grid, for a threshold in the first momentum cell.
-The part below such a threshold comes from the envelope within that cell, and it tends to 0 as the threshold nears the cell's lower face.
-There [`Runes2P.threshold_split`](@ref) takes ``1 - f_>`` as the weight of that cell, with a warning: at 5 thermal momenta or more, nearly the whole Maxwellian lies in that cell, below the threshold.
-The sum then holds only to within that part.
-A finer first momentum cell, or a threshold of more thermal momenta, restores the sum.
+A threshold in the first momentum cell, below its upper face, is not resolved by the grid.
+The part of the Maxwellian below such a threshold then comes from the envelope within that cell, not from the shape of the Maxwellian.
+That part tends to 0 as the threshold nears the lower face of the cell, while the fluid coefficient divides by it.
+For such a threshold [`Runes2P.threshold_split`](@ref) takes as ``1 - f_>`` the weight of the first momentum cell.
+The sum of the kinetic and the fluid rates then equals the ADAS rate only to within the weight of that cell.
+
+At 5 thermal momenta or more, a threshold in the first cell leaves nearly the whole Maxwellian in that cell, below the threshold.
+A warning, once per session, names the radius and the temperature of such a threshold.
+A finer first momentum cell, or a threshold of more thermal momenta, resolves it.
 
 The split takes a threshold ``p_0 = k\, p_{\mathrm{th}}``, with the thermal momentum ``p_{\mathrm{th}} = \sqrt{2T/m_e c^2}`` (``T`` in energy units) of the temperature unknown ([`ThermalMomentum`](@ref)), so that the fluid coefficient follows the temperature.
 The split refuses factors ``k`` below [`MINIMUM_SPLIT_THRESHOLD_FACTORS`](@ref): 7 with `:chianti`, 5 with `:dream` and `:bethe`, a choice of this package.

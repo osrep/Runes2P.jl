@@ -35,8 +35,8 @@ The channels of this row:
 With a runaway grid, [`free_electron_energy_transfer_term`](@ref) takes its place: the energy moment of the electron-electron collisions of that grid.
 
 The channels other than [`SecondaryHeatingTerm`](@ref) are those of DREAM's equation of ``T_\mathrm{cold}`` (`src/Settings/Equations/T_cold.cpp`, DREAM v26.5).
-[`RadiatedPowerTerm`](@ref) takes DREAM's radiation with `radiation = :dream` and `bremsstrahlung_corrections = :dream`.
-Where DREAM has a hot-tail or a runaway grid, it adds the collisional transfer from that grid by mode:
+With `radiation = :dream` and `bremsstrahlung_corrections = :dream`, [`RadiatedPowerTerm`](@ref) takes DREAM's radiation.
+Whether DREAM adds the collisional transfer from each grid depends on its mode:
 
 | DREAM's mode | Transfer from the hot-tail distribution | Transfer from the runaway grid |
 |---|---|---|
@@ -69,12 +69,12 @@ The row of the temperature then holds ``\mathrm{d}W_\mathrm{tot}/\mathrm{d}t``, 
 
 The row lists only the channels by which energy enters or leaves the electrons of the hot-tail grid:
 
-- the work of the field, ``E j_\mathrm{ohm} + E j_\mathrm{hot}`` (two [`ProductTerm`](@ref)s), where the ohmic current already leaves out the hot current, so each electron is counted once.
-- the radiation, the heat transport and the exchange with the ions, as in the row of the cold energy.
-- the heating by the secondaries of a kinetic ionization ([`SecondaryHeatingTerm`](@ref)), which moves their energy from the sinks to the cold electrons.
-- the sinks of the collisions of `f`: [`KineticEnergyLossTerm`](@ref) with `part = :sinks` and the hot region.
-- the outflow at ``p_\mathrm{max}``: [`MomentumBoundaryFluxTerm`](@ref) with `weight = :energy` and `coefficient = -1`.
-- the electrons that cross to a runaway grid: [`InterfaceEnergyFluxTerm`](@ref).
+- The work of the field is ``E j_\mathrm{ohm} + E j_\mathrm{hot}`` (two [`ProductTerm`](@ref)s), where the ohmic current already leaves out the hot current, so each electron is counted once.
+- The radiation, the heat transport and the exchange with the ions are as in the row of the cold energy.
+- The heating by the secondaries of a kinetic ionization ([`SecondaryHeatingTerm`](@ref)) moves their energy from the sinks to the cold electrons.
+- The sinks of the collisions of `f` are [`KineticEnergyLossTerm`](@ref) with `part = :sinks` and the hot region.
+- The outflow at ``p_\mathrm{max}`` is [`MomentumBoundaryFluxTerm`](@ref) with `weight = :energy` and `coefficient = -1`.
+- The channel of the electrons that cross to a runaway grid is [`InterfaceEnergyFluxTerm`](@ref).
 
 The collisional transfer from the hot electrons to the cold ones does not appear in the row.
 Neither do the electrons that cross the threshold, nor the threshold that moves with the temperature.

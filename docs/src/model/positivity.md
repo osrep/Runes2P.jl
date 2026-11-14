@@ -135,7 +135,7 @@ In the relaxation run of `test/test_flux_limiters.jl`, TCDF leaves 5 such entrie
 
 `polish_negatives` of [`NewtonSolver`](@ref) takes one more Newton iteration when an iterate that passes both tests has negative entries in a polished kinetic unknown, at most once per step, and that removes them there.
 A scheme whose converged solution has negative entries, such as central interpolation or SMART, keeps them.
-With `polish_negatives = true` such a scheme pays the iteration on each such step.
+With `polish_negatives = true` that scheme pays the iteration on each step that ends with negative entries.
 The step statistics count the steps that took it (`polished_for_negatives` of [`SolverStatistics`](@ref)).
 
 | `polish_negatives` | Polished unknowns | Cost |
@@ -150,7 +150,7 @@ The log then has a warning.
 
 Upwind and exponential fitting give an M-matrix and keep a non-negative distribution non-negative, as long as the central cross diffusion keeps the off-diagonal couplings non-negative (above).
 TCDF, OSPRE and van Albada stayed non-negative in the tests, without such a guarantee.
-A run in which one of them does not is the one in which `:auto` turns itself off.
+`:auto` turns itself off only in a run in which one of them does not stay non-negative.
 For results free of negative entries that the iteration leaves, keep the polish on with one of these schemes.
 `true` polishes the other schemes too, at the cost of an iteration on almost every step: in the relaxation run of `test/test_flux_limiters.jl` SMART takes 98 Newton iterations instead of 57 over 40 steps.
 

@@ -102,7 +102,7 @@ A few properties decide how a term enters the system and its Jacobian:
 | Property | Values | Effect |
 |---|---|---|
 | [`treatment`](@ref) | `:implicit`, `:explicit` | an explicit term is evaluated at the previous time level and is absent from the Jacobian |
-| [`coupling`](@ref) | `:sparse`, `:matrix_free` | a stored sparse block ([`sparsity!`](@ref)), or products ([`jacobian_vector_product!`](@ref)) |
+| [`coupling`](@ref) | `:sparse`, `:matrix_free` | a stored sparse block ([`sparsity!`](@ref)), or matrix-free, applied through [`jacobian_vector_product!`](@ref) |
 | [`jacobian_assembly`](@ref) | `:automatic`, `:direct` | colored forward-mode AD of `rhs!`, or the term's own entries ([`add_jacobian!`](@ref)) |
 | [`jacobian_kind`](@ref) | `:exact`, `:approximate` | an approximate stored block comes with [`jacobian_correction_product!`](@ref) |
 | [`is_linear`](@ref) | `false`, `true` | a linear system with an exact Newton matrix accepts a Newton step on the update test alone, without the residual test (see [Time stepping and solvers](time-stepping.md)) |
@@ -141,9 +141,9 @@ Newton's method ([`NewtonSolver`](@ref)) uses the Jacobian ``M/h - \partial \mat
 
 The stored part of ``\partial \mathrm{rhs}/\partial u`` ([`jacobian!`](@ref)) has three sources:
 
-- the terms with automatic assembly, by colored forward-mode AD ([`jacobian_colors`](@ref) counts the passes).
-- the terms with direct assembly, by their own entries.
-- the plasma columns of the terms whose coefficients follow unknowns ([`add_plasma_columns!`](@ref)).
+- The terms with automatic assembly add their entries by colored forward-mode AD ([`jacobian_colors`](@ref) counts the passes).
+- The terms with direct assembly add their own entries.
+- The terms whose coefficients follow unknowns add their plasma columns ([`add_plasma_columns!`](@ref)).
 
 [`jacobian_operator`](@ref) adds the matrix-free terms and the corrections of approximate blocks, so the operator is the exact Jacobian.
 The structure ([`jacobian_sparsity`](@ref), [`jacobian_prototype`](@ref)) is fixed when the system is built.
@@ -168,15 +168,15 @@ The system holds separate tolerances for Newton and for the error control of the
 
 ### Construction checks
 
-The constructor refuses a system in which
+The constructor refuses a system in these cases:
 
-- an unknown has no equation or more than one.
-- a term reads a name that is not in the layout, or fails its own check against the layout.
-- an algebraic row has no implicit term that reads its unknown.
-- a constraint has no scale, or no other equation reads its unknown implicitly.
-- a `TimeDerivative(of)` pairs unknowns of different kind or sizes, or nothing determines the row's unknown.
-- the time derivative of one unknown appears in two rows.
-- a tolerance with a group part belongs to an unknown other than a radial one.
+- An unknown has no equation, or more than one.
+- A term reads a name that is not in the layout, or fails its own check against the layout.
+- An algebraic row has no implicit term that reads its unknown.
+- A constraint has no scale, or no other equation reads its unknown implicitly.
+- A `TimeDerivative(of)` pairs unknowns of different kind or sizes, or nothing determines the row's unknown.
+- The time derivative of one unknown appears in two rows.
+- A tolerance with a group part belongs to an unknown other than a radial one.
 
 The algebraic block is not checked for numerical regularity.
 

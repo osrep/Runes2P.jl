@@ -59,11 +59,11 @@ A segment without a saved state has no `time`, no `unknowns` and no datasets und
 
 The `settings` group, the `layout` group and the record parts of a checkpoint are plain records ([`SettingsRecord`](@ref)) written as HDF5 objects:
 
-- a record becomes a group with one entry per key.
-- a list of records becomes a group with one subgroup per entry, named by the entry's `name`, and the dataset `order` with the names.
-- a list of arrays becomes a group with the datasets `1`, `2`, ….
-- a boolean becomes a byte with the attribute `bool`, read back as a boolean.
-- strings, numbers, arrays of numbers and lists of strings become datasets.
+- A record becomes a group with one entry per key.
+- A list of records becomes a group with one subgroup per entry, named by the entry's `name`, and the dataset `order` with the names.
+- A list of arrays becomes a group with the datasets `1`, `2` and so on.
+- A boolean becomes a byte with the attribute `bool`, read back as a boolean.
+- Strings, numbers, arrays of numbers and lists of strings become datasets.
 
 The reader returns every group as a record, so a list of records reads back as a record keyed by the names and a list of arrays as one keyed `"1"`, `"2"`, ….
 [`read_settings`](@ref) returns the record of [`run_settings`](@ref) as written, type for type, and [`settings_hash`](@ref) of it equals the hash written.
@@ -181,14 +181,14 @@ A state read from an output file has no stepper record, so its time must be a ti
 
 `read_output(settings)` joins the segment files that exist, in the order of their numbers ([`segment_files`](@ref)).
 Files given by name are joined in the order given.
-The join refuses files that are not the segments of one run:
+The join refuses files that are not the segments of one run, in these cases:
 
-- a segment that starts before the one given before it.
-- a segment whose `resumed_from_segment` is not the `index` of the one before it, where both records hold them.
-- a segment whose `previous_setup_hash` is not the `setup_hash` of the one before it, where both are known.
-- a segment with other unknown names or another state length.
-- a segment with saved states and other interval updates.
-- joined times that are not strictly increasing.
+- A segment starts before the one given before it.
+- The `resumed_from_segment` of a segment is not the `index` of the one before it, where both records hold them.
+- The `previous_setup_hash` of a segment is not the `setup_hash` of the one before it, where both are known.
+- A segment has other unknown names or another state length.
+- A segment has saved states and other interval updates.
+- The joined times are not strictly increasing.
 
 A segment that went on after its last checkpoint is repeated from there by the following one.
 Its states after the start time of the following segment are dropped.

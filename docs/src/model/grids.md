@@ -77,6 +77,8 @@ One item of the list gives the errors with such values instead, on this grid wit
 | 1000 | 0.9990 | +0.045 % | −0.037 % | `:cell_center` |
 | 3000 | 0.99967 | +0.064 % | −0.035 % | `:cell_center` |
 
+Neither rule is the closer one at every ``\kappa``.
+
 - `:linear` lies above the exact mean pitch at every ``\kappa`` of the table, and `:cell_center` below it.
 - The largest errors are those of the broad beams for `:cell_center` and of the beams that end near the split of the grid at ``\theta = 0.5`` (``\kappa`` = 10 to 30) for `:linear`.
 - For a beam inside the last pitch cells the error is small against ``\langle\xi\rangle`` but not against ``1 - \langle\xi\rangle``.
