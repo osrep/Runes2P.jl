@@ -41,7 +41,8 @@ env:
 
 jobs:
   # whether the pull request changes code, the same job as in CI.yml; a weekly or manual run
-  # changes code. A failure of this job leaves the output empty, and the suite runs.
+  # changes code. After a failure of this job the groups are skipped, and the check
+  # "Full suite" fails.
   changes:
     name: Code changes
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
