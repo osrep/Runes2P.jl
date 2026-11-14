@@ -105,7 +105,9 @@ This form stays positive where the paper's ``\ln(1 + h^k)/k - β^2`` turns negat
 The two agree to 3e-9 for ``h ≥ 16``, for Ar⁺ at ``p ≥ 0.1``.
 Read from its curve, the limit without screening in Fig. 3(b) of that paper keeps only the free electrons among the targets of the electron-electron collisions.
 The paper's text (p. 12) counts the bound electrons there.
-`screening = :none`, which counts them, is 4.3 to 5.0 % below the readings of that figure.
+Fig. 3(b) shows the deflection frequency of partial screening over that without screening.
+With `screening = :none` as the frequency without screening, which counts the bound electrons, that ratio lies 4.3 to 5.0 % below the readings of the figure.
+Each difference is relative to the reading at the same momentum.
 
 With `screening_window = :excitation_energy` (the default) the bound-electron parts are weighted by ``w_j``, which is a cubic smooth step in the kinetic energy ``E_k = (γ - 1) m_e c^2``:
 
@@ -265,26 +267,72 @@ The docstring of [`IonEnergyExchangeTerm`](@ref) gives examples of the logarithm
 - The Rosenbluth-Putvinski source and the fluid growth rate against DREAM: `test/test_avalanche_rp_dream.jl`.
 - The growth rate of the Rosenbluth-Putvinski source against that of the knock-on operator in one avalanche run, whose primaries have a mean momentum of ``34\, m_e c``: `test/test_runaway_physics.jl`.
   The source gives 1.04 times the growth rate of the knock-on operator at the step of the test (1.03 extrapolated to a zero step).
-- The Dreicer rate with the self-consistent [`ParticleSourceTerm`](@ref) against that with a held Maxwellian bulk, [`MaxwellianSourceTerm`](@ref), at 1 keV, 1e20 m⁻³ and ``E/E_c = 25``: `test/test_populations.jl`.
-  The self-consistent rate is 0.962 of the held rate, a drop of 3.8 points.
-  Depleting the held bulk by the runaway fraction (0.78 %) lowers the held rate by at most 0.78 points.
-  The remaining 3.0 points or more lie between `MaxwellianSourceTerm` and `ParticleSourceTerm`.
+- The Dreicer rate with the self-consistent bulk against that with a held bulk: `test/test_populations.jl` ([below](#The-Dreicer-rate-with-a-self-consistent-bulk)).
 - The field-particle term, `test/test_field_particle.jl`: momentum conservation, the matrix elements of the test-particle operator against Braginskii's, and the field-particle ratios against the like-species sums.
   The same file checks the Lorentz limit and the Spitzer-Härm conductivity.
   It also checks the conductivity at ``Z = 1`` from 1 to 10 keV against that of B. J. Braams and C. F. F. Karney, Phys. Fluids B 1, 1355 (1989), doi:10.1063/1.858966.
   It is 1.1 % above theirs at 10 keV, a departure that grows with the temperature and that the nonrelativistic field-particle matrix elements would explain.
-- The field of the first short step of a system that holds the current of a shifted Maxwellian, `test/test_first_step_field.jl`.
-  The reference is ``E = m_e j/(n e^2 τ_e)`` of S. I. Braginskii, Rev. Plasma Phys. 1, 205 (1965), eqs. (2.5e), (2.7) and (4.6): 1.030 V/m for deuterium at 120 eV, 5e19 m⁻³ and 1 MA/m².
-  The step is short against ``τ_e``: at 1e-7 ``τ_e`` the field is within 1.4e-5 of that at 1e-8 ``τ_e``, relative to it, with 80 momentum cells, and shorter steps are no better.
-  With the ion scattering alone, the field extrapolated in the momentum grid lies below the reference times the relativistic correction ``1 + 13Θ/8``, ``Θ = T/(m_e c^2)``.
-  It is 6.3e-6 below at 120 eV and 3.3e-6 below at 30 eV, relative to that value.
-  The test holds it within 2e-5 of that value at both temperatures.
-  That bound is set by the error of the step, not by the operator.
-  The test-particle electron-electron term multiplies the field of the ions alone by ``1 + 1/(\sqrt{2} Z)`` in the nonrelativistic limit, derived in the test from the slowing-down frequencies and tested at ``Z = 1``.
-  Extrapolated in the momentum grid, the ratio is within 5e-6 of ``1 + 1/\sqrt{2}`` at 7.5 eV, relative to it.
-  At higher temperature it lies below ``1 + 1/\sqrt{2}`` by an amount of the order of ``Θ``: 3.9e-5 at 120 eV and 7.6e-6 at 30 eV, relative to it, with an uncertainty of about 3e-6.
-  With the [`FieldParticleTerm`](@ref) the field is 2.3e-6 from that of the ions alone with 160 momentum cells, relative to it.
-  For an exactly shifted Maxwellian it is 4.1e-6 from it on 4 pitch cells, with the cell-centre pitch weights of the current, those of the term's momentum conservation.
-  With the linear weights it holds as the pitch grid is refined.
+- The field of the first step against Braginskii: `test/test_first_step_field.jl` ([below](#The-field-of-the-first-step)).
 
 The conductivity is that of L. Spitzer and R. Härm, Phys. Rev. 89, 977 (1953), doi:10.1103/PhysRev.89.977.
+
+### The Dreicer rate with a self-consistent bulk
+
+`test/test_populations.jl` compares the Dreicer rate with the self-consistent [`ParticleSourceTerm`](@ref) against that with a held Maxwellian bulk, [`MaxwellianSourceTerm`](@ref).
+The plasma is at 1 keV and 1e20 m⁻³, with ``E/E_c = 25``.
+The reference is the held rate: the rate with `MaxwellianSourceTerm` and the full bulk.
+A drop is given in percentage points of the held rate.
+
+| Rate | Value relative to the held rate | Drop, in percentage points of the held rate |
+|---|---|---|
+| Held bulk, `MaxwellianSourceTerm` | 1 | 0 |
+| Self-consistent bulk, `ParticleSourceTerm` | 0.962 | 3.8 |
+| Held bulk, depleted by the runaway fraction | 0.9922 | 0.78 |
+
+- In the self-consistent run, 0.78 % of the electrons run away.
+- The depleted held run lacks these electrons from the start.
+- The self-consistent bulk loses them over the run.
+- So the depletion explains at most 0.78 of the 3.8 points.
+- The remaining 3.0 points or more lie between `MaxwellianSourceTerm` and `ParticleSourceTerm`.
+
+### The field of the first step
+
+`test/test_first_step_field.jl` takes one short step of a system that holds the current of a shifted Maxwellian.
+The field of that step balances the friction of the collisions.
+
+| | |
+|---|---|
+| Plasma | deuterium at 120 eV and 5e19 m⁻³, unless a row names another temperature |
+| Current | 1 MA/m², unless a row names another, held by a constraint with the field as its unknown |
+| Distribution | the Maxwellian shifted to first order, unless a row says "exact shift" |
+| Step | 1e-8 ``τ_e``, unless a row names another |
+| Grid | 80 momentum cells and 4 pitch cells, unless a row names others |
+
+Steps shorter than 1e-8 ``τ_e`` are no better.
+
+The reference field is ``E_B = m_e j/(n e^2 τ_e)`` of S. I. Braginskii, Rev. Plasma Phys. 1, 205 (1965), eqs. (2.5e), (2.7) and (4.6).
+At 120 eV, ``E_B`` is 1.030 V/m.
+The rows of the ion scattering alone compare with ``E_B`` times the relativistic correction ``1 + 13Θ/8``, with ``Θ = T/(m_e c^2)``.
+The test-particle electron-electron term multiplies the field of the ions alone by ``1 + 1/(\sqrt{2} Z)`` in the nonrelativistic limit.
+The test derives that factor from the slowing-down frequencies and tests it at ``Z = 1``.
+
+Each deviation is relative and signed: (value − reference) / reference.
+A deviation without a sign gives its size only.
+"Extrapolated" means extrapolated in the momentum grid.
+The bound of the test is on the deviation of its row, unless the cell names another quantity.
+
+| Case | Reference | Deviation, (value − reference) / reference | Bound of the test |
+|---|---|---|---|
+| ion scattering alone, step of 1e-7 ``τ_e`` | the field of the step of 1e-8 ``τ_e`` | −1.4e-5 | ±5e-5 |
+| ion scattering alone, extrapolated, 120 eV | ``E_B (1 + 13Θ/8)`` | −6.3e-6 | ±2e-5 in ``E/E_B`` |
+| ion scattering alone, extrapolated, 30 eV | ``E_B (1 + 13Θ/8)`` | −3.3e-6 | ±2e-5 in ``E/E_B`` |
+| test-particle term, ratio to the ions alone, extrapolated, 7.5 eV | ``1 + 1/\sqrt{2}`` | within the bound | ±5e-6 |
+| test-particle term, ratio to the ions alone, extrapolated, 120 eV | ``1 + 1/\sqrt{2}`` | −3.9e-5 | −0.5 Θ to −0.02 Θ |
+| test-particle term, ratio to the ions alone, extrapolated, 30 eV | ``1 + 1/\sqrt{2}`` | −7.6e-6 | −0.5 Θ to −0.02 Θ |
+| [`FieldParticleTerm`](@ref), 160 momentum cells | the field of the ions alone | +2.3e-6 | ±1e-5 |
+| [`FieldParticleTerm`](@ref), exact shift at 10 MA/m², cell-centre pitch weights | the field of the ions alone | 4.1e-6 in size | ±1e-5 |
+
+- The bound of the ion rows is set by the error of the step, not by the operator.
+- The deviations of the test-particle term at 120 and 30 eV are of the order of ``Θ``, with an uncertainty of about 3e-6.
+- On the exact shift, the current takes the cell-centre pitch weights, those of the momentum conservation of the term.
+- With the linear weights of the current, the field approaches that of the ions alone as the pitch grid is refined.
