@@ -24,6 +24,8 @@ The examples run from a checkout of the repository.
 Their environment, `examples/Project.toml`, takes Runes2P from the parent directory and adds HDF5:
 
 ```sh
+git clone https://github.com/osrep/Runes2P.jl
+cd Runes2P.jl
 julia --project=examples -e 'using Pkg; Pkg.instantiate()'   # once
 julia --project=examples examples/relaxation.jl
 julia --project=examples examples/cooling.jl scheme=van_albada solver=gmres
@@ -39,8 +41,8 @@ Its header lists its default values and further command lines.
 
 | Script | What it integrates | What it reports |
 |---|---|---|
-| `relaxation.jl` | a Maxwell-Jüttner distribution in a fixed plasma and field | with `p_star=`, the fraction of the density above that momentum |
-| `cooling.jl` | a thermal quench that starts in the slide-away regime | the saves at which ``f`` has negative cells, and the first of them in momentum |
+| `relaxation.jl` | a Maxwell-Jüttner distribution in a fixed plasma and field | the density fraction above `p_star=`, when given |
+| `cooling.jl` | a thermal quench that starts in the slide-away regime | the saves at which ``f`` has negative cells, and at each the lowest negative momentum cell |
 | `avalanche.jl` | knock-on multiplication of a Maxwell-Jüttner seed | the mean growth rate of the density over the run |
 
 ### `relaxation.jl`
@@ -53,7 +55,7 @@ Its header lists its default values and further command lines.
 
 ### `cooling.jl`
 
-- The temperature decays exponentially from `T=` to `T_final=` over `t_end=`.
+- The temperature decays exponentially from the initial temperature `T=` to `T_final=` over `t_end=`.
 - [`prescribed_fokker_planck_term`](@ref) rebuilds the collision coefficients from the temperature.
 - The field stays at `e_over_ec=` times the critical field at the initial temperature.
 - With `nr=` above one, radial diffusion along stochastic field lines couples the radii ([`add_rechester_rosenbluth_diffusion!`](@ref)).
@@ -68,10 +70,7 @@ Its header lists its default values and further command lines.
 - The seed is a Maxwell-Jüttner distribution of temperature 100 keV.
 - The knock-on collisions are those of [`KnockOnOperator`](@ref) and [`KnockOnTerm`](@ref).
 - The setup is that of `examples/avalanche/generateCylindrical.py` of DREAM's `boltzmann-eqterm` branch.
-- The script takes the values of that example, among them these.
-  - Superthermal collisions.
-  - The energy-dependent Coulomb logarithm.
-  - DREAM's ion-size table.
+- It takes that example's values, among them superthermal collisions, the energy-dependent Coulomb logarithm and DREAM's ion-size table.
 - The interpolation scheme is the default of this package, where the example uses TCDF (`scheme=tcdf`).
 
 The switch `treatment=` of [`KnockOnTerm`](@ref) sets the time level of the knock-on term.
@@ -83,18 +82,13 @@ The switch `treatment=` of [`KnockOnTerm`](@ref) sets the time level of the knoc
 | `implicit` | the whole term at the new time level |
 
 `implicit` applies the term matrix-free in each Krylov iteration of [`GMRES`](@ref).
-The direct solvers do not take it, so with `treatment=implicit` the solver defaults to GMRES.
+The direct solvers do not take it, so with `treatment=implicit` the solver defaults to GMRES, and `solver=gmres` in the command above only repeats that default.
 
 ### What every script prints
 
-Every script prints the following.
-
-- The segment and its status.
-- The solver statistics ([`SolverStatistics`](@ref)).
-- The negative entries of the saved states.
-- The density per radius at every save.
-
-A segment is one part of a run that is split over several allocations ([Checkpoints, segments and the stop](model/time-stepping.md#Checkpoints,-segments-and-the-stop)).
+A run is one segment, or a chain of segments when it is split over several allocations ([Checkpoints, segments and the stop](model/time-stepping.md#Checkpoints,-segments-and-the-stop)).
+Every script prints the segment and its status, the solver statistics ([`SolverStatistics`](@ref)) and the negative entries of the saved states.
+It then prints the density per radius at every save.
 In a GMRES run the statistics include the Krylov iterations and factorizations.
 Before the timed run a script integrates over the first three time points, so that the timing leaves out the compilation.
 `relaxation.jl` and `cooling.jl` end with [`exit_status`](@ref) as the exit status of the process.
@@ -109,12 +103,7 @@ The three scripts build a run in the same order.
 4. An [`UnknownLayout`](@ref) with one [`KineticUnknown`](@ref) `:f`, and an [`EquationSystem`](@ref) of one [`Equation`](@ref): a [`TimeDerivative`](@ref) and the terms, among them [`FokkerPlanckTerm`](@ref) or [`prescribed_fokker_planck_term`](@ref) ([Unknowns and the equation system](model/unknowns.md)).
 5. A [`NewtonSolver`](@ref) with its linear solver, and [`integrate`](@ref) over the time points, which returns a [`TimeSolution`](@ref) ([Time stepping and solvers](model/time-stepping.md)).
 
-The shared helpers of the scripts are in `examples/common.jl`.
-
-- The switches.
-- A Maxwell-Jüttner initial state normalized with [`density`](@ref).
-- The report.
-- The output.
+The shared helpers of the scripts are in `examples/common.jl`: the switches, a Maxwell-Jüttner initial state normalized with [`density`](@ref), the report and the output.
 
 ## Switches
 
@@ -124,57 +113,62 @@ The switches of `common.jl` are shared, and a script's header names the defaults
 | Switches | Values | Sets |
 |---|---|---|
 | `grid=` | `uniform` (default), `biuniform`, `tanh`, `biuniform_270` | the momentum faces |
-| `np=`, `p_max=`, `np_low=`, `p_sep=` | integers, numbers | the momentum cells and extent, and the split of the biuniform and tanh grids |
-| `pitch=`, `nxi=`, `nxi_low=`, `theta_sep=` | `uniform` (default) or `theta`; integers, radians | the pitch faces |
+| `np=`, `p_max=` | integer, number | the momentum cells and the extent |
+| `np_low=`, `p_sep=` | integer, number | the cells below the split of the biuniform and tanh grids, and its position |
+| `pitch=` | `uniform` (default), `theta` (biuniform in the pitch angle) | the pitch faces |
+| `nxi=` | integer | the pitch cells |
+| `nxi_low=`, `theta_sep=` | integer, radians | the cells of `pitch=theta` within `theta_sep=` of ``\xi = 1`` |
 | `T=`, `n=`, `B=` | eV, m⁻³, T | the deuterium plasma |
 | `n_ar=` | m⁻³ | neutral argon added to the plasma (`relaxation.jl`) |
 | `E=` or `e_over_ec=` | V/m, or multiples of [`critical_field`](@ref) at the [`thermal_coulomb_logarithm`](@ref) | the electric field |
-| `mode=`, `screening=`, `lnlambda=`, `ion_size_table=` | the options of [`CollisionSettings`](@ref) | the collision frequencies |
+| `mode=` | `full` (default of `relaxation.jl` and `cooling.jl`), `superthermal`, `ultra_relativistic` | the collision frequency mode ([`CollisionSettings`](@ref)) |
+| `screening=` | `partial` (default), `complete`, `none` | the screening |
+| `lnlambda=` | `thermal` (default), `energy_dependent`, `relativistic` | the Coulomb logarithm |
+| `ion_size_table=` | `hesslow` (default), `dream` | the table of ion sizes |
 | `synchrotron=` | `true`, `false` (default) | the synchrotron loss of `relaxation.jl` |
 | `scheme=`, `p_scheme=`, `xi_scheme=` | `exponential_fitting` (default), `central`, `upwind`, `quick`, `upwind_second_order`, `van_albada`, `tcdf`, `muscl`, `smart`, `ospre` | the interpolation scheme in both directions or in one ([`AdvectionDiffusion`](@ref)) |
 | `jacobian=` | `exact` (default), `frozen_limiter`, `upwind`, `central`, `exponential_fitting` | the stored Jacobian of a limiter ([`FokkerPlanckTerm`](@ref)) |
-| `pmax_boundary=` | `f_zero` (default), `constant_flux`, `extrapolated_flux`, `extrapolated_flux_consistent`, `outflow` | the boundary at `p_max` ([`AdvectionDiffusion`](@ref)) |
+| `pmax_boundary=` | `f_zero` (default), `constant_flux`, `extrapolated_flux` (needs a `p_scheme=` other than the default), `extrapolated_flux_consistent`, `outflow` | the boundary at `p_max` ([`AdvectionDiffusion`](@ref)) |
 | `nonnegative=` | `true`, `false` (default) | a [`LowerLimit`](@ref) ``f \ge 0`` on the unknown (`relaxation.jl`, `cooling.jl`) |
 | `solver=` | `lu` (default), `gmres` | [`SparseLU`](@ref), or [`GMRES`](@ref) on the Newton operator |
-| `preconditioner=`, `ilu_drop=` | `lu` (default), `ilu`; number | [`RadiusBlockLU`](@ref) or [`RadiusBlockILU`](@ref) for GMRES |
+| `preconditioner=` | `lu` (default), `ilu` | [`RadiusBlockLU`](@ref) or [`RadiusBlockILU`](@ref) for GMRES |
+| `ilu_drop=` | number | the drop tolerance of [`RadiusBlockILU`](@ref) |
 | `refresh=` | `every_step` (default), `every_iteration`, `on_demand` | when the preconditioner is factorized again |
 | `operator=` | `exact` (default), `stored` | the Newton operator of GMRES |
 | `restart=` | integer | the restart length of GMRES |
-| `max_iterations=`, `residual_tolerance=`, `line_search=` | integer, number, boolean | the Newton iterations, the residual tolerance and the backtracking line search of [`NewtonSolver`](@ref) |
-| `dt=`, `t_end=`, `saves=` | s, s, integer | the time points and the number of save times of [`integrate`](@ref) |
+| `max_iterations=`, `residual_tolerance=` | integer, number | the Newton iterations and the residual tolerance of [`NewtonSolver`](@ref) |
+| `line_search=` | boolean | the backtracking line search of [`NewtonSolver`](@ref) |
+| `dt=`, `t_end=` | s, s | the time points of [`integrate`](@ref) |
+| `saves=` | integer | the number of save times |
 | `output=` | file name | the HDF5 output, written with [`write_output`](@ref) |
-| `checkpoint=`, `checkpoint_dir=`, `checkpoint_interval=`, `overwrite=`, `resume=` | name, directory, s, boolean, boolean | the [`CheckpointSettings`](@ref) of a run of that name, and its continuation from the last checkpoint |
+| `checkpoint=`, `checkpoint_dir=` | name, directory | the [`CheckpointSettings`](@ref) of a run of that name |
+| `checkpoint_interval=` | s | the wall time between checkpoints, 1800 s by default |
+| `resume=` | boolean | the continuation from the last checkpoint, when there is one |
+| `overwrite=` | boolean | whether a run may replace the segment files of an earlier one |
 | `stop_file=`, `wall_budget=`, `slack=` | file name, s, s | the [`StopCondition`](@ref) of a segment |
-| `log=`, `request_file=` | `stdout` or a file name; file name | the [`ProgressLog`](@ref) and the file whose appearance asks for an entry |
+| `log=` | `stdout` or a file name | the [`ProgressLog`](@ref) |
+| `request_file=` | file name | the file whose appearance asks the log for an entry |
 
-### Notes on the table
+`grid=biuniform_270` is a fully kinetic hot-tail grid of 270 momentum cells to ``p = 2.5``.
+It has 15 pitch cells, ignores the other grid switches and is a choice of this package ([Choices of this package](choices.md)).
+The default scheme, exponential fitting, is a choice of this package too.
+Its properties, the other schemes and DREAM's default are on the page [Positivity and flux limiters](model/positivity.md).
 
-- `grid=biuniform_270` is a fully kinetic hot-tail grid of 270 momentum cells to ``p = 2.5``.
-  It has 15 pitch cells and ignores the other grid switches.
-  It is a choice of this package ([Choices of this package](choices.md)).
-- `np_low=` is the number of cells below the split, and `p_sep=` its position.
-- `pitch=theta` is biuniform in the pitch angle, with `nxi_low=` cells within `theta_sep=` of ``\xi = 1``.
-- In `cooling.jl`, `T=` is the initial temperature.
-- `pmax_boundary=extrapolated_flux` needs a `p_scheme=` other than `exponential_fitting`.
-- The default scheme, exponential fitting, is a choice of this package ([Choices of this package](choices.md)).
-  Its properties, the other schemes and DREAM's default are on the page [Positivity and flux limiters](model/positivity.md).
-
-Three settings of GMRES in the examples differ from the defaults of [`GMRES`](@ref).
-
-- The preconditioner is [`RadiusBlockLU`](@ref).
-- It is factorized once per step.
-- GMRES restarts after 30 iterations.
+The examples precondition GMRES with [`RadiusBlockLU`](@ref) and restart it after 30 iterations, unlike the defaults of [`GMRES`](@ref).
 
 ### The switches of `avalanche.jl`
 
-`avalanche.jl` takes neither the checkpoint, stop and log switches nor the grid and plasma switches of `common.jl`.
-It has switches of its own.
+`avalanche.jl` builds its own grid and plasma, and it takes no checkpoint, stop or log switches.
+Of the shared switches it reads the schemes, `pmax_boundary=`, `jacobian=`, the solver switches, `dt=`, `t_end=`, `saves=` and `output=`.
+It reads `mode=`, `screening=`, `lnlambda=` and `ion_size_table=` with the values of its DREAM example as defaults.
+Its own switches are these.
 
 | Switch | Sets |
 |---|---|
 | `treatment=` | the time level of the knock-on term ([`avalanche.jl`](#avalanche.jl)) |
 | `cutoff=` | the knock-on cutoff momentum |
-| `np=`, `np_low=`, `nxi=` | the momentum and pitch cells, as in the table of [Switches](#Switches) |
+| `np=`, `np_low=` | the momentum cells, and those below the fixed split at ``p = 0.7`` |
+| `nxi=` | the cells of its own pitch grid, which grows geometrically |
 | `e_over_ec=` | the field in multiples of the critical field of the total electron density |
 
 ### Lower limits
@@ -195,16 +189,16 @@ In a Slurm job with checkpoints, the segment stops before the end of the job wit
 [`integrate`](@ref) records the settings of the run with [`run_settings`](@ref) before the first step and returns them in `settings` of the [`TimeSolution`](@ref).
 Each object of the package the run is built from has a [`describe`](@ref) record, and the record collects them by section.
 
-- The setup: `grids`, `layout`, `system`, `updates`, `prescribed`, `solver`, `time` and `run`, each with a [`settings_hash`](@ref) and a hash of them together.
+- The sections of the setup are `grids`, `layout`, `system`, `updates`, `prescribed`, `solver`, `time` and `run`.
+  Each has a [`settings_hash`](@ref), and the record has a hash of them together.
 - `run` holds the `description` that a script passes to [`integrate`](@ref), such as the name of the example and the origin of its initial state.
-- Outside the hashes: `code`, `environment`, `checkpoint`, `stop` and `log`.
-- `code` is the [`code_version`](@ref).
-  It holds the commit of Runes2P when it runs from a git checkout, as the examples do, and `"unknown"` for an installed package.
-- `segment`: the number, the start, the status and the reason of a stop of this segment.
+- The sections `code`, `environment`, `checkpoint`, `stop` and `log` are outside the hashes.
+- `code` holds the [`code_version`](@ref): the commit of Runes2P when it runs from a git checkout, as the examples do, and `"unknown"` for an installed package.
+- `segment` holds the number, the start, the status and the reason of a stop of this segment.
+- `complete` is false when some object of the run has no record of its own, such as a term defined outside the package.
 
 The record is taken before a stored state is restored, so restoring does not change it.
 A resumed segment whose setup differs lists the changed sections in its `segment` record.
-`complete` is false when some object of the run has no record of its own, such as a term defined outside the package.
 
 ## Output files
 

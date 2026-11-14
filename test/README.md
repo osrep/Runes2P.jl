@@ -19,9 +19,9 @@ The test suite: its layout, its tiers and groups, how to run it, and the rules f
 `example_disruption.jl` holds four parts of the disruption case.
 
 - The system in the fully kinetic and the superthermal mode, with or without DREAM's runaway grid.
-- The phases, started from DREAM's state or from Runes2P's own initialization (DREAM's runs 0 to 2).
+- The phases, started from DREAM's state or from Runes2P's own initialization, which stands for DREAM's first three runs (0 to 2) of the case.
 - The comparison of a run with DREAM.
-- The budgets of its closures, with their bounds.
+- The budgets: the balances of particles and energy that the assembled system must close, with their bounds.
 
 | Test files that use `example_disruption.jl` |
 |---|
@@ -128,8 +128,8 @@ The grids of the tests have 120 to 1 540 unknowns.
 
 What is still compiled per case:
 
-- `integrate`, `rhs!`, the Jacobian operator and keyword calls, once per type of `EquationSystem`;
-- a Jacobian that a test file takes itself with `ForwardDiff.jacobian` of a closure, once per closure.
+- `integrate`, `rhs!`, the Jacobian operator and keyword calls, once per type of `EquationSystem`.
+- A Jacobian that a test file takes itself with `ForwardDiff.jacobian` of a closure, once per closure.
 
 ## Rules for a test file
 

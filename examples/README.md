@@ -13,9 +13,11 @@ julia --project=examples examples/avalanche.jl treatment=implicit solver=gmres
 
 ## The scripts
 
+The three scripts, what each runs and what it reports:
+
 | Script | Run | Report |
 |---|---|---|
-| `relaxation.jl` | a Maxwellian under a fixed plasma and field (Dreicer regime by default) | with `p_star=`, the fraction above that momentum |
+| `relaxation.jl` | a Maxwell-Jüttner distribution under a fixed plasma and field (Dreicer regime by default) | with `p_star=`, the fraction above that momentum |
 | `cooling.jl` | the temperature decays from `T=` to `T_final=` over `t_end=` | where a scheme goes negative |
 | `avalanche.jl` | knock-on multiplication of a 100 keV seed on DREAM's avalanche example | the growth rate |
 
@@ -24,17 +26,12 @@ julia --project=examples examples/avalanche.jl treatment=implicit solver=gmres
   With `nr=`, that many radii are coupled by radial diffusion of strength `dbb=`.
 - `avalanche.jl`: `treatment=` takes `explicit_primary` (the default), `explicit` or `implicit`.
   `cutoff=` sets the knock-on cutoff.
+  The script builds its own grid and plasma and takes no checkpoint, stop or log switches.
 
 ## What a script prints and writes
 
 Each script prints the solver statistics, the negative entries of the saved states and the density at every save.
-The statistics are these:
-
-- The steps.
-- The Newton and Krylov iterations.
-- The factorizations.
-- The steps accepted at the residual floor or as a linear system.
-- The steps polished for negatives.
+The statistics are the counts of `SolverStatistics`, described with the convergence tests on the docs page [Time stepping and solvers](../docs/src/model/time-stepping.md).
 
 `output=run.h5` writes the solution with `write_output`.
 The file holds the layout, the saved states per unknown, the solver statistics, and the settings of the run with the commit of Runes2P.
@@ -55,7 +52,7 @@ A script's own defaults are in its header.
 | `jacobian=` | `exact` (default), `frozen_limiter`, `upwind`, `central`, `exponential_fitting` | the stored Jacobian of a limiter |
 | `pmax_boundary=` | `f_zero` (default), `constant_flux`, `extrapolated_flux`, `extrapolated_flux_consistent`, `outflow` | boundary at `p_max` |
 | `mode=` | `full` (default of `relaxation.jl` and `cooling.jl`), `superthermal`, `ultra_relativistic` | collision frequency mode |
-| `screening=`, `lnlambda=`, `ion_size_table=` | `partial` (default), `complete`, `none`; `thermal` (default), `energy_dependent`, `relativistic`; `hesslow` (default), `dream` | collision settings |
+| `screening=`, `lnlambda=`, `ion_size_table=` | `partial` (default), `complete`, `none`; `thermal` (default), `energy_dependent`, `relativistic`; `hesslow` (default), `dream` | collision settings (`avalanche.jl` reads them with its example's values as defaults) |
 | `T=`, `n=`, `B=` | eV, m⁻³, T | plasma |
 | `E=` or `e_over_ec=` | V/m, or multiples of the critical field | electric field |
 | `n_ar=` | m⁻³ | neutral argon added to the deuterium plasma |
@@ -86,9 +83,8 @@ A script's own defaults are in its header.
 - `jacobian=frozen_limiter` freezes the limiter at the iterate (DREAM `AD_INTERP_JACOBIAN_LINEAR`).
 - `jacobian=upwind`, `central` and `exponential_fitting` take the Jacobian of that linear scheme.
   `upwind` is DREAM `AD_INTERP_JACOBIAN_UPWIND`.
-- `avalanche.jl` uses the collision settings of its example.
 
-The first four values of `pmax_boundary=` are DREAM's boundary conditions at `p_max`.
+The first three values of `pmax_boundary=` are DREAM's boundary conditions at `p_max`, and the fourth is the consistent form of the third.
 
 | `pmax_boundary=` | DREAM |
 |---|---|
@@ -115,7 +111,7 @@ The first four values of `pmax_boundary=` are DREAM's boundary conditions at `p_
 - A Newton step may remove at most 90% of an entry's distance to zero.
 - A step that would push an entry already at zero below it fails and is retried with half the time step.
 
-A Maxwellian tail underflows to exact zeros, so with this switch a run rejects and halves many steps.
+A Maxwell-Jüttner tail underflows to exact zeros, so with this switch a run rejects and halves many steps.
 This is the rule at work, not a fault.
 
 ## Parameter values and schemes
