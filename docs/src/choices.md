@@ -228,35 +228,26 @@ Its options and their values are in the table, with one note per row below it.
 | absolute tolerance of `f_re` | 1e5 from run 1 on, that of `f_hot` in the phases |
 | window of phase 2 of the test | `--window-start 170 --window-steps 10` |
 
-- Scenario.
-  The DREAM paper runs scenarios 1 and 4.
+- Scenario: the DREAM paper runs scenarios 1 and 4.
   `generate.py` runs scenario 0 by default, which `--scenario 0` reproduces.
-- Elongation.
-  The cylinder of Runes2P has no shaping.
+- Elongation: the cylinder of Runes2P has no shaping.
   `ASDEXU.py` takes an elongation linear from 1.0 to 1.15 in the radius, which `--elongation asdexu` reproduces.
-- Steps of phase 1.
-  The 500 steps are passed with `--elongation 1`, and the default of the script stays the 200 steps of scenario 1.
+- Steps of phase 1: the 500 steps are passed with `--elongation 1`, and the default of the script stays the 200 steps of scenario 1.
   Each step of phase 1 is then 4e-8 s instead of 1e-7 s.
   With 200 steps DREAM's first step fails in runs with `--linear-solver mkl`, also when retried, since its Newton iteration meets a non-finite value (`brent.c:69: computed function value is infinite or NaN`).
-  With 500 steps phase 1 converges, and phase 2 runs its 1500 steps.
   The step of 4e-8 s is also that of the case at the size of a test in `test/test_disruption_dream.jl`.
-- Runaway grid.
-  DREAM's example runs no runaway grid.
+- Runaway grid: DREAM's example runs no runaway grid.
   The defaults of `--runaway-grid` serve scenario 1 at the reduced size of the tests.
   At 300 µs of scenario 1, a grid to `p_max = 60` holds 3e-5 of the density of `f_re` above `p = 20`.
   The avalanche source keeps a small population up to the last cell, so a few cells more do not change the result.
   The 8 pitch cells, fine near `ξ = 1`, differ from the 4 uniform cells of the hot-tail grid, so that a test crosses DREAM's mapping between the two pitch grids.
-- Runaway grid of scenario 4.
-  The measurement of scenario 4 at full size ([The whole quench of scenario 4](dream-comparison.md#The-whole-quench-of-scenario-4)) takes the grid to `p_max = 200`.
+- Runaway grid of scenario 4: the measurement of scenario 4 at full size ([The whole quench of scenario 4](dream-comparison.md#The-whole-quench-of-scenario-4)) takes the grid to `p_max = 200`.
   The reason is in the table of `p_max` below.
-- Advection scheme.
-  The scheme of `f_hot` on `f_re`, with its switch to upwind in phase 2 where `generate.py` makes it, keeps one scheme across the interface.
+- Advection scheme: the scheme of `f_hot` on `f_re`, with its switch to upwind in phase 2 where `generate.py` makes it, keeps one scheme across the interface.
   DREAM's own default for `f_re` is the centred scheme.
-- Absolute tolerance.
-  `generate.py` sets no absolute tolerance for `f_re`, and DREAM sets none either (`ToleranceSettings.py`).
+- Absolute tolerance: `generate.py` sets no absolute tolerance for `f_re`, and DREAM sets none either (`ToleranceSettings.py`).
   The case gives `f_re` the 1e5 of `f_hot`.
-- Window.
-  The window is described in [The window of the test](#The-window-of-the-test).
+- Window: the window is described in [The window of the test](#The-window-of-the-test).
   The default of `--window-steps` is 10.
 
 The runaway grids have a fine segment above the hot-tail `p_max` of 0.8 and a geometric segment above it.
@@ -279,7 +270,7 @@ The table compares runs of DREAM v26.5 in scenario 4 with three values of the `p
 |---|---|---|---|
 | 20, the default of the case script | 0.44 of `n_re` | - | - |
 | 60 | - | 2.5305347e5 A | −4.5e-5 |
-| 200 | all but the share above the grid ([Comparison with DREAM](dream-comparison.md#The-whole-quench-of-scenario-4)) | 2.5306492e5 A | the reference |
+| 200 | share above the grid: [Comparison with DREAM](dream-comparison.md#The-whole-quench-of-scenario-4) | 2.5306492e5 A | the reference |
 
 - The relative difference is (`I_p` − `I_p` at `p_max = 200`) / `I_p` at `p_max = 200`.
 - The default grid holds too little of `n_re` in scenario 4, so the measurement takes the grid to `p_max = 200`.

@@ -214,7 +214,7 @@ The same window with Rechester–Rosenbluth diffusion of both distributions at `
   That is the part of its run with transport that was timed.
 - In the window itself DREAM takes 4 Newton iterations per step and Runes2P 4.8.
 - At this size, the largest relative difference between the states of the two codes over the steps of the window is 2.4e-9, in `j_ohm`.
-  It is relative to DREAM's largest `j_ohm` over the radii at the same step, the measure of the table without transport.
+  It is relative to DREAM's largest `j_ohm` over the radii at the same step, the measure of `phase_differences` of `test/example_disruption.jl`.
 - The factorization and the solve are 92 % of an iteration with [`SparseLU`](@ref), and 77 % with [`MKLPardiso`](@ref) at eight threads.
 - At one thread [`SparseLU`](@ref) is the faster solver with transport, and [`MKLPardiso`](@ref) without it.
   With eight threads [`MKLPardiso`](@ref) is the faster in both.
