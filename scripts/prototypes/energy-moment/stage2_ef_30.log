@@ -1,0 +1,1000 @@
+HEAD 89056db125032522eaa03d56e93d6309a88eaabd
+pathof <checkout>/src/Runes2P.jl
+times: 30 steps to 3.0e-6
+
+================ run pb: (ii) prototype, start (b): Maxwellian bulk at DREAM's (n_cold, T_cold) ================
+  wall time 212.6 s; steps attempted=30 accepted=30 not accepted=0 newton=[5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] status=[:converged]
+  energy budget of f per step [W/m^3] (whole-grid energy moment; backward Euler: terms at u_new, cooling at u_old)
+   step 1 t=1.00e-07 dt=1.0e-07
+      dW_f/dt                                                  [-3.0636e+09, 4.1526e+08]
+      sum of the term moments                                  [-3.0636e+09, 4.1526e+08]
+        field work (FP − collision parts)                      [2.2362e+04, 4.0047e+05]
+        e-e collisions on the free electrons (−L_fe)           [4.6258e+08, 3.4819e+08]
+        sinks (−L_s)                                           [4.5045e+08, -4.6836e+05]
+        outflow at p_max (−)                                   [-2.3873e-04, -3.5735e-15]
+        cooling (P_fluid)                                      [-4.0080e+09, 3.8846e+07]
+        particle source                                        [3.1362e+07, 2.8298e+07]
+        knock-on source                                        [1.9106e+01, 3.9004e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9075e+04, 2.8616e+05]
+          P_fluid: e c E_c n_re                                [1.1021e+01, 2.6910e-14]
+          P_fluid: exchange (electrons)                        [3.4270e+05, 1.2571e+06]
+          P_fluid: heat diffusion                              [-3.4145e+09, 1.1382e+09]
+          P_fluid: radiation and binding                       [-5.9381e+08, -1.1009e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [2.7451e+07, 5.3125e+06]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6679e+05, 3.4732e+03]
+      CFL                                                      [2.4005e-01, 3.8484e-03]
+      density moment of the cooling [m^-3/s]                   [-3.0977e+08, 8.3886e+06]
+      dn_f/dt vs particle source density                       [1.2258e+26, 1.1061e+26, 1.2258e+26, 1.1061e+26]
+   step 2 t=2.00e-07 dt=1.0e-07
+      dW_f/dt                                                  [-2.2531e+09, 4.7229e+08]
+      sum of the term moments                                  [-2.2531e+09, 4.7229e+08]
+        field work (FP − collision parts)                      [3.1937e+04, 4.8442e+05]
+        e-e collisions on the free electrons (−L_fe)           [1.0149e+09, 5.8867e+08]
+        sinks (−L_s)                                           [6.8147e+08, 4.1111e+06]
+        outflow at p_max (−)                                   [-6.6672e-05, -9.9698e-15]
+        cooling (P_fluid)                                      [-3.9796e+09, -1.4447e+08]
+        particle source                                        [3.0126e+07, 2.3494e+07]
+        knock-on source                                        [1.9106e+01, 3.9004e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [3.1126e+04, 3.7081e+05]
+          P_fluid: e c E_c n_re                                [1.2910e+01, 3.0162e-14]
+          P_fluid: exchange (electrons)                        [5.5619e+05, 1.6722e+06]
+          P_fluid: heat diffusion                              [-3.2639e+09, 1.0880e+09]
+          P_fluid: radiation and binding                       [-7.1629e+08, -1.2345e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [4.7664e+07, 3.6960e+06]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6833e+05, -3.6048e+04]
+      CFL                                                      [2.2553e-01, 3.9943e-02]
+      density moment of the cooling [m^-3/s]                   [-5.3699e+08, 0.0000e+00]
+      dn_f/dt vs particle source density                       [1.1775e+26, 9.1827e+25, 1.1775e+26, 9.1827e+25]
+   step 3 t=3.00e-07 dt=1.0e-07
+      dW_f/dt                                                  [-1.6248e+09, 3.9971e+08]
+      sum of the term moments                                  [-1.6248e+09, 3.9971e+08]
+        field work (FP − collision parts)                      [4.3833e+04, 5.5951e+05]
+        e-e collisions on the free electrons (−L_fe)           [1.6254e+09, 6.6392e+08]
+        sinks (−L_s)                                           [6.7390e+08, 2.3901e+06]
+        outflow at p_max (−)                                   [-2.2770e-05, -1.4898e-14]
+        cooling (P_fluid)                                      [-3.9521e+09, -2.8659e+08]
+        particle source                                        [2.7984e+07, 1.9440e+07]
+        knock-on source                                        [1.9106e+01, 3.9004e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [4.7053e+04, 4.1234e+05]
+          P_fluid: e c E_c n_re                                [1.4710e+01, 3.2854e-14]
+          P_fluid: exchange (electrons)                        [8.1455e+05, 2.0300e+06]
+          P_fluid: heat diffusion                              [-3.1271e+09, 1.0424e+09]
+          P_fluid: radiation and binding                       [-8.2590e+08, -1.3314e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [7.3530e+07, 2.7298e+06]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6908e+05, -7.1213e+04]
+      CFL                                                      [2.0973e-01, 7.8906e-02]
+      density moment of the cooling [m^-3/s]                   [5.3687e+08, -2.6844e+08]
+      dn_f/dt vs particle source density                       [1.0938e+26, 7.5982e+25, 1.0938e+26, 7.5982e+25]
+   step 4 t=4.00e-07 dt=1.0e-07
+      dW_f/dt                                                  [-1.1259e+09, 2.8714e+08]
+      sum of the term moments                                  [-1.1259e+09, 2.8714e+08]
+        field work (FP − collision parts)                      [5.7753e+04, 6.2848e+05]
+        e-e collisions on the free electrons (−L_fe)           [2.2351e+09, 6.6034e+08]
+        sinks (−L_s)                                           [5.3909e+08, 2.2111e+05]
+        outflow at p_max (−)                                   [-9.8594e-06, -1.9210e-14]
+        cooling (P_fluid)                                      [-3.9256e+09, -3.9021e+08]
+        particle source                                        [2.5377e+07, 1.6164e+07]
+        knock-on source                                        [1.9106e+01, 3.9005e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [6.6298e+04, 4.3183e+05]
+          P_fluid: e c E_c n_re                                [1.6371e+01, 3.5074e-14]
+          P_fluid: exchange (electrons)                        [1.1031e+06, 2.3455e+06]
+          P_fluid: heat diffusion                              [-3.0119e+09, 1.0040e+09]
+          P_fluid: radiation and binding                       [-9.1483e+08, -1.3970e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [1.0340e+08, 2.0893e+06]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6920e+05, -9.6642e+04]
+      CFL                                                      [1.9307e-01, 1.0708e-01]
+      density moment of the cooling [m^-3/s]                   [5.3687e+08, 1.3422e+08]
+      dn_f/dt vs particle source density                       [9.9188e+25, 6.3178e+25, 9.9188e+25, 6.3178e+25]
+   step 5 t=5.00e-07 dt=1.0e-07
+      dW_f/dt                                                  [-7.1137e+08, 1.7622e+08]
+      sum of the term moments                                  [-7.1137e+08, 1.7622e+08]
+        field work (FP − collision parts)                      [7.3724e+04, 6.9498e+05]
+        e-e collisions on the free electrons (−L_fe)           [2.7939e+09, 6.2555e+08]
+        sinks (−L_s)                                           [3.6971e+08, -1.1284e+06]
+        outflow at p_max (−)                                   [-5.4017e-06, -2.3445e-14]
+        cooling (P_fluid)                                      [-3.8977e+09, -4.6248e+08]
+        particle source                                        [2.2660e+07, 1.3579e+07]
+        knock-on source                                        [1.9106e+01, 3.9006e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [8.7424e+04, 4.4460e+05]
+          P_fluid: e c E_c n_re                                [1.7869e+01, 3.6913e-14]
+          P_fluid: exchange (electrons)                        [1.4063e+06, 2.6337e+06]
+          P_fluid: heat diffusion                              [-2.9190e+09, 9.7300e+08]
+          P_fluid: radiation and binding                       [-9.8022e+08, -1.4386e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [1.3537e+08, 1.6330e+06]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6873e+05, -1.1442e+05]
+      CFL                                                      [1.8696e-01, 1.2678e-01]
+      density moment of the cooling [m^-3/s]                   [1.0737e+09, 0.0000e+00]
+      dn_f/dt vs particle source density                       [8.8567e+25, 5.3075e+25, 8.8567e+25, 5.3075e+25]
+   step 6 t=6.00e-07 dt=1.0e-07
+      dW_f/dt                                                  [-3.6181e+08, 8.2625e+07]
+      sum of the term moments                                  [-3.6181e+08, 8.2625e+07]
+        field work (FP − collision parts)                      [9.1483e+04, 7.6044e+05]
+        e-e collisions on the free electrons (−L_fe)           [3.2703e+09, 5.8320e+08]
+        sinks (−L_s)                                           [2.1569e+08, -1.7812e+06]
+        outflow at p_max (−)                                   [-3.6169e-06, -2.7779e-14]
+        cooling (P_fluid)                                      [-3.8680e+09, -5.1112e+08]
+        particle source                                        [2.0077e+07, 1.1562e+07]
+        knock-on source                                        [1.9106e+01, 3.9006e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.0927e+05, 4.5774e+05]
+          P_fluid: e c E_c n_re                                [1.9200e+01, 3.8453e-14]
+          P_fluid: exchange (electrons)                        [1.7105e+06, 2.9051e+06]
+          P_fluid: heat diffusion                              [-2.8463e+09, 9.4875e+08]
+          P_fluid: radiation and binding                       [-1.0235e+09, -1.4632e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [1.6783e+08, 1.2924e+06]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6779e+05, -1.2663e+05]
+      CFL                                                      [1.8592e-01, 1.4031e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, 1.3422e+08]
+      dn_f/dt vs particle source density                       [7.8475e+25, 4.5189e+25, 7.8475e+25, 4.5189e+25]
+   step 7 t=7.00e-07 dt=1.0e-07
+      dW_f/dt                                                  [-7.1318e+07, 9.6479e+06]
+      sum of the term moments                                  [-7.1318e+07, 9.6479e+06]
+        field work (FP − collision parts)                      [1.1066e+05, 8.2538e+05]
+        e-e collisions on the free electrons (−L_fe)           [3.6524e+09, 5.4357e+08]
+        sinks (−L_s)                                           [9.5596e+07, -2.0294e+06]
+        outflow at p_max (−)                                   [-2.8242e-06, -3.2252e-14]
+        cooling (P_fluid)                                      [-3.8372e+09, -5.4271e+08]
+        particle source                                        [1.7768e+07, 9.9885e+06]
+        knock-on source                                        [1.9106e+01, 3.9007e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.3045e+05, 4.7278e+05]
+          P_fluid: e c E_c n_re                                [2.0376e+01, 3.9759e-14]
+          P_fluid: exchange (electrons)                        [2.0055e+06, 3.1662e+06]
+          P_fluid: heat diffusion                              [-2.7905e+09, 9.3018e+08]
+          P_fluid: radiation and binding                       [-1.0488e+09, -1.4765e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [1.9967e+08, 1.0309e+06]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6654e+05, -1.3493e+05]
+      CFL                                                      [1.8453e-01, 1.4951e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, -1.0737e+09]
+      dn_f/dt vs particle source density                       [6.9447e+25, 3.9041e+25, 6.9447e+25, 3.9041e+25]
+   step 8 t=8.00e-07 dt=1.0e-07
+      dW_f/dt                                                  [1.6258e+08, -4.4613e+07]
+      sum of the term moments                                  [1.6258e+08, -4.4613e+07]
+        field work (FP − collision parts)                      [1.3080e+05, 8.8982e+05]
+        e-e collisions on the free electrons (−L_fe)           [3.9428e+09, 5.1014e+08]
+        sinks (−L_s)                                           [1.0650e+07, -2.0762e+06]
+        outflow at p_max (−)                                   [-2.4571e-06, -3.6861e-14]
+        cooling (P_fluid)                                      [-3.8068e+09, -5.6232e+08]
+        particle source                                        [1.5783e+07, 8.7547e+06]
+        knock-on source                                        [1.9106e+01, 3.9008e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.4983e+05, 4.8946e+05]
+          P_fluid: e c E_c n_re                                [2.1414e+01, 4.0884e-14]
+          P_fluid: exchange (electrons)                        [2.2852e+06, 3.4202e+06]
+          P_fluid: heat diffusion                              [-2.7486e+09, 9.1621e+08]
+          P_fluid: radiation and binding                       [-1.0606e+09, -1.4824e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [2.3025e+08, 8.2662e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6514e+05, -1.4052e+05]
+      CFL                                                      [1.8298e-01, 1.5570e-01]
+      density moment of the cooling [m^-3/s]                   [1.0737e+09, 1.2080e+09]
+      dn_f/dt vs particle source density                       [6.1688e+25, 3.4218e+25, 6.1688e+25, 3.4218e+25]
+   step 9 t=9.00e-07 dt=1.0e-07
+      dW_f/dt                                                  [3.4362e+08, -8.3695e+07]
+      sum of the term moments                                  [3.4362e+08, -8.3695e+07]
+        field work (FP − collision parts)                      [1.5140e+05, 9.5365e+05]
+        e-e collisions on the free electrons (−L_fe)           [4.1527e+09, 4.8324e+08]
+        sinks (−L_s)                                           [-4.5294e+07, -2.0331e+06]
+        outflow at p_max (−)                                   [-2.2931e-06, -4.1595e-14]
+        cooling (P_fluid)                                      [-3.7781e+09, -5.7363e+08]
+        particle source                                        [1.4119e+07, 7.7760e+06]
+        knock-on source                                        [1.9106e+01, 3.9009e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.6661e+05, 5.0713e+05]
+          P_fluid: e c E_c n_re                                [2.2334e+01, 4.1867e-14]
+          P_fluid: exchange (electrons)                        [2.5465e+06, 3.6690e+06]
+          P_fluid: heat diffusion                              [-2.7175e+09, 9.0584e+08]
+          P_fluid: radiation and binding                       [-1.0633e+09, -1.4836e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [2.5931e+08, 6.6509e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6374e+05, -1.4426e+05]
+      CFL                                                      [1.8143e-01, 1.5984e-01]
+      density moment of the cooling [m^-3/s]                   [1.0737e+09, -8.0531e+08]
+      dn_f/dt vs particle source density                       [5.5183e+25, 3.0393e+25, 5.5183e+25, 3.0393e+25]
+   step 10 t=1.00e-06 dt=1.0e-07
+      dW_f/dt                                                  [4.7772e+08, -1.1120e+08]
+      sum of the term moments                                  [4.7772e+08, -1.1120e+08]
+        field work (FP − collision parts)                      [1.7195e+05, 1.0167e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.2965e+09, 4.6200e+08]
+        sinks (−L_s)                                           [-8.0011e+07, -1.9546e+06]
+        outflow at p_max (−)                                   [-2.2306e-06, -4.6450e-14]
+        cooling (P_fluid)                                      [-3.7517e+09, -5.7925e+08]
+        particle source                                        [1.2741e+07, 6.9885e+06]
+        knock-on source                                        [1.9106e+01, 3.9011e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.8040e+05, 5.2518e+05]
+          P_fluid: e c E_c n_re                                [2.3155e+01, 4.2738e-14]
+          P_fluid: exchange (electrons)                        [2.7890e+06, 3.9133e+06]
+          P_fluid: heat diffusion                              [-2.6947e+09, 8.9824e+08]
+          P_fluid: radiation and binding                       [-1.0599e+09, -1.4819e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [2.8685e+08, 5.3629e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6244e+05, -1.4672e+05]
+      CFL                                                      [1.7999e-01, 1.6257e-01]
+      density moment of the cooling [m^-3/s]                   [5.3687e+08, 6.7109e+08]
+      dn_f/dt vs particle source density                       [4.9801e+25, 2.7315e+25, 4.9801e+25, 2.7315e+25]
+   step 11 t=1.10e-06 dt=1.0e-07
+      dW_f/dt                                                  [5.7228e+08, -1.3019e+08]
+      sum of the term moments                                  [5.7228e+08, -1.3019e+08]
+        field work (FP − collision parts)                      [1.9203e+05, 1.0790e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.3886e+09, 4.4522e+08]
+        sinks (−L_s)                                           [-1.0033e+08, -1.8661e+06]
+        outflow at p_max (−)                                   [-2.2169e-06, -5.1432e-14]
+        cooling (P_fluid)                                      [-3.7278e+09, -5.8097e+08]
+        particle source                                        [1.1606e+07, 6.3445e+06]
+        knock-on source                                        [1.9106e+01, 3.9012e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9113e+05, 5.4325e+05]
+          P_fluid: e c E_c n_re                                [2.3896e+01, 4.3518e-14]
+          P_fluid: exchange (electrons)                        [3.0135e+06, 4.1535e+06]
+          P_fluid: heat diffusion                              [-2.6782e+09, 8.9272e+08]
+          P_fluid: radiation and binding                       [-1.0529e+09, -1.4784e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [3.1293e+08, 4.3287e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6131e+05, -1.4829e+05]
+      CFL                                                      [1.7873e-01, 1.6431e-01]
+      density moment of the cooling [m^-3/s]                   [-2.1475e+09, 1.3422e+08]
+      dn_f/dt vs particle source density                       [4.5364e+25, 2.4798e+25, 4.5364e+25, 2.4798e+25]
+   step 12 t=1.20e-06 dt=1.0e-07
+      dW_f/dt                                                  [6.3500e+08, -1.4309e+08]
+      sum of the term moments                                  [6.3500e+08, -1.4309e+08]
+        field work (FP − collision parts)                      [2.1127e+05, 1.1403e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.4420e+09, 4.3176e+08]
+        sinks (−L_s)                                           [-1.1139e+08, -1.7787e+06]
+        outflow at p_max (−)                                   [-2.2222e-06, -5.6551e-14]
+        cooling (P_fluid)                                      [-3.7065e+09, -5.8002e+08]
+        particle source                                        [1.0668e+07, 5.8090e+06]
+        knock-on source                                        [1.9106e+01, 3.9014e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9900e+05, 5.6110e+05]
+          P_fluid: e c E_c n_re                                [2.4570e+01, 4.4224e-14]
+          P_fluid: exchange (electrons)                        [3.2215e+06, 4.3899e+06]
+          P_fluid: heat diffusion                              [-2.6663e+09, 8.8876e+08]
+          P_fluid: radiation and binding                       [-1.0436e+09, -1.4737e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [3.3771e+08, 3.4930e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6036e+05, -1.4924e+05]
+      CFL                                                      [1.7769e-01, 1.6537e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, 6.7109e+08]
+      dn_f/dt vs particle source density                       [4.1695e+25, 2.2705e+25, 4.1695e+25, 2.2705e+25]
+   step 13 t=1.30e-06 dt=1.0e-07
+      dW_f/dt                                                  [6.7302e+08, -1.5168e+08]
+      sum of the term moments                                  [6.7302e+08, -1.5168e+08]
+        field work (FP − collision parts)                      [2.2944e+05, 1.2008e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.4669e+09, 4.2071e+08]
+        sinks (−L_s)                                           [-1.1667e+08, -1.6968e+06]
+        outflow at p_max (−)                                   [-2.2297e-06, -6.1826e-14]
+        cooling (P_fluid)                                      [-3.6873e+09, -5.7725e+08]
+        particle source                                        [9.8848e+06, 5.3567e+06]
+        knock-on source                                        [1.9106e+01, 3.9015e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0433e+05, 5.7861e+05]
+          P_fluid: e c E_c n_re                                [2.5188e+01, 4.4870e-14]
+          P_fluid: exchange (electrons)                        [3.4149e+06, 4.6226e+06]
+          P_fluid: heat diffusion                              [-2.6578e+09, 8.8593e+08]
+          P_fluid: radiation and binding                       [-1.0332e+09, -1.4684e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [3.6134e+08, 2.8137e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5962e+05, -1.4976e+05]
+      CFL                                                      [1.7686e-01, 1.6594e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, 5.3687e+08]
+      dn_f/dt vs particle source density                       [3.8635e+25, 2.0937e+25, 3.8635e+25, 2.0937e+25]
+   step 14 t=1.40e-06 dt=1.0e-07
+      dW_f/dt                                                  [6.9243e+08, -1.5727e+08]
+      sum of the term moments                                  [6.9243e+08, -1.5727e+08]
+        field work (FP − collision parts)                      [2.4643e+05, 1.2603e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.4715e+09, 4.1136e+08]
+        sinks (−L_s)                                           [-1.1846e+08, -1.6216e+06]
+        outflow at p_max (−)                                   [-2.2308e-06, -6.7275e-14]
+        cooling (P_fluid)                                      [-3.6701e+09, -5.7324e+08]
+        particle source                                        [9.2241e+06, 4.9690e+06]
+        knock-on source                                        [1.9106e+01, 3.9017e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0756e+05, 5.9575e+05]
+          P_fluid: e c E_c n_re                                [2.5761e+01, 4.5464e-14]
+          P_fluid: exchange (electrons)                        [3.5953e+06, 4.8519e+06]
+          P_fluid: heat diffusion                              [-2.6518e+09, 8.8394e+08]
+          P_fluid: radiation and binding                       [-1.0221e+09, -1.4626e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [3.8395e+08, 2.2584e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5906e+05, -1.4997e+05]
+      CFL                                                      [1.7624e-01, 1.6617e-01]
+      density moment of the cooling [m^-3/s]                   [-2.1475e+09, 5.3687e+08]
+      dn_f/dt vs particle source density                       [3.6053e+25, 1.9422e+25, 3.6053e+25, 1.9422e+25]
+   step 15 t=1.50e-06 dt=1.0e-07
+      dW_f/dt                                                  [6.9812e+08, -1.6301e+08]
+      sum of the term moments                                  [6.9812e+08, -1.6301e+08]
+        field work (FP − collision parts)                      [2.6219e+05, 1.3193e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.4619e+09, 4.0099e+08]
+        sinks (−L_s)                                           [-1.1812e+08, -1.5542e+06]
+        outflow at p_max (−)                                   [-2.2226e-06, -7.2948e-14]
+        cooling (P_fluid)                                      [-3.6545e+09, -5.6840e+08]
+        particle source                                        [8.6591e+06, 4.6311e+06]
+        knock-on source                                        [1.9106e+01, 3.9019e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0911e+05, 6.1248e+05]
+          P_fluid: e c E_c n_re                                [2.6295e+01, 4.6014e-14]
+          P_fluid: exchange (electrons)                        [3.7645e+06, 5.0780e+06]
+          P_fluid: heat diffusion                              [-2.6477e+09, 8.8257e+08]
+          P_fluid: radiation and binding                       [-1.0108e+09, -1.4567e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [4.0565e+08, 1.7953e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5868e+05, -1.4995e+05]
+      CFL                                                      [1.7582e-01, 1.6615e-01]
+      density moment of the cooling [m^-3/s]                   [-1.0737e+09, -2.6844e+08]
+      dn_f/dt vs particle source density                       [3.3845e+25, 1.8101e+25, 3.3845e+25, 1.8101e+25]
+   step 16 t=1.60e-06 dt=1.0e-07
+      dW_f/dt                                                  [6.9376e+08, -1.6757e+08]
+      sum of the term moments                                  [6.9376e+08, -1.6757e+08]
+        field work (FP − collision parts)                      [2.7679e+05, 1.3777e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.4422e+09, 3.9117e+08]
+        sinks (−L_s)                                           [-1.1651e+08, -1.4932e+06]
+        outflow at p_max (−)                                   [-2.2056e-06, -7.8860e-14]
+        cooling (P_fluid)                                      [-3.6404e+09, -5.6296e+08]
+        particle source                                        [8.1692e+06, 4.3338e+06]
+        knock-on source                                        [1.9106e+01, 3.9021e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0938e+05, 6.2891e+05]
+          P_fluid: e c E_c n_re                                [2.6796e+01, 4.6525e-14]
+          P_fluid: exchange (electrons)                        [3.9238e+06, 5.3043e+06]
+          P_fluid: heat diffusion                              [-2.6451e+09, 8.8168e+08]
+          P_fluid: radiation and binding                       [-9.9946e+08, -1.4506e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [4.2655e+08, 1.4108e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5845e+05, -1.4976e+05]
+      CFL                                                      [1.7557e-01, 1.6594e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, 0.0000e+00]
+      dn_f/dt vs particle source density                       [3.1930e+25, 1.6939e+25, 3.1930e+25, 1.6939e+25]
+   step 17 t=1.70e-06 dt=1.0e-07
+      dW_f/dt                                                  [6.8222e+08, -1.7110e+08]
+      sum of the term moments                                  [6.8222e+08, -1.7110e+08]
+        field work (FP − collision parts)                      [2.9030e+05, 1.4354e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.4157e+09, 3.8198e+08]
+        sinks (−L_s)                                           [-1.1411e+08, -1.4380e+06]
+        outflow at p_max (−)                                   [-2.1820e-06, -8.5041e-14]
+        cooling (P_fluid)                                      [-3.6274e+09, -5.5715e+08]
+        particle source                                        [7.7389e+06, 4.0696e+06]
+        knock-on source                                        [1.9106e+01, 3.9023e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0875e+05, 6.4500e+05]
+          P_fluid: e c E_c n_re                                [2.7268e+01, 4.7003e-14]
+          P_fluid: exchange (electrons)                        [4.0743e+06, 5.5294e+06]
+          P_fluid: heat diffusion                              [-2.6434e+09, 8.8114e+08]
+          P_fluid: radiation and binding                       [-9.8825e+08, -1.4445e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [4.4672e+08, 1.0906e+05]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5836e+05, -1.4947e+05]
+      CFL                                                      [1.7547e-01, 1.6562e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, -9.3952e+08]
+      dn_f/dt vs particle source density                       [3.0248e+25, 1.5906e+25, 3.0248e+25, 1.5906e+25]
+   step 18 t=1.80e-06 dt=1.0e-07
+      dW_f/dt                                                  [6.6554e+08, -1.7396e+08]
+      sum of the term moments                                  [6.6554e+08, -1.7396e+08]
+        field work (FP − collision parts)                      [3.0286e+05, 1.4926e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.3844e+09, 3.7321e+08]
+        sinks (−L_s)                                           [-1.1121e+08, -1.3879e+06]
+        outflow at p_max (−)                                   [-2.1549e-06, -9.1523e-14]
+        cooling (P_fluid)                                      [-3.6153e+09, -5.5111e+08]
+        particle source                                        [7.3563e+06, 3.8328e+06]
+        knock-on source                                        [1.9106e+01, 3.9026e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0749e+05, 6.6082e+05]
+          P_fluid: e c E_c n_re                                [2.7715e+01, 4.7451e-14]
+          P_fluid: exchange (electrons)                        [4.2169e+06, 5.7534e+06]
+          P_fluid: heat diffusion                              [-2.6425e+09, 8.8085e+08]
+          P_fluid: radiation and binding                       [-9.7723e+08, -1.4384e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [4.6622e+08, 8.2281e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5838e+05, -1.4911e+05]
+      CFL                                                      [1.7549e-01, 1.6522e-01]
+      density moment of the cooling [m^-3/s]                   [2.1475e+09, -2.6844e+08]
+      dn_f/dt vs particle source density                       [2.8753e+25, 1.4981e+25, 2.8753e+25, 1.4981e+25]
+   step 19 t=1.90e-06 dt=1.0e-07
+      dW_f/dt                                                  [6.4521e+08, -1.7638e+08]
+      sum of the term moments                                  [6.4521e+08, -1.7638e+08]
+        field work (FP − collision parts)                      [3.1459e+05, 1.5493e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.3500e+09, 3.6475e+08]
+        sinks (−L_s)                                           [-1.0798e+08, -1.3424e+06]
+        outflow at p_max (−)                                   [-2.1274e-06, -9.8355e-14]
+        cooling (P_fluid)                                      [-3.6041e+09, -5.4495e+08]
+        particle source                                        [7.0126e+06, 3.6189e+06]
+        knock-on source                                        [1.9106e+01, 3.9029e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0584e+05, 6.7640e+05]
+          P_fluid: e c E_c n_re                                [2.8140e+01, 4.7873e-14]
+          P_fluid: exchange (electrons)                        [4.3527e+06, 5.9767e+06]
+          P_fluid: heat diffusion                              [-2.6422e+09, 8.8074e+08]
+          P_fluid: radiation and binding                       [-9.6644e+08, -1.4323e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [4.8511e+08, 5.9782e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5850e+05, -1.4871e+05]
+      CFL                                                      [1.7562e-01, 1.6478e-01]
+      density moment of the cooling [m^-3/s]                   [1.0737e+09, 1.7448e+09]
+      dn_f/dt vs particle source density                       [2.7410e+25, 1.4145e+25, 2.7410e+25, 1.4145e+25]
+   step 20 t=2.00e-06 dt=1.0e-07
+      dW_f/dt                                                  [6.2228e+08, -1.7851e+08]
+      sum of the term moments                                  [6.2228e+08, -1.7851e+08]
+        field work (FP − collision parts)                      [3.2563e+05, 1.6056e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.3133e+09, 3.5650e+08]
+        sinks (−L_s)                                           [-1.0453e+08, -1.3010e+06]
+        outflow at p_max (−)                                   [-2.1021e-06, -1.0562e-13]
+        cooling (P_fluid)                                      [-3.5935e+09, -5.3874e+08]
+        particle source                                        [6.7012e+06, 3.4245e+06]
+        knock-on source                                        [1.9106e+01, 3.9031e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0399e+05, 6.9178e+05]
+          P_fluid: e c E_c n_re                                [2.8545e+01, 4.8270e-14]
+          P_fluid: exchange (electrons)                        [4.4822e+06, 6.1996e+06]
+          P_fluid: heat diffusion                              [-2.6423e+09, 8.8077e+08]
+          P_fluid: radiation and binding                       [-9.5589e+08, -1.4264e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [5.0344e+08, 4.0799e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5868e+05, -1.4829e+05]
+      CFL                                                      [1.7583e-01, 1.6431e-01]
+      density moment of the cooling [m^-3/s]                   [1.0737e+09, 1.3422e+08]
+      dn_f/dt vs particle source density                       [2.6192e+25, 1.3385e+25, 2.6192e+25, 1.3385e+25]
+   step 21 t=2.10e-06 dt=1.0e-07
+      dW_f/dt                                                  [5.9753e+08, -1.8048e+08]
+      sum of the term moments                                  [5.9753e+08, -1.8048e+08]
+        field work (FP − collision parts)                      [3.3608e+05, 1.6616e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.2752e+09, 3.4842e+08]
+        sinks (−L_s)                                           [-1.0093e+08, -1.2631e+06]
+        outflow at p_max (−)                                   [-2.0812e-06, -1.1334e-13]
+        cooling (P_fluid)                                      [-3.5835e+09, -5.3254e+08]
+        particle source                                        [6.4167e+06, 3.2467e+06]
+        knock-on source                                        [1.9106e+01, 3.9034e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0206e+05, 7.0700e+05]
+          P_fluid: e c E_c n_re                                [2.8931e+01, 4.8646e-14]
+          P_fluid: exchange (electrons)                        [4.6060e+06, 6.4225e+06]
+          P_fluid: heat diffusion                              [-2.6427e+09, 8.8091e+08]
+          P_fluid: radiation and binding                       [-9.4557e+08, -1.4206e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [5.2123e+08, 2.4720e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5893e+05, -1.4785e+05]
+      CFL                                                      [1.7610e-01, 1.6383e-01]
+      density moment of the cooling [m^-3/s]                   [2.1475e+09, -2.6844e+08]
+      dn_f/dt vs particle source density                       [2.5080e+25, 1.2690e+25, 2.5080e+25, 1.2690e+25]
+   step 22 t=2.20e-06 dt=1.0e-07
+      dW_f/dt                                                  [5.7152e+08, -1.8235e+08]
+      sum of the term moments                                  [5.7152e+08, -1.8235e+08]
+        field work (FP − collision parts)                      [3.4606e+05, 1.7173e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.2361e+09, 3.4048e+08]
+        sinks (−L_s)                                           [-9.7227e+07, -1.2283e+06]
+        outflow at p_max (−)                                   [-2.0662e-06, -1.2153e-13]
+        cooling (P_fluid)                                      [-3.5739e+09, -5.2640e+08]
+        particle source                                        [6.1551e+06, 3.0835e+06]
+        knock-on source                                        [1.9106e+01, 3.9038e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [2.0016e+05, 7.2209e+05]
+          P_fluid: e c E_c n_re                                [2.9301e+01, 4.9001e-14]
+          P_fluid: exchange (electrons)                        [4.7248e+06, 6.6457e+06]
+          P_fluid: heat diffusion                              [-2.6433e+09, 8.8111e+08]
+          P_fluid: radiation and binding                       [-9.3547e+08, -1.4149e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [5.3853e+08, 1.1047e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5923e+05, -1.4743e+05]
+      CFL                                                      [1.7643e-01, 1.6335e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, -2.6844e+08]
+      dn_f/dt vs particle source density                       [2.4058e+25, 1.2052e+25, 2.4058e+25, 1.2052e+25]
+   step 23 t=2.30e-06 dt=1.0e-07
+      dW_f/dt                                                  [5.4468e+08, -1.8417e+08]
+      sum of the term moments                                  [5.4468e+08, -1.8417e+08]
+        field work (FP − collision parts)                      [3.5564e+05, 1.7727e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.1965e+09, 3.3266e+08]
+        sinks (−L_s)                                           [-9.3461e+07, -1.1963e+06]
+        outflow at p_max (−)                                   [-2.0583e-06, -1.3023e-13]
+        cooling (P_fluid)                                      [-3.5646e+09, -5.2034e+08]
+        particle source                                        [5.9134e+06, 2.9328e+06]
+        knock-on source                                        [1.9106e+01, 3.9041e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9834e+05, 7.3709e+05]
+          P_fluid: e c E_c n_re                                [2.9655e+01, 4.9339e-14]
+          P_fluid: exchange (electrons)                        [4.8389e+06, 6.8696e+06]
+          P_fluid: heat diffusion                              [-2.6441e+09, 8.8137e+08]
+          P_fluid: radiation and binding                       [-9.2558e+08, -1.4093e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [5.5535e+08, -6.2147e+02]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5956e+05, -1.4702e+05]
+      CFL                                                      [1.7679e-01, 1.6290e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, 1.3422e+09]
+      dn_f/dt vs particle source density                       [2.3113e+25, 1.1463e+25, 2.3113e+25, 1.1463e+25]
+   step 24 t=2.40e-06 dt=1.0e-07
+      dW_f/dt                                                  [5.1733e+08, -1.8598e+08]
+      sum of the term moments                                  [5.1733e+08, -1.8598e+08]
+        field work (FP − collision parts)                      [3.6492e+05, 1.8281e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.1566e+09, 3.2496e+08]
+        sinks (−L_s)                                           [-8.9664e+07, -1.1668e+06]
+        outflow at p_max (−)                                   [-2.0582e-06, -1.3949e-13]
+        cooling (P_fluid)                                      [-3.5557e+09, -5.1440e+08]
+        particle source                                        [5.6889e+06, 2.7932e+06]
+        knock-on source                                        [1.9106e+01, 3.9045e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9666e+05, 7.5201e+05]
+          P_fluid: e c E_c n_re                                [2.9996e+01, 4.9659e-14]
+          P_fluid: exchange (electrons)                        [4.9488e+06, 7.0946e+06]
+          P_fluid: heat diffusion                              [-2.6450e+09, 8.8166e+08]
+          P_fluid: radiation and binding                       [-9.1586e+08, -1.4039e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [5.7172e+08, -1.0615e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.5991e+05, -1.4663e+05]
+      CFL                                                      [1.7718e-01, 1.6247e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, 1.3422e+09]
+      dn_f/dt vs particle source density                       [2.2236e+25, 1.0918e+25, 2.2236e+25, 1.0918e+25]
+   step 25 t=2.50e-06 dt=1.0e-07
+      dW_f/dt                                                  [4.8974e+08, -1.8780e+08]
+      sum of the term moments                                  [4.8974e+08, -1.8780e+08]
+        field work (FP − collision parts)                      [3.7393e+05, 1.8833e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.1167e+09, 3.1738e+08]
+        sinks (−L_s)                                           [-8.5862e+07, -1.1395e+06]
+        outflow at p_max (−)                                   [-2.0664e-06, -1.4938e-13]
+        cooling (P_fluid)                                      [-3.5469e+09, -5.0858e+08]
+        particle source                                        [5.4795e+06, 2.6635e+06]
+        knock-on source                                        [1.9106e+01, 3.9049e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9512e+05, 7.6689e+05]
+          P_fluid: e c E_c n_re                                [3.0323e+01, 4.9965e-14]
+          P_fluid: exchange (electrons)                        [5.0548e+06, 7.3209e+06]
+          P_fluid: heat diffusion                              [-2.6459e+09, 8.8197e+08]
+          P_fluid: radiation and binding                       [-9.0630e+08, -1.3986e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [5.8767e+08, -1.9202e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6027e+05, -1.4628e+05]
+      CFL                                                      [1.7758e-01, 1.6208e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, 8.0531e+08]
+      dn_f/dt vs particle source density                       [2.1417e+25, 1.0411e+25, 2.1417e+25, 1.0411e+25]
+   step 26 t=2.60e-06 dt=1.0e-07
+      dW_f/dt                                                  [4.6212e+08, -1.8964e+08]
+      sum of the term moments                                  [4.6212e+08, -1.8964e+08]
+        field work (FP − collision parts)                      [3.8274e+05, 1.9386e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.0769e+09, 3.0991e+08]
+        sinks (−L_s)                                           [-8.2081e+07, -1.1142e+06]
+        outflow at p_max (−)                                   [-2.0831e-06, -1.5997e-13]
+        cooling (P_fluid)                                      [-3.5384e+09, -5.0292e+08]
+        particle source                                        [5.2834e+06, 2.5426e+06]
+        knock-on source                                        [1.9106e+01, 3.9053e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9375e+05, 7.8175e+05]
+          P_fluid: e c E_c n_re                                [3.0638e+01, 5.0255e-14]
+          P_fluid: exchange (electrons)                        [5.1573e+06, 7.5489e+06]
+          P_fluid: heat diffusion                              [-2.6469e+09, 8.8228e+08]
+          P_fluid: radiation and binding                       [-8.9687e+08, -1.3935e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [6.0321e+08, -2.6605e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6064e+05, -1.4596e+05]
+      CFL                                                      [1.7800e-01, 1.6173e-01]
+      density moment of the cooling [m^-3/s]                   [1.0737e+09, 1.6106e+09]
+      dn_f/dt vs particle source density                       [2.0651e+25, 9.9380e+24, 2.0651e+25, 9.9380e+24]
+   step 27 t=2.70e-06 dt=1.0e-07
+      dW_f/dt                                                  [4.3464e+08, -1.9152e+08]
+      sum of the term moments                                  [4.3464e+08, -1.9152e+08]
+        field work (FP − collision parts)                      [3.9137e+05, 1.9939e+06]
+        e-e collisions on the free electrons (−L_fe)           [4.0374e+09, 3.0256e+08]
+        sinks (−L_s)                                           [-7.8339e+07, -1.0907e+06]
+        outflow at p_max (−)                                   [-2.1086e-06, -1.7132e-13]
+        cooling (P_fluid)                                      [-3.5299e+09, -4.9741e+08]
+        particle source                                        [5.0993e+06, 2.4295e+06]
+        knock-on source                                        [1.9106e+01, 3.9058e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9255e+05, 7.9663e+05]
+          P_fluid: e c E_c n_re                                [3.0942e+01, 5.0533e-14]
+          P_fluid: exchange (electrons)                        [5.2566e+06, 7.7789e+06]
+          P_fluid: heat diffusion                              [-2.6478e+09, 8.8260e+08]
+          P_fluid: radiation and binding                       [-8.8756e+08, -1.3886e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [6.1835e+08, -3.3009e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6101e+05, -1.4569e+05]
+      CFL                                                      [1.7841e-01, 1.6143e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, 8.0531e+08]
+      dn_f/dt vs particle source density                       [1.9931e+25, 9.4961e+24, 1.9931e+25, 9.4961e+24]
+   step 28 t=2.80e-06 dt=1.0e-07
+      dW_f/dt                                                  [4.0746e+08, -1.9343e+08]
+      sum of the term moments                                  [4.0746e+08, -1.9343e+08]
+        field work (FP − collision parts)                      [3.9986e+05, 2.0492e+06]
+        e-e collisions on the free electrons (−L_fe)           [3.9983e+09, 2.9533e+08]
+        sinks (−L_s)                                           [-7.4655e+07, -1.0688e+06]
+        outflow at p_max (−)                                   [-2.1430e-06, -1.8352e-13]
+        cooling (P_fluid)                                      [-3.5216e+09, -4.9206e+08]
+        particle source                                        [4.9258e+06, 2.3236e+06]
+        knock-on source                                        [1.9106e+01, 3.9062e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9150e+05, 8.1154e+05]
+          P_fluid: e c E_c n_re                                [3.1234e+01, 5.0798e-14]
+          P_fluid: exchange (electrons)                        [5.3529e+06, 8.0113e+06]
+          P_fluid: heat diffusion                              [-2.6487e+09, 8.8292e+08]
+          P_fluid: radiation and binding                       [-8.7835e+08, -1.3838e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [6.3312e+08, -3.8566e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6138e+05, -1.4546e+05]
+      CFL                                                      [1.7881e-01, 1.6118e-01]
+      density moment of the cooling [m^-3/s]                   [2.1475e+09, -2.6844e+08]
+      dn_f/dt vs particle source density                       [1.9253e+25, 9.0818e+24, 1.9253e+25, 9.0818e+24]
+   step 29 t=2.90e-06 dt=1.0e-07
+      dW_f/dt                                                  [3.8069e+08, -1.9538e+08]
+      sum of the term moments                                  [3.8069e+08, -1.9538e+08]
+        field work (FP − collision parts)                      [4.0823e+05, 2.1048e+06]
+        e-e collisions on the free electrons (−L_fe)           [3.9598e+09, 2.8822e+08]
+        sinks (−L_s)                                           [-7.1042e+07, -1.0484e+06]
+        outflow at p_max (−)                                   [-2.1863e-06, -1.9665e-13]
+        cooling (P_fluid)                                      [-3.5132e+09, -4.8688e+08]
+        particle source                                        [4.7620e+06, 2.2240e+06]
+        knock-on source                                        [1.9106e+01, 3.9068e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.9061e+05, 8.2651e+05]
+          P_fluid: e c E_c n_re                                [3.1517e+01, 5.1051e-14]
+          P_fluid: exchange (electrons)                        [5.4464e+06, 8.2464e+06]
+          P_fluid: heat diffusion                              [-2.6497e+09, 8.8322e+08]
+          P_fluid: radiation and binding                       [-8.6922e+08, -1.3792e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [6.4753e+08, -4.3404e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6173e+05, -1.4529e+05]
+      CFL                                                      [1.7920e-01, 1.6098e-01]
+      density moment of the cooling [m^-3/s]                   [-1.0737e+09, -5.3687e+08]
+      dn_f/dt vs particle source density                       [1.8613e+25, 8.6926e+24, 1.8613e+25, 8.6926e+24]
+   step 30 t=3.00e-06 dt=1.0e-07
+      dW_f/dt                                                  [3.5445e+08, -1.9737e+08]
+      sum of the term moments                                  [3.5445e+08, -1.9737e+08]
+        field work (FP − collision parts)                      [4.1648e+05, 2.1606e+06]
+        e-e collisions on the free electrons (−L_fe)           [3.9219e+09, 2.8125e+08]
+        sinks (−L_s)                                           [-6.7514e+07, -1.0293e+06]
+        outflow at p_max (−)                                   [-2.2388e-06, -2.1082e-13]
+        cooling (P_fluid)                                      [-3.5050e+09, -4.8187e+08]
+        particle source                                        [4.6068e+06, 2.1302e+06]
+        knock-on source                                        [1.9106e+01, 3.9073e-14]
+          P_fluid: E^2(sigma-sigma_kin)                        [1.8987e+05, 8.4156e+05]
+          P_fluid: e c E_c n_re                                [3.1790e+01, 5.1294e-14]
+          P_fluid: exchange (electrons)                        [5.5374e+06, 8.4845e+06]
+          P_fluid: heat diffusion                              [-2.6505e+09, 8.8351e+08]
+          P_fluid: radiation and binding                       [-8.6017e+08, -1.3747e+09]
+      −L_fe on a Maxwellian at (n_cold,T) of u_new             [6.6159e+08, -4.7629e+04]
+      cooling a [1/s], CFL a p g J/(JΔp) dt                    [-1.6207e+05, -1.4517e+05]
+      CFL                                                      [1.7958e-01, 1.6085e-01]
+      density moment of the cooling [m^-3/s]                   [0.0000e+00, 1.3422e+09]
+      dn_f/dt vs particle source density                       [1.8006e+25, 8.3260e+24, 1.8006e+25, 8.3260e+24]
+  bulk shape at the end, (ii): f_iso/f_M per p cell with p < p0, and the L1 distance Σ(1−w)|f_iso−f_M| / n
+   r1 T=519 eV p0=0.315 L1=2.811e-01 : 0.0025:2.99 0.0075:1.99 0.0125:1.71 0.0175:1.55 0.0225:1.43 0.0275:1.33 0.0325:1.23 0.0375:1.14 0.0425:1.04 0.0475:0.933 0.0687:0.69 0.106:1.28 0.144:15.4 0.181:499 0.219:3.86e+04 0.256:7e+06 0.294:2.9e+09
+   r2 T=65.37 eV p0=0.112 L1=1.283e-02 : 0.0025:1.03 0.0075:1.02 0.0125:1.01 0.0175:1 0.0225:0.992 0.0275:0.98 0.0325:0.965 0.0375:0.947 0.0425:0.934 0.0475:0.964 0.0687:1.26e+03 0.106:9.79e+11
+
+================ run cold: (iii) runes2p, cold-energy row ================
+  wall time 112.8 s; steps attempted=30 accepted=30 not accepted=0 newton=[5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] status=[:converged]
+  bulk shape at the end, (iii): f_iso/f_M per p cell with p < p0, and the L1 distance Σ(1−w)|f_iso−f_M| / n
+   r1 T=326.9 eV p0=0.25 L1=1.690e-01 : 0.0025:1.46 0.0075:1.09 0.0125:0.997 0.0175:0.949 0.0225:0.92 0.0275:0.9 0.0325:0.886 0.0375:0.875 0.0425:0.866 0.0475:0.857 0.0687:0.978 0.106:8.15 0.144:5.73e+03 0.181:3.52e+07 0.219:1.51e+12
+   r2 T=26.65 eV p0=0.0715 L1=6.714e-02 : 0.0025:0.948 0.0075:0.951 0.0125:0.964 0.0175:1.01 0.0225:1.13 0.0275:1.61 0.0325:5.03 0.0375:71 0.0425:2.74e+03 0.0475:1.86e+05 0.0687:3.13e+15
+
+================ tables (per radius r1 | r2) ================
+runs: pb = (ii) prototype, start (b): Maxwellian bulk at DREAM's (n_cold, T_cold); cold = (iii) runes2p, cold-energy row; file = (vi) DREAM's file
+
+T [eV]   columns: pb | cold | file
+  t=0.0e+00  1.5803e+03 1.3876e+02 | 1.5803e+03 1.3876e+02 | 1.5803e+03 1.3876e+02
+  t=1.0e-07  1.3213e+03 1.2455e+02 | 1.3158e+03 1.2141e+02 | 1.3178e+03 1.2288e+02
+  t=2.0e-07  1.1411e+03 1.1563e+02 | 1.1283e+03 1.1003e+02 | 1.1318e+03 1.1152e+02
+  t=3.0e-07  1.0126e+03 1.0942e+02 | 9.9190e+02 1.0145e+02 | 9.9653e+02 1.0294e+02
+  t=4.0e-07  9.1907e+02 1.0470e+02 | 8.9003e+02 9.4676e+01 | 8.9594e+02 9.6139e+01
+  t=5.0e-07  8.4948e+02 1.0091e+02 | 8.1203e+02 8.9087e+01 | 8.1882e+02 9.0527e+01
+  t=6.0e-07  7.9666e+02 9.7711e+01 | 7.5077e+02 8.4317e+01 | 7.5820e+02 8.5736e+01
+  t=7.0e-07  7.5576e+02 9.4936e+01 | 7.0144e+02 8.0141e+01 | 7.0951e+02 8.1531e+01
+  t=8.0e-07  7.2345e+02 9.2476e+01 | 6.6072e+02 7.6414e+01 | 6.6927e+02 7.7761e+01
+  t=9.0e-07  6.9739e+02 9.0264e+01 | 6.2637e+02 7.3003e+01 | 6.3524e+02 7.4342e+01
+  t=1.0e-06  6.7594e+02 8.8253e+01 | 5.9682e+02 6.9836e+01 | 6.0589e+02 7.1167e+01
+  t=1.1e-06  6.5795e+02 8.6411e+01 | 5.7092e+02 6.6861e+01 |       -
+  t=1.2e-06  6.4259e+02 8.4713e+01 | 5.4788e+02 6.4042e+01 |       -
+  t=1.3e-06  6.2926e+02 8.3139e+01 | 5.2712e+02 6.1351e+01 |       -
+  t=1.4e-06  6.1753e+02 8.1673e+01 | 5.0823e+02 5.8769e+01 |       -
+  t=1.5e-06  6.0708e+02 8.0283e+01 | 4.9093e+02 5.6280e+01 |       -
+  t=1.6e-06  5.9768e+02 7.8970e+01 | 4.7495e+02 5.3872e+01 |       -
+  t=1.7e-06  5.8914e+02 7.7726e+01 | 4.6008e+02 5.1537e+01 |       -
+  t=1.8e-06  5.8132e+02 7.6545e+01 | 4.4620e+02 4.9267e+01 |       -
+  t=1.9e-06  5.7413e+02 7.5418e+01 | 4.3317e+02 4.7058e+01 |       -
+  t=2.0e-06  5.6746e+02 7.4341e+01 | 4.2089e+02 4.4906e+01 |       -
+  t=2.1e-06  5.6125e+02 7.3307e+01 | 4.0929e+02 4.2810e+01 |       -
+  t=2.2e-06  5.5544e+02 7.2313e+01 | 3.9830e+02 4.0767e+01 |       -
+  t=2.3e-06  5.4999e+02 7.1354e+01 | 3.8787e+02 3.8787e+01 |       -
+  t=2.4e-06  5.4486e+02 7.0426e+01 | 3.7797e+02 3.6866e+01 |       -
+  t=2.5e-06  5.4000e+02 6.9527e+01 | 3.6851e+02 3.5002e+01 |       -
+  t=2.6e-06  5.3539e+02 6.8654e+01 | 3.5948e+02 3.3198e+01 |       -
+  t=2.7e-06  5.3101e+02 6.7804e+01 | 3.5083e+02 3.1456e+01 |       -
+  t=2.8e-06  5.2684e+02 6.6976e+01 | 3.4253e+02 2.9782e+01 |       -
+  t=2.9e-06  5.2285e+02 6.6166e+01 | 3.3456e+02 2.8180e+01 |       -
+  t=3.0e-06  5.1903e+02 6.5373e+01 | 3.2689e+02 2.6654e+01 |       -
+
+n_cold [m^-3]   columns: pb | cold | file
+  t=0.0e+00  6.7471e+19 8.6526e+19 | 6.7436e+19 8.5700e+19 | 6.7436e+19 8.5700e+19
+  t=1.0e-07  7.9729e+19 9.7583e+19 | 7.9740e+19 9.7440e+19 | 7.9621e+19 9.6303e+19
+  t=2.0e-07  9.1504e+19 1.0676e+20 | 9.1536e+19 1.0642e+20 | 9.1271e+19 1.0506e+20
+  t=3.0e-07  1.0244e+20 1.1436e+20 | 1.0250e+20 1.1376e+20 | 1.0205e+20 1.1224e+20
+  t=4.0e-07  1.1236e+20 1.2068e+20 | 1.1244e+20 1.1977e+20 | 1.1174e+20 1.1816e+20
+  t=5.0e-07  1.2122e+20 1.2599e+20 | 1.2131e+20 1.2475e+20 | 1.2036e+20 1.2307e+20
+  t=6.0e-07  1.2907e+20 1.3051e+20 | 1.2915e+20 1.2892e+20 | 1.2796e+20 1.2720e+20
+  t=7.0e-07  1.3601e+20 1.3441e+20 | 1.3608e+20 1.3243e+20 | 1.3461e+20 1.3071e+20
+  t=8.0e-07  1.4218e+20 1.3784e+20 | 1.4221e+20 1.3540e+20 | 1.4049e+20 1.3373e+20
+  t=9.0e-07  1.4770e+20 1.4088e+20 | 1.4767e+20 1.3796e+20 | 1.4572e+20 1.3632e+20
+  t=1.0e-06  1.5268e+20 1.4361e+20 | 1.5258e+20 1.4021e+20 | 1.5042e+20 1.3859e+20
+  t=1.1e-06  1.5721e+20 1.4609e+20 | 1.5703e+20 1.4218e+20 |       -
+  t=1.2e-06  1.6138e+20 1.4836e+20 | 1.6110e+20 1.4394e+20 |       -
+  t=1.3e-06  1.6525e+20 1.5045e+20 | 1.6486e+20 1.4549e+20 |       -
+  t=1.4e-06  1.6885e+20 1.5240e+20 | 1.6834e+20 1.4688e+20 |       -
+  t=1.5e-06  1.7224e+20 1.5421e+20 | 1.7158e+20 1.4812e+20 |       -
+  t=1.6e-06  1.7543e+20 1.5590e+20 | 1.7462e+20 1.4923e+20 |       -
+  t=1.7e-06  1.7845e+20 1.5749e+20 | 1.7747e+20 1.5022e+20 |       -
+  t=1.8e-06  1.8133e+20 1.5899e+20 | 1.8017e+20 1.5110e+20 |       -
+  t=1.9e-06  1.8407e+20 1.6040e+20 | 1.8271e+20 1.5188e+20 |       -
+  t=2.0e-06  1.8669e+20 1.6174e+20 | 1.8513e+20 1.5257e+20 |       -
+  t=2.1e-06  1.8920e+20 1.6301e+20 | 1.8742e+20 1.5318e+20 |       -
+  t=2.2e-06  1.9160e+20 1.6422e+20 | 1.8960e+20 1.5371e+20 |       -
+  t=2.3e-06  1.9392e+20 1.6536e+20 | 1.9167e+20 1.5415e+20 |       -
+  t=2.4e-06  1.9614e+20 1.6645e+20 | 1.9362e+20 1.5450e+20 |       -
+  t=2.5e-06  1.9828e+20 1.6750e+20 | 1.9549e+20 1.5480e+20 |       -
+  t=2.6e-06  2.0035e+20 1.6849e+20 | 1.9726e+20 1.5504e+20 |       -
+  t=2.7e-06  2.0234e+20 1.6944e+20 | 1.9896e+20 1.5525e+20 |       -
+  t=2.8e-06  2.0426e+20 1.7035e+20 | 2.0057e+20 1.5541e+20 |       -
+  t=2.9e-06  2.0613e+20 1.7122e+20 | 2.0212e+20 1.5554e+20 |       -
+  t=3.0e-06  2.0793e+20 1.7205e+20 | 2.0359e+20 1.5565e+20 |       -
+
+n_below [m^-3]   columns: pb | cold | file
+  t=0.0e+00  6.7471e+19 8.6526e+19 | 6.7471e+19 8.6525e+19 | 6.7471e+19 8.6525e+19
+  t=1.0e-07  7.9729e+19 9.7583e+19 | 7.9740e+19 9.7440e+19 | 7.9725e+19 9.7448e+19
+  t=2.0e-07  9.1504e+19 1.0676e+20 | 9.1536e+19 1.0642e+20 | 9.1496e+19 1.0645e+20
+  t=3.0e-07  1.0244e+20 1.1436e+20 | 1.0250e+20 1.1376e+20 | 1.0243e+20 1.1384e+20
+  t=4.0e-07  1.1236e+20 1.2068e+20 | 1.1244e+20 1.1977e+20 | 1.1234e+20 1.1991e+20
+  t=5.0e-07  1.2122e+20 1.2599e+20 | 1.2131e+20 1.2475e+20 | 1.2118e+20 1.2495e+20
+  t=6.0e-07  1.2907e+20 1.3051e+20 | 1.2915e+20 1.2892e+20 | 1.2900e+20 1.2919e+20
+  t=7.0e-07  1.3601e+20 1.3441e+20 | 1.3608e+20 1.3243e+20 | 1.3591e+20 1.3279e+20
+  t=8.0e-07  1.4218e+20 1.3784e+20 | 1.4221e+20 1.3540e+20 | 1.4203e+20 1.3583e+20
+  t=9.0e-07  1.4770e+20 1.4088e+20 | 1.4767e+20 1.3796e+20 | 1.4749e+20 1.3847e+20
+  t=1.0e-06  1.5268e+20 1.4361e+20 | 1.5258e+20 1.4021e+20 | 1.5239e+20 1.4079e+20
+  t=1.1e-06  1.5721e+20 1.4609e+20 | 1.5703e+20 1.4218e+20 |       -
+  t=1.2e-06  1.6138e+20 1.4836e+20 | 1.6110e+20 1.4394e+20 |       -
+  t=1.3e-06  1.6525e+20 1.5045e+20 | 1.6486e+20 1.4549e+20 |       -
+  t=1.4e-06  1.6885e+20 1.5240e+20 | 1.6834e+20 1.4688e+20 |       -
+  t=1.5e-06  1.7224e+20 1.5421e+20 | 1.7158e+20 1.4812e+20 |       -
+  t=1.6e-06  1.7543e+20 1.5590e+20 | 1.7462e+20 1.4923e+20 |       -
+  t=1.7e-06  1.7845e+20 1.5749e+20 | 1.7747e+20 1.5022e+20 |       -
+  t=1.8e-06  1.8133e+20 1.5899e+20 | 1.8017e+20 1.5110e+20 |       -
+  t=1.9e-06  1.8407e+20 1.6040e+20 | 1.8271e+20 1.5188e+20 |       -
+  t=2.0e-06  1.8669e+20 1.6174e+20 | 1.8513e+20 1.5257e+20 |       -
+  t=2.1e-06  1.8920e+20 1.6301e+20 | 1.8742e+20 1.5318e+20 |       -
+  t=2.2e-06  1.9160e+20 1.6422e+20 | 1.8960e+20 1.5371e+20 |       -
+  t=2.3e-06  1.9392e+20 1.6536e+20 | 1.9167e+20 1.5415e+20 |       -
+  t=2.4e-06  1.9614e+20 1.6645e+20 | 1.9362e+20 1.5450e+20 |       -
+  t=2.5e-06  1.9828e+20 1.6750e+20 | 1.9549e+20 1.5480e+20 |       -
+  t=2.6e-06  2.0035e+20 1.6849e+20 | 1.9726e+20 1.5504e+20 |       -
+  t=2.7e-06  2.0234e+20 1.6944e+20 | 1.9896e+20 1.5525e+20 |       -
+  t=2.8e-06  2.0426e+20 1.7035e+20 | 2.0057e+20 1.5541e+20 |       -
+  t=2.9e-06  2.0613e+20 1.7122e+20 | 2.0212e+20 1.5554e+20 |       -
+  t=3.0e-06  2.0793e+20 1.7205e+20 | 2.0359e+20 1.5565e+20 |       -
+
+n_hot [m^-3]   columns: pb | cold | file
+  t=0.0e+00  9.5535e+13 4.7722e+16 | 3.5258e+16 8.7450e+17 | 3.5258e+16 8.7450e+17
+  t=1.0e-07  1.2935e+14 5.2225e+16 | 7.5466e+14 1.2383e+17 | 1.0395e+17 1.2605e+18
+  t=2.0e-07  1.2870e+14 5.3200e+16 | 2.9533e+15 1.9370e+17 | 2.2806e+17 1.5794e+18
+  t=3.0e-07  1.2836e+14 5.3142e+16 | 8.5806e+15 2.5697e+17 | 3.8865e+17 1.8392e+18
+  t=4.0e-07  1.2826e+14 5.2704e+16 | 1.8743e+16 3.1373e+17 | 6.1899e+17 2.0515e+18
+  t=5.0e-07  1.2827e+14 5.2132e+16 | 3.3656e+16 3.6501e+17 | 8.5557e+17 2.2268e+18
+  t=6.0e-07  1.2827e+14 5.1522e+16 | 5.4801e+16 4.1196e+17 | 1.0977e+18 2.3732e+18
+  t=7.0e-07  1.2830e+14 5.0914e+16 | 8.2602e+16 4.7797e+17 | 1.3742e+18 2.4970e+18
+  t=8.0e-07  1.2834e+14 5.0323e+16 | 1.1164e+17 5.8739e+17 | 1.6422e+18 2.6124e+18
+  t=9.0e-07  1.2838e+14 4.9754e+16 | 1.4585e+17 6.9628e+17 | 1.8981e+18 2.7692e+18
+  t=1.0e-06  1.2840e+14 4.9207e+16 | 1.9030e+17 8.0469e+17 | 2.1416e+18 2.9079e+18
+  t=1.1e-06  1.2842e+14 4.8682e+16 | 2.3665e+17 9.1278e+17 |       -
+  t=1.2e-06  1.2843e+14 4.8175e+16 | 2.8402e+17 1.0207e+18 |       -
+  t=1.3e-06  1.2870e+14 4.7685e+16 | 3.3188e+17 1.1286e+18 |       -
+  t=1.4e-06  1.2900e+14 4.7208e+16 | 3.8082e+17 1.2367e+18 |       -
+  t=1.5e-06  1.2923e+14 4.7077e+16 | 4.4684e+17 1.3450e+18 |       -
+  t=1.6e-06  1.2941e+14 4.6998e+16 | 5.1553e+17 1.4537e+18 |       -
+  t=1.7e-06  1.2954e+14 4.6916e+16 | 5.8625e+17 1.5628e+18 |       -
+  t=1.8e-06  1.2963e+14 4.6832e+16 | 6.5851e+17 1.6723e+18 |       -
+  t=1.9e-06  1.2969e+14 4.6745e+16 | 7.3192e+17 1.7823e+18 |       -
+  t=2.0e-06  1.2973e+14 4.6656e+16 | 8.0619e+17 1.8927e+18 |       -
+  t=2.1e-06  1.2974e+14 4.6566e+16 | 8.8107e+17 2.0035e+18 |       -
+  t=2.2e-06  1.2975e+14 4.6475e+16 | 9.5635e+17 2.1145e+18 |       -
+  t=2.3e-06  1.2974e+14 4.6382e+16 | 1.0438e+18 2.2540e+18 |       -
+  t=2.4e-06  1.2972e+14 4.6289e+16 | 1.1404e+18 2.4148e+18 |       -
+  t=2.5e-06  1.2970e+14 4.6195e+16 | 1.2391e+18 2.5754e+18 |       -
+  t=2.6e-06  1.2968e+14 4.6100e+16 | 1.3397e+18 2.7348e+18 |       -
+  t=2.7e-06  1.2965e+14 4.6006e+16 | 1.4417e+18 2.8919e+18 |       -
+  t=2.8e-06  1.2962e+14 4.5910e+16 | 1.5450e+18 3.0456e+18 |       -
+  t=2.9e-06  1.2958e+14 4.5815e+16 | 1.6493e+18 3.1945e+18 |       -
+  t=3.0e-06  1.2955e+14 4.5720e+16 | 1.7543e+18 3.3373e+18 |       -
+
+j_hot [A/m^2]   columns: pb | cold | file
+  t=0.0e+00  1.3018e+02 2.0670e+04 | 1.6122e+04 1.2342e+05 | 1.6122e+04 1.2342e+05
+  t=1.0e-07  1.6736e+02 2.2401e+04 | 7.5475e+02 3.5121e+04 | 3.5688e+04 1.4897e+05
+  t=2.0e-07  1.6624e+02 2.2740e+04 | 2.3115e+03 4.7287e+04 | 6.1828e+04 1.7022e+05
+  t=3.0e-07  1.6577e+02 2.2659e+04 | 5.3543e+03 5.8007e+04 | 9.0727e+04 1.8845e+05
+  t=4.0e-07  1.6558e+02 2.2420e+04 | 9.8105e+03 6.7492e+04 | 1.2110e+05 2.0460e+05
+  t=5.0e-07  1.6551e+02 2.2123e+04 | 1.5523e+04 7.6029e+04 | 1.5001e+05 2.1933e+05
+  t=6.0e-07  1.6543e+02 2.1808e+04 | 2.2289e+04 8.3886e+04 | 1.7685e+05 2.3314e+05
+  t=7.0e-07  1.6537e+02 2.1495e+04 | 3.0063e+04 9.1658e+04 | 2.0164e+05 2.4638e+05
+  t=8.0e-07  1.6531e+02 2.1189e+04 | 3.7917e+04 9.9939e+04 | 2.2476e+05 2.5891e+05
+  t=9.0e-07  1.6526e+02 2.0895e+04 | 4.6143e+04 1.0816e+05 | 2.4656e+05 2.6852e+05
+  t=1.0e-06  1.6521e+02 2.0611e+04 | 5.5215e+04 1.1646e+05 | 2.6735e+05 2.7795e+05
+  t=1.1e-06  1.6516e+02 2.0339e+04 | 6.4375e+04 1.2496e+05 |       -
+  t=1.2e-06  1.6511e+02 2.0077e+04 | 7.3565e+04 1.3376e+05 |       -
+  t=1.3e-06  1.6510e+02 1.9824e+04 | 8.2759e+04 1.4298e+05 |       -
+  t=1.4e-06  1.6510e+02 1.9579e+04 | 9.1985e+04 1.5271e+05 |       -
+  t=1.5e-06  1.6508e+02 1.9531e+04 | 1.0194e+05 1.6304e+05 |       -
+  t=1.6e-06  1.6507e+02 1.9524e+04 | 1.1202e+05 1.7407e+05 |       -
+  t=1.7e-06  1.6505e+02 1.9526e+04 | 1.2223e+05 1.8591e+05 |       -
+  t=1.8e-06  1.6503e+02 1.9537e+04 | 1.3255e+05 1.9864e+05 |       -
+  t=1.9e-06  1.6500e+02 1.9557e+04 | 1.4297e+05 2.1236e+05 |       -
+  t=2.0e-06  1.6497e+02 1.9585e+04 | 1.5347e+05 2.2717e+05 |       -
+  t=2.1e-06  1.6494e+02 1.9622e+04 | 1.6406e+05 2.4318e+05 |       -
+  t=2.2e-06  1.6491e+02 1.9667e+04 | 1.7473e+05 2.6047e+05 |       -
+  t=2.3e-06  1.6488e+02 1.9720e+04 | 1.8554e+05 2.7709e+05 |       -
+  t=2.4e-06  1.6485e+02 1.9782e+04 | 1.9649e+05 2.9318e+05 |       -
+  t=2.5e-06  1.6482e+02 1.9851e+04 | 2.0753e+05 3.1017e+05 |       -
+  t=2.6e-06  1.6479e+02 1.9927e+04 | 2.1867e+05 3.2807e+05 |       -
+  t=2.7e-06  1.6475e+02 2.0012e+04 | 2.2992e+05 3.4685e+05 |       -
+  t=2.8e-06  1.6472e+02 2.0103e+04 | 2.4127e+05 3.6649e+05 |       -
+  t=2.9e-06  1.6469e+02 2.0202e+04 | 2.5271e+05 3.8693e+05 |       -
+  t=3.0e-06  1.6466e+02 2.0308e+04 | 2.6427e+05 4.0806e+05 |       -
+
+j_ohm [A/m^2]   columns: pb | cold | file
+  t=0.0e+00  1.3063e+06 9.0149e+05 | 1.2904e+06 7.9915e+05 | 1.2904e+06 7.9915e+05
+  t=1.0e-07  1.3063e+06 9.0017e+05 | 1.3058e+06 8.8745e+05 | 1.2708e+06 7.7360e+05
+  t=2.0e-07  1.3063e+06 8.9983e+05 | 1.3042e+06 8.7528e+05 | 1.2447e+06 7.5235e+05
+  t=3.0e-07  1.3063e+06 8.9991e+05 | 1.3012e+06 8.6456e+05 | 1.2158e+06 7.3411e+05
+  t=4.0e-07  1.3064e+06 9.0014e+05 | 1.2967e+06 8.5507e+05 | 1.1854e+06 7.1797e+05
+  t=5.0e-07  1.3064e+06 9.0044e+05 | 1.2910e+06 8.4653e+05 | 1.1565e+06 7.0323e+05
+  t=6.0e-07  1.3064e+06 9.0075e+05 | 1.2842e+06 8.3867e+05 | 1.1297e+06 6.8942e+05
+  t=7.0e-07  1.3064e+06 9.0105e+05 | 1.2765e+06 8.3090e+05 | 1.1049e+06 6.7617e+05
+  t=8.0e-07  1.3064e+06 9.0135e+05 | 1.2686e+06 8.2261e+05 | 1.0818e+06 6.6363e+05
+  t=9.0e-07  1.3064e+06 9.0164e+05 | 1.2604e+06 8.1438e+05 | 1.0600e+06 6.5402e+05
+  t=1.0e-06  1.3064e+06 9.0192e+05 | 1.2513e+06 8.0608e+05 | 1.0392e+06 6.4459e+05
+  t=1.1e-06  1.3064e+06 9.0219e+05 | 1.2422e+06 7.9758e+05 |       -
+  t=1.2e-06  1.3064e+06 9.0244e+05 | 1.2330e+06 7.8877e+05 |       -
+  t=1.3e-06  1.3064e+06 9.0269e+05 | 1.2238e+06 7.7955e+05 |       -
+  t=1.4e-06  1.3064e+06 9.0293e+05 | 1.2146e+06 7.6981e+05 |       -
+  t=1.5e-06  1.3064e+06 9.0297e+05 | 1.2046e+06 7.5948e+05 |       -
+  t=1.6e-06  1.3064e+06 9.0297e+05 | 1.1945e+06 7.4843e+05 |       -
+  t=1.7e-06  1.3064e+06 9.0296e+05 | 1.1843e+06 7.3659e+05 |       -
+  t=1.8e-06  1.3064e+06 9.0294e+05 | 1.1740e+06 7.2386e+05 |       -
+  t=1.9e-06  1.3064e+06 9.0292e+05 | 1.1636e+06 7.1013e+05 |       -
+  t=2.0e-06  1.3064e+06 9.0288e+05 | 1.1531e+06 6.9531e+05 |       -
+  t=2.1e-06  1.3064e+06 9.0283e+05 | 1.1425e+06 6.7929e+05 |       -
+  t=2.2e-06  1.3064e+06 9.0278e+05 | 1.1319e+06 6.6199e+05 |       -
+  t=2.3e-06  1.3064e+06 9.0272e+05 | 1.1210e+06 6.4536e+05 |       -
+  t=2.4e-06  1.3064e+06 9.0265e+05 | 1.1101e+06 6.2926e+05 |       -
+  t=2.5e-06  1.3064e+06 9.0257e+05 | 1.0991e+06 6.1226e+05 |       -
+  t=2.6e-06  1.3065e+06 9.0248e+05 | 1.0879e+06 5.9435e+05 |       -
+  t=2.7e-06  1.3065e+06 9.0239e+05 | 1.0767e+06 5.7555e+05 |       -
+  t=2.8e-06  1.3065e+06 9.0229e+05 | 1.0654e+06 5.5590e+05 |       -
+  t=2.9e-06  1.3065e+06 9.0218e+05 | 1.0539e+06 5.3545e+05 |       -
+  t=3.0e-06  1.3065e+06 9.0206e+05 | 1.0424e+06 5.1431e+05 |       -
+
+E [V/m]   columns: pb | cold | file
+  t=0.0e+00  2.7499e-02 6.4762e-01 | 2.7499e-02 6.4762e-01 | 2.7499e-02 6.4762e-01
+  t=1.0e-07  4.3097e-02 8.4622e-01 | 4.1602e-02 7.5448e-01 | 4.1583e-02 8.1166e-01
+  t=2.0e-07  6.3092e-02 9.9004e-01 | 5.9237e-02 8.2906e-01 | 5.9219e-02 9.4755e-01
+  t=3.0e-07  8.6835e-02 1.1001e+00 | 7.9827e-02 8.9217e-01 | 7.9862e-02 1.0578e+00
+  t=4.0e-07  1.1282e-01 1.1948e+00 | 1.0208e-01 9.5310e-01 | 1.0223e-01 1.1501e+00
+  t=5.0e-07  1.4012e-01 1.2856e+00 | 1.2530e-01 1.0178e+00 | 1.2573e-01 1.2337e+00
+  t=6.0e-07  1.6754e-01 1.3759e+00 | 1.4854e-01 1.0874e+00 | 1.4948e-01 1.3140e+00
+  t=7.0e-07  1.9412e-01 1.4664e+00 | 1.7101e-01 1.1619e+00 | 1.7261e-01 1.3940e+00
+  t=8.0e-07  2.1913e-01 1.5566e+00 | 1.9211e-01 1.2406e+00 | 1.9455e-01 1.4767e+00
+  t=9.0e-07  2.4214e-01 1.6459e+00 | 2.1140e-01 1.3239e+00 | 2.1480e-01 1.5622e+00
+  t=1.0e-06  2.6294e-01 1.7339e+00 | 2.2864e-01 1.4115e+00 | 2.3304e-01 1.6513e+00
+  t=1.1e-06  2.8151e-01 1.8205e+00 | 2.4378e-01 1.5036e+00 |       -
+  t=1.2e-06  2.9796e-01 1.9054e+00 | 2.5687e-01 1.6004e+00 |       -
+  t=1.3e-06  3.1248e-01 1.9886e+00 | 2.6804e-01 1.7019e+00 |       -
+  t=1.4e-06  3.2531e-01 2.0702e+00 | 2.7752e-01 1.8087e+00 |       -
+  t=1.5e-06  3.3670e-01 2.1508e+00 | 2.8550e-01 1.9209e+00 |       -
+  t=1.6e-06  3.4688e-01 2.2301e+00 | 2.9227e-01 2.0389e+00 |       -
+  t=1.7e-06  3.5609e-01 2.3083e+00 | 2.9808e-01 2.1633e+00 |       -
+  t=1.8e-06  3.6451e-01 2.3855e+00 | 3.0312e-01 2.2945e+00 |       -
+  t=1.9e-06  3.7231e-01 2.4618e+00 | 3.0760e-01 2.4329e+00 |       -
+  t=2.0e-06  3.7963e-01 2.5374e+00 | 3.1168e-01 2.5789e+00 |       -
+  t=2.1e-06  3.8658e-01 2.6123e+00 | 3.1547e-01 2.7332e+00 |       -
+  t=2.2e-06  3.9326e-01 2.6868e+00 | 3.1908e-01 2.8959e+00 |       -
+  t=2.3e-06  3.9973e-01 2.7608e+00 | 3.2256e-01 3.0670e+00 |       -
+  t=2.4e-06  4.0604e-01 2.8346e+00 | 3.2599e-01 3.2465e+00 |       -
+  t=2.5e-06  4.1224e-01 2.9081e+00 | 3.2942e-01 3.4350e+00 |       -
+  t=2.6e-06  4.1836e-01 2.9816e+00 | 3.3288e-01 3.6323e+00 |       -
+  t=2.7e-06  4.2440e-01 3.0551e+00 | 3.3639e-01 3.8378e+00 |       -
+  t=2.8e-06  4.3040e-01 3.1286e+00 | 3.3997e-01 4.0508e+00 |       -
+  t=2.9e-06  4.3636e-01 3.2024e+00 | 3.4363e-01 4.2698e+00 |       -
+  t=3.0e-06  4.4228e-01 3.2764e+00 | 3.4738e-01 4.4931e+00 |       -
+
+W_below [J/m^3]   columns: pb | cold | file
+  t=0.0e+00  2.5625e+04 2.8854e+03 | 2.9998e+04 4.8448e+03 | 2.9998e+04 4.8448e+03
+  t=1.0e-07  2.5318e+04 2.9210e+03 | 3.0371e+04 4.9827e+03 | 3.0626e+04 4.9850e+03
+  t=2.0e-07  2.5093e+04 2.9670e+03 | 3.0770e+04 5.0843e+03 | 3.1250e+04 5.0801e+03
+  t=3.0e-07  2.4931e+04 3.0072e+03 | 3.1180e+04 5.1425e+03 | 3.1860e+04 5.1288e+03
+  t=4.0e-07  2.4818e+04 3.0367e+03 | 3.1592e+04 5.1585e+03 | 3.2454e+04 5.1331e+03
+  t=5.0e-07  2.4747e+04 3.0553e+03 | 3.2000e+04 5.1370e+03 | 3.3029e+04 5.0983e+03
+  t=6.0e-07  2.4711e+04 3.0647e+03 | 3.2395e+04 5.0843e+03 | 3.3589e+04 5.0311e+03
+  t=7.0e-07  2.4704e+04 3.0667e+03 | 3.2771e+04 4.9998e+03 | 3.4120e+04 4.9379e+03
+  t=8.0e-07  2.4720e+04 3.0633e+03 | 3.3143e+04 4.8825e+03 | 3.4644e+04 4.8073e+03
+  t=9.0e-07  2.4754e+04 3.0560e+03 | 3.3493e+04 4.7501e+03 | 3.5154e+04 4.6628e+03
+  t=1.0e-06  2.4802e+04 3.0459e+03 | 3.3799e+04 4.6063e+03 | 3.5612e+04 4.5083e+03
+  t=1.1e-06  2.4859e+04 3.0338e+03 | 3.4082e+04 4.4542e+03 |       -
+  t=1.2e-06  2.4923e+04 3.0204e+03 | 3.4342e+04 4.2959e+03 |       -
+  t=1.3e-06  2.4990e+04 3.0061e+03 | 3.4576e+04 4.1332e+03 |       -
+  t=1.4e-06  2.5059e+04 2.9912e+03 | 3.4782e+04 3.9675e+03 |       -
+  t=1.5e-06  2.5129e+04 2.9753e+03 | 3.4925e+04 3.7999e+03 |       -
+  t=1.6e-06  2.5198e+04 2.9588e+03 | 3.5035e+04 3.6311e+03 |       -
+  t=1.7e-06  2.5267e+04 2.9419e+03 | 3.5113e+04 3.4618e+03 |       -
+  t=1.8e-06  2.5333e+04 2.9247e+03 | 3.5160e+04 3.2926e+03 |       -
+  t=1.9e-06  2.5398e+04 2.9073e+03 | 3.5178e+04 3.1238e+03 |       -
+  t=2.0e-06  2.5460e+04 2.8897e+03 | 3.5168e+04 2.9560e+03 |       -
+  t=2.1e-06  2.5520e+04 2.8719e+03 | 3.5131e+04 2.7893e+03 |       -
+  t=2.2e-06  2.5577e+04 2.8539e+03 | 3.5067e+04 2.6243e+03 |       -
+  t=2.3e-06  2.5631e+04 2.8357e+03 | 3.4965e+04 2.4688e+03 |       -
+  t=2.4e-06  2.5683e+04 2.8173e+03 | 3.4830e+04 2.3221e+03 |       -
+  t=2.5e-06  2.5732e+04 2.7987e+03 | 3.4669e+04 2.1796e+03 |       -
+  t=2.6e-06  2.5778e+04 2.7800e+03 | 3.4483e+04 2.0415e+03 |       -
+  t=2.7e-06  2.5822e+04 2.7610e+03 | 3.4275e+04 1.9082e+03 |       -
+  t=2.8e-06  2.5862e+04 2.7419e+03 | 3.4045e+04 1.7801e+03 |       -
+  t=2.9e-06  2.5900e+04 2.7226e+03 | 3.3794e+04 1.6577e+03 |       -
+  t=3.0e-06  2.5936e+04 2.7031e+03 | 3.3523e+04 1.5412e+03 |       -
+
+W_hot [J/m^3]   columns: pb | cold | file
+  t=0.0e+00  1.2278e+00 6.6329e+01 | 1.6079e+00 6.7761e+01 | 1.6079e+00 6.7761e+01
+  t=1.0e-07  1.6016e+00 7.2283e+01 | 8.1916e+00 1.3342e+02 | 8.1017e+00 1.2621e+02
+  t=2.0e-07  1.5880e+00 7.3486e+01 | 2.8043e+01 1.9262e+02 | 2.7498e+01 1.8264e+02
+  t=3.0e-07  1.5840e+00 7.3244e+01 | 7.1945e+01 2.4554e+02 | 6.9837e+01 2.3279e+02
+  t=4.0e-07  1.5828e+00 7.2447e+01 | 1.4261e+02 2.9261e+02 | 1.3640e+02 2.7690e+02
+  t=5.0e-07  1.5827e+00 7.1439e+01 | 2.3916e+02 3.3488e+02 | 2.2882e+02 3.1593e+02
+  t=6.0e-07  1.5823e+00 7.0362e+01 | 3.6277e+02 3.7338e+02 | 3.4214e+02 3.5086e+02
+  t=7.0e-07  1.5822e+00 6.9279e+01 | 5.1374e+02 4.1560e+02 | 4.8435e+02 3.8253e+02
+  t=8.0e-07  1.5822e+00 6.8218e+01 | 6.6832e+02 4.6903e+02 | 6.3023e+02 4.2917e+02
+  t=9.0e-07  1.5821e+00 6.7190e+01 | 8.3774e+02 5.2101e+02 | 7.7932e+02 4.7327e+02
+  t=1.0e-06  1.5820e+00 6.6199e+01 | 1.0378e+03 5.7181e+02 | 9.6567e+02 5.1531e+02
+  t=1.1e-06  1.5818e+00 6.5246e+01 | 1.2418e+03 6.2165e+02 |       -
+  t=1.2e-06  1.5816e+00 6.4329e+01 | 1.4470e+03 6.7072e+02 |       -
+  t=1.3e-06  1.5825e+00 6.3446e+01 | 1.6520e+03 7.1919e+02 |       -
+  t=1.4e-06  1.5835e+00 6.2594e+01 | 1.8578e+03 7.6718e+02 |       -
+  t=1.5e-06  1.5842e+00 6.2267e+01 | 2.0987e+03 8.1479e+02 |       -
+  t=1.6e-06  1.5847e+00 6.2027e+01 | 2.3437e+03 8.6210e+02 |       -
+  t=1.7e-06  1.5850e+00 6.1790e+01 | 2.5915e+03 9.0917e+02 |       -
+  t=1.8e-06  1.5851e+00 6.1556e+01 | 2.8410e+03 9.5604e+02 |       -
+  t=1.9e-06  1.5850e+00 6.1324e+01 | 3.0914e+03 1.0027e+03 |       -
+  t=2.0e-06  1.5849e+00 6.1094e+01 | 3.3421e+03 1.0493e+03 |       -
+  t=2.1e-06  1.5847e+00 6.0867e+01 | 3.5926e+03 1.0956e+03 |       -
+  t=2.2e-06  1.5844e+00 6.0642e+01 | 3.8426e+03 1.1417e+03 |       -
+  t=2.3e-06  1.5840e+00 6.0419e+01 | 4.1045e+03 1.1801e+03 |       -
+  t=2.4e-06  1.5837e+00 6.0197e+01 | 4.3749e+03 1.2118e+03 |       -
+  t=2.5e-06  1.5833e+00 5.9978e+01 | 4.6463e+03 1.2417e+03 |       -
+  t=2.6e-06  1.5829e+00 5.9760e+01 | 4.9180e+03 1.2697e+03 |       -
+  t=2.7e-06  1.5824e+00 5.9543e+01 | 5.1897e+03 1.2957e+03 |       -
+  t=2.8e-06  1.5820e+00 5.9329e+01 | 5.4611e+03 1.3195e+03 |       -
+  t=2.9e-06  1.5816e+00 5.9115e+01 | 5.7319e+03 1.3410e+03 |       -
+  t=3.0e-06  1.5811e+00 5.8903e+01 | 6.0019e+03 1.3602e+03 |       -
+
+W_cold [J/m^3]   columns: pb | cold | file
+  t=0.0e+00  2.5625e+04 2.8854e+03 | 2.5612e+04 2.8578e+03 | 2.5612e+04 2.8578e+03
+  t=1.0e-07  2.5318e+04 2.9210e+03 | 2.5215e+04 2.8432e+03 | 2.5217e+04 2.8439e+03
+  t=2.0e-07  2.5093e+04 2.9670e+03 | 2.4822e+04 2.8139e+03 | 2.4826e+04 2.8158e+03
+  t=3.0e-07  2.4931e+04 3.0072e+03 | 2.4434e+04 2.7736e+03 | 2.4440e+04 2.7768e+03
+  t=4.0e-07  2.4818e+04 3.0367e+03 | 2.4051e+04 2.7252e+03 | 2.4060e+04 2.7300e+03
+  t=5.0e-07  2.4747e+04 3.0553e+03 | 2.3674e+04 2.6709e+03 | 2.3685e+04 2.6775e+03
+  t=6.0e-07  2.4711e+04 3.0647e+03 | 2.3303e+04 2.6123e+03 | 2.3316e+04 2.6209e+03
+  t=7.0e-07  2.4704e+04 3.0667e+03 | 2.2939e+04 2.5506e+03 | 2.2953e+04 2.5612e+03
+  t=8.0e-07  2.4720e+04 3.0633e+03 | 2.2581e+04 2.4865e+03 | 2.2597e+04 2.4992e+03
+  t=9.0e-07  2.4754e+04 3.0560e+03 | 2.2230e+04 2.4205e+03 | 2.2247e+04 2.4355e+03
+  t=1.0e-06  2.4802e+04 3.0459e+03 | 2.1885e+04 2.3532e+03 | 2.1903e+04 2.3704e+03
+  t=1.1e-06  2.4859e+04 3.0338e+03 | 2.1546e+04 2.2847e+03 |       -
+  t=1.2e-06  2.4923e+04 3.0204e+03 | 2.1212e+04 2.2153e+03 |       -
+  t=1.3e-06  2.4990e+04 3.0061e+03 | 2.0884e+04 2.1452e+03 |       -
+  t=1.4e-06  2.5059e+04 2.9912e+03 | 2.0561e+04 2.0745e+03 |       -
+  t=1.5e-06  2.5129e+04 2.9753e+03 | 2.0244e+04 2.0034e+03 |       -
+  t=1.6e-06  2.5198e+04 2.9588e+03 | 1.9931e+04 1.9321e+03 |       -
+  t=1.7e-06  2.5267e+04 2.9419e+03 | 1.9623e+04 1.8605e+03 |       -
+  t=1.8e-06  2.5333e+04 2.9247e+03 | 1.9320e+04 1.7890e+03 |       -
+  t=1.9e-06  2.5398e+04 2.9073e+03 | 1.9021e+04 1.7177e+03 |       -
+  t=2.0e-06  2.5460e+04 2.8897e+03 | 1.8726e+04 1.6466e+03 |       -
+  t=2.1e-06  2.5520e+04 2.8719e+03 | 1.8435e+04 1.5760e+03 |       -
+  t=2.2e-06  2.5577e+04 2.8539e+03 | 1.8149e+04 1.5060e+03 |       -
+  t=2.3e-06  2.5631e+04 2.8357e+03 | 1.7866e+04 1.4369e+03 |       -
+  t=2.4e-06  2.5683e+04 2.8173e+03 | 1.7588e+04 1.3689e+03 |       -
+  t=2.5e-06  2.5732e+04 2.7987e+03 | 1.7313e+04 1.3021e+03 |       -
+  t=2.6e-06  2.5778e+04 2.7800e+03 | 1.7042e+04 1.2370e+03 |       -
+  t=2.7e-06  2.5822e+04 2.7610e+03 | 1.6775e+04 1.1736e+03 |       -
+  t=2.8e-06  2.5862e+04 2.7419e+03 | 1.6511e+04 1.1123e+03 |       -
+  t=2.9e-06  2.5900e+04 2.7226e+03 | 1.6251e+04 1.0534e+03 |       -
+  t=3.0e-06  2.5936e+04 2.7031e+03 | 1.5994e+04 9.9704e+02 |       -
+
+relative difference of T_cold to DREAM (vi), (T − T_ref)/T_ref   columns: pb | cold | file
+  t=0.0e+00  +0.000e+00 +0.000e+00 | +0.000e+00 +0.000e+00 | +0.000e+00 +0.000e+00
+  t=1.0e-07  +2.666e-03 +1.362e-02 | -1.573e-03 -1.192e-02 | +0.000e+00 +0.000e+00
+  t=2.0e-07  +8.168e-03 +3.686e-02 | -3.072e-03 -1.342e-02 | +0.000e+00 +0.000e+00
+  t=3.0e-07  +1.615e-02 +6.289e-02 | -4.653e-03 -1.444e-02 | +0.000e+00 +0.000e+00
+  t=4.0e-07  +2.581e-02 +8.909e-02 | -6.596e-03 -1.523e-02 | +0.000e+00 +0.000e+00
+  t=5.0e-07  +3.744e-02 +1.147e-01 | -8.294e-03 -1.591e-02 | +0.000e+00 +0.000e+00
+  t=6.0e-07  +5.072e-02 +1.397e-01 | -9.798e-03 -1.656e-02 | +0.000e+00 +0.000e+00
+  t=7.0e-07  +6.519e-02 +1.644e-01 | -1.137e-02 -1.705e-02 | +0.000e+00 +0.000e+00
+  t=8.0e-07  +8.096e-02 +1.892e-01 | -1.277e-02 -1.732e-02 | +0.000e+00 +0.000e+00
+  t=9.0e-07  +9.783e-02 +2.142e-01 | -1.397e-02 -1.802e-02 | +0.000e+00 +0.000e+00
+  t=1.0e-06  +1.156e-01 +2.401e-01 | -1.497e-02 -1.871e-02 | +0.000e+00 +0.000e+00
+
+relative difference of T_cold to (iii) cold row, (T − T_ref)/T_ref   columns: pb | cold | file
+  t=0.0e+00  +0.000e+00 +0.000e+00 | +0.000e+00 +0.000e+00 | +0.000e+00 +0.000e+00
+  t=1.0e-07  +4.245e-03 +2.585e-02 | +0.000e+00 +0.000e+00 | +1.575e-03 +1.207e-02
+  t=2.0e-07  +1.128e-02 +5.096e-02 | +0.000e+00 +0.000e+00 | +3.082e-03 +1.360e-02
+  t=3.0e-07  +2.090e-02 +7.846e-02 | +0.000e+00 +0.000e+00 | +4.674e-03 +1.465e-02
+  t=4.0e-07  +3.262e-02 +1.059e-01 | +0.000e+00 +0.000e+00 | +6.640e-03 +1.546e-02
+  t=5.0e-07  +4.611e-02 +1.327e-01 | +0.000e+00 +0.000e+00 | +8.364e-03 +1.617e-02
+  t=6.0e-07  +6.112e-02 +1.589e-01 | +0.000e+00 +0.000e+00 | +9.895e-03 +1.684e-02
+  t=7.0e-07  +7.745e-02 +1.846e-01 | +0.000e+00 +0.000e+00 | +1.151e-02 +1.735e-02
+  t=8.0e-07  +9.494e-02 +2.102e-01 | +0.000e+00 +0.000e+00 | +1.293e-02 +1.762e-02
+  t=9.0e-07  +1.134e-01 +2.364e-01 | +0.000e+00 +0.000e+00 | +1.416e-02 +1.835e-02
+  t=1.0e-06  +1.326e-01 +2.637e-01 | +0.000e+00 +0.000e+00 | +1.519e-02 +1.906e-02
+  t=1.1e-06  +1.524e-01 +2.924e-01 | +0.000e+00 +0.000e+00 |       -
+  t=1.2e-06  +1.729e-01 +3.228e-01 | +0.000e+00 +0.000e+00 |       -
+  t=1.3e-06  +1.938e-01 +3.551e-01 | +0.000e+00 +0.000e+00 |       -
+  t=1.4e-06  +2.151e-01 +3.897e-01 | +0.000e+00 +0.000e+00 |       -
+  t=1.5e-06  +2.366e-01 +4.265e-01 | +0.000e+00 +0.000e+00 |       -
+  t=1.6e-06  +2.584e-01 +4.659e-01 | +0.000e+00 +0.000e+00 |       -
+  t=1.7e-06  +2.805e-01 +5.082e-01 | +0.000e+00 +0.000e+00 |       -
+  t=1.8e-06  +3.028e-01 +5.537e-01 | +0.000e+00 +0.000e+00 |       -
+  t=1.9e-06  +3.254e-01 +6.027e-01 | +0.000e+00 +0.000e+00 |       -
+  t=2.0e-06  +3.482e-01 +6.555e-01 | +0.000e+00 +0.000e+00 |       -
+  t=2.1e-06  +3.713e-01 +7.124e-01 | +0.000e+00 +0.000e+00 |       -
+  t=2.2e-06  +3.946e-01 +7.738e-01 | +0.000e+00 +0.000e+00 |       -
+  t=2.3e-06  +4.180e-01 +8.396e-01 | +0.000e+00 +0.000e+00 |       -
+  t=2.4e-06  +4.415e-01 +9.103e-01 | +0.000e+00 +0.000e+00 |       -
+  t=2.5e-06  +4.653e-01 +9.864e-01 | +0.000e+00 +0.000e+00 |       -
+  t=2.6e-06  +4.894e-01 +1.068e+00 | +0.000e+00 +0.000e+00 |       -
+  t=2.7e-06  +5.136e-01 +1.156e+00 | +0.000e+00 +0.000e+00 |       -
+  t=2.8e-06  +5.381e-01 +1.249e+00 | +0.000e+00 +0.000e+00 |       -
+  t=2.9e-06  +5.628e-01 +1.348e+00 | +0.000e+00 +0.000e+00 |       -
+  t=3.0e-06  +5.878e-01 +1.453e+00 | +0.000e+00 +0.000e+00 |       -
+
+Newton/steps pb: steps attempted=30 accepted=30 not accepted=0 newton=[5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] status=[:converged]
+
+Newton/steps cold: steps attempted=30 accepted=30 not accepted=0 newton=[5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] status=[:converged]
+END

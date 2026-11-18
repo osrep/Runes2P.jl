@@ -1,0 +1,132 @@
+HEAD 89056db125032522eaa03d56e93d6309a88eaabd
+pathof <checkout>/src/Runes2P.jl
+p_faces = [0.0, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.0875, 0.125, 0.1625, 0.2, 0.2375, 0.275, 0.3125, 0.35, 0.3875, 0.425, 0.4625, 0.5, 0.5375, 0.575, 0.6125, 0.65, 0.6875, 0.725, 0.7625, 0.8]
+xi_faces = [-1.0, -0.5, 0.0, 0.5, 1.0]
+TIMES = [0.0, 1.0e-7, 2.0e-7, 3.0e-7, 4.0e-7, 5.0e-7, 6.0e-7, 7.0e-7, 8.0e-7, 9.0e-7, 1.0e-6]
+first cell centre p=0.0025, ε=1.597 eV, floor of T from a bulk in cell 1 = 2/3 ε = 1.065 eV
+
+Maxwellian on the grid: n_grid/n, W_grid/(3/2 n T), T_moment/T (whole grid)
+  T= 2000.0 eV  n_grid/n=1.0000  W/(1.5nT)=1.0000  T_mom/T=1.0000
+  T= 1000.0 eV  n_grid/n=1.0000  W/(1.5nT)=1.0096  T_mom/T=1.0096
+  T=  500.0 eV  n_grid/n=1.0000  W/(1.5nT)=1.0517  T_mom/T=1.0517
+  T=  300.0 eV  n_grid/n=1.0000  W/(1.5nT)=1.0314  T_mom/T=1.0314
+  T=  200.0 eV  n_grid/n=1.0000  W/(1.5nT)=0.9545  T_mom/T=0.9545
+  T=  139.0 eV  n_grid/n=1.0000  W/(1.5nT)=0.9507  T_mom/T=0.9507
+  T=  100.0 eV  n_grid/n=1.0000  W/(1.5nT)=0.9824  T_mom/T=0.9824
+  T=   70.0 eV  n_grid/n=1.0000  W/(1.5nT)=0.9981  T_mom/T=0.9981
+  T=   50.0 eV  n_grid/n=1.0000  W/(1.5nT)=1.0000  T_mom/T=1.0000
+  T=   30.0 eV  n_grid/n=1.0000  W/(1.5nT)=1.0001  T_mom/T=1.0001
+  T=   20.0 eV  n_grid/n=1.0000  W/(1.5nT)=1.0000  T_mom/T=1.0000
+  T=   10.0 eV  n_grid/n=1.0000  W/(1.5nT)=0.9999  T_mom/T=0.9999
+  T=    5.0 eV  n_grid/n=1.0000  W/(1.5nT)=0.9441  T_mom/T=0.9441
+  below + hot − whole [J/m^3]                                  [3.6380e-12, 0.0000e+00]
+  DREAM T_cold [eV]                                            [1.5803e+03, 1.3876e+02]
+
+start (a): scan of the moment row F(T) = M_below(T) − 3/2 e n_cold(T) T, relative to 3/2 e n T
+  T/T_D=0.50  F/(1.5enT) = [1.3213e+00, 1.9818e+00]   p0 = [3.8928e-01, 1.1535e-01]
+  T/T_D=0.80  F/(1.5enT) = [4.6283e-01, 1.0492e+00]   p0 = [4.9240e-01, 1.4591e-01]
+  T/T_D=1.00  F/(1.5enT) = [1.7065e-01, 6.7911e-01]   p0 = [5.5052e-01, 1.6313e-01]
+  T/T_D=1.20  F/(1.5enT) = [-2.4418e-02, 4.0799e-01]   p0 = [6.0307e-01, 1.7870e-01]
+  T/T_D=1.40  F/(1.5enT) = [-1.6378e-01, 2.1179e-01]   p0 = [6.5139e-01, 1.9302e-01]
+  T/T_D=1.60  F/(1.5enT) = [-2.6831e-01, 6.2190e-02]   p0 = [6.9636e-01, 2.0634e-01]
+  T/T_D=1.80  F/(1.5enT) = [-3.4961e-01, -5.5308e-02]   p0 = [7.3861e-01, 2.1886e-01]
+  T/T_D=2.00  F/(1.5enT) = [-4.1465e-01, -1.4945e-01]   p0 = [7.7856e-01, 2.3070e-01]
+  T/T_D=2.20  F/(1.5enT) = [-4.6786e-01, -2.2662e-01]   p0 = [8.1656e-01, 2.4196e-01]
+  T/T_D=2.50  F/(1.5enT) = [-5.3172e-01, -3.1939e-01]   p0 = [8.7045e-01, 2.5793e-01]
+  T/T_D=3.00  F/(1.5enT) = [-6.0976e-01, -4.3279e-01]   p0 = [9.5354e-01, 2.8255e-01]
+  T/T_D=4.00  F/(1.5enT) = [-7.0732e-01, -5.7459e-01]   p0 = [1.1010e+00, 3.2626e-01]
+  T/T_D=6.00  F/(1.5enT) = [-8.0488e-01, -7.1639e-01]   p0 = [1.3485e+00, 3.9958e-01]
+  start (a) T from the moment [eV]                             [1.8501e+03, 2.3589e+02]
+  T_a / T_D                                                    [1.1707e+00, 1.7000e+00]
+  (dM_below/dT)/(3/2 e n) at the root [-]                      [1.1678e-04, 4.8395e-03]
+  n_cold(a) − density below [m^-3]                             [8.0940e+10, 8.3602e+11]
+   r1 T*/T_D=0.30 G/(1.5 e n T)=-6.8362e-01 c=1.5463e+23 Mbelow=8.1071e+03 nhot=9.5535e+13
+   r1 T*/T_D=0.50 G/(1.5 e n T)=-4.8963e-01 c=6.9814e+22 Mbelow=1.3078e+04 nhot=9.5535e+13
+   r1 T*/T_D=0.80 G/(1.5 e n T)=-1.9744e-01 c=3.4244e+22 Mbelow=2.0566e+04 nhot=9.5535e+13
+   r1 T*/T_D=1.00 G/(1.5 e n T)=4.6364e-04 c=2.4490e+22 Mbelow=2.5637e+04 nhot=9.5535e+13
+   r1 T*/T_D=1.20 G/(1.5 e n T)=1.9994e-01 c=1.8630e+22 Mbelow=3.0748e+04 nhot=9.5535e+13
+   r1 T*/T_D=1.50 G/(1.5 e n T)=5.0107e-01 c=1.3329e+22 Mbelow=3.8465e+04 nhot=9.5535e+13
+   r1 T*/T_D=2.00 G/(1.5 e n T)=1.0063e+00 c=8.6509e+21 Mbelow=5.1411e+04 nhot=9.5558e+13
+   r1 T*/T_D=3.00 G/(1.5 e n T)=2.0247e+00 c=4.6931e+21 Mbelow=7.7507e+04 nhot=1.2315e+14
+   r2 T*/T_D=0.30 G/(1.5 e n T)=-6.9909e-01 c=7.4709e+24 Mbelow=8.6712e+02 nhot=4.7722e+16
+   r2 T*/T_D=0.50 G/(1.5 e n T)=-5.0011e-01 c=3.4729e+24 Mbelow=1.4416e+03 nhot=4.7722e+16
+   r2 T*/T_D=0.80 G/(1.5 e n T)=-2.2094e-01 c=1.7292e+24 Mbelow=2.2475e+03 nhot=4.7722e+16
+   r2 T*/T_D=1.00 G/(1.5 e n T)=-4.8623e-02 c=1.2532e+24 Mbelow=2.7450e+03 nhot=4.7722e+16
+   r2 T*/T_D=1.20 G/(1.5 e n T)=1.3126e-01 c=9.6774e+23 Mbelow=3.2643e+03 nhot=4.7722e+16
+   r2 T*/T_D=1.50 G/(1.5 e n T)=4.4044e-01 c=7.0452e+23 Mbelow=4.1569e+03 nhot=4.7722e+16
+   r2 T*/T_D=2.00 G/(1.5 e n T)=1.0338e+00 c=4.6009e+23 Mbelow=5.8699e+03 nhot=4.7722e+16
+   r2 T*/T_D=3.00 G/(1.5 e n T)=2.1736e+00 c=2.4371e+23 Mbelow=9.1604e+03 nhot=4.7723e+16
+  start (b): Maxwellian temperature T* [eV]                    [1.5796e+03, 1.4649e+02]
+  T*/T_D                                                       [9.9953e-01, 1.0558e+00]
+  start (b): α [1/(m_e c)]                                     [6.5450e-02, 4.3440e-01]
+  start (b): min f                                             [3.9744e+04, 6.4011e-07]
+  start (b): T from the moment / T_D                           [1.0000e+00, 1.0000e+00]
+  start (b): bulk current before [A/m^2]                       [6.1266e+05, 4.5963e+05]
+  start (b): bulk current after [A/m^2]                        [6.1266e+05, 4.5963e+05]
+  start (b): ∫f − ∫f_DREAM [m^-3]                              [0.0000e+00, 0.0000e+00]
+
+point 3 at the starts (fp prepared at the start state, t = t1)
+  --- start (a)
+  FP energy moment, whole grid [W/m^3]                         [4.0477e+09, 3.4898e+09]
+  free-electron loss L_fe whole grid [W/m^3] (+: f loses)      [-1.0021e+09, -3.2433e+09]
+  free-electron loss below the threshold [W/m^3]               [-1.0021e+09, -3.2434e+09]
+  sinks L_s whole grid [W/m^3]                                 [-3.0455e+09, -2.4625e+08]
+  sinks below the threshold [W/m^3]                            [-3.0455e+09, -2.4637e+08]
+  outflow energy at p_max (term value) [W/m^3]                 [2.7359e-01, 7.5035e-16]
+  field part = W + L_fe + L_s + outflow [W/m^3]                [1.7337e+04, 2.7156e+05]
+  E (j(f)) [W/m^3]                                             [1.6852e+04, 3.1133e+05]
+  P_fluid channel: E^2(sigma-sigma_kin) [W/m^3]                [2.3890e+04, 6.0912e+05]
+  P_fluid channel: e c E_c n_re [W/m^3]                        [1.1065e+01, 2.7309e-14]
+  P_fluid channel: exchange (electrons) [W/m^3]                [2.2232e+05, 3.7563e+04]
+  P_fluid channel: heat diffusion [W/m^3]                      [-3.8245e+09, 1.2748e+09]
+  P_fluid channel: radiation and binding [W/m^3]               [-5.6881e+08, -1.0612e+09]
+  P_fluid total [W/m^3]                                        [-4.3931e+09, 2.1428e+08]
+  cooling a_k [1/s]                                            [-1.1542e+05, 1.0111e+04]
+  cooling rate max |a| p g J/(J Δp) [1/s]                      [1.7761e+06, 1.1204e+05]
+  E j_ohm [W/m^3]                                              [4.0741e+04, 9.1912e+05]
+  L_fe on a Maxwellian at (n_cold,T) [W/m^3]                   [-7.3080e+07, -6.2331e+08]
+    relative to 3/2 e n T [1/s]                                [-2.4361e+03, -1.2700e+05]
+  L_fe / (3/2 e n T) [1/s]                                     [-3.3406e+04, -6.6084e+05]
+  --- start (b)
+  FP energy moment, whole grid [W/m^3]                         [2.7919e+08, 1.2184e+08]
+  free-electron loss L_fe whole grid [W/m^3] (+: f loses)      [-1.0241e+08, -5.4361e+07]
+  free-electron loss below the threshold [W/m^3]               [-1.0241e+08, -5.6426e+07]
+  sinks L_s whole grid [W/m^3]                                 [-1.7676e+08, -6.7197e+07]
+  sinks below the threshold [W/m^3]                            [-1.7677e+08, -6.9780e+07]
+  outflow energy at p_max (term value) [W/m^3]                 [2.3348e-01, 4.3898e-16]
+  field part = W + L_fe + L_s + outflow [W/m^3]                [1.5423e+04, 2.8312e+05]
+  E (j(f)) [W/m^3]                                             [1.6851e+04, 3.1105e+05]
+  P_fluid channel: E^2(sigma-sigma_kin) [W/m^3]                [1.9075e+04, 2.8616e+05]
+  P_fluid channel: e c E_c n_re [W/m^3]                        [1.1021e+01, 2.6910e-14]
+  P_fluid channel: exchange (electrons) [W/m^3]                [3.4270e+05, 1.2571e+06]
+  P_fluid channel: heat diffusion [W/m^3]                      [-3.4145e+09, 1.1382e+09]
+  P_fluid channel: radiation and binding [W/m^3]               [-5.9381e+08, -1.1009e+09]
+  P_fluid total [W/m^3]                                        [-4.0080e+09, 3.8846e+07]
+  cooling a_k [1/s]                                            [-1.6679e+05, 3.4732e+03]
+  cooling rate max |a| p g J/(J Δp) [1/s]                      [2.4005e+06, 3.8484e+04]
+  E j_ohm [W/m^3]                                              [3.5923e+04, 5.8382e+05]
+  L_fe on a Maxwellian at (n_cold,T) [W/m^3]                   [-1.0191e+08, -2.4576e+08]
+    relative to 3/2 e n T [1/s]                                [-3.9769e+03, -8.5175e+04]
+  L_fe / (3/2 e n T) [1/s]                                     [-3.9965e+03, -1.8840e+04]
+  --- DREAM's state as is, T = T_D (not on the moment row)
+  FP energy moment, whole grid [W/m^3]                         [3.4653e+09, 2.1766e+09]
+  free-electron loss L_fe whole grid [W/m^3] (+: f loses)      [-1.0052e+09, -2.2009e+09]
+  free-electron loss below the threshold [W/m^3]               [-1.0052e+09, -2.2035e+09]
+  sinks L_s whole grid [W/m^3]                                 [-2.4601e+09, 2.4539e+07]
+  sinks below the threshold [W/m^3]                            [-2.4601e+09, 2.1255e+07]
+  outflow energy at p_max (term value) [W/m^3]                 [2.3348e-01, 4.3898e-16]
+  field part = W + L_fe + L_s + outflow [W/m^3]                [1.7337e+04, 2.7156e+05]
+  E (j(f)) [W/m^3]                                             [1.6852e+04, 3.1133e+05]
+  P_fluid channel: E^2(sigma-sigma_kin) [W/m^3]                [1.9075e+04, 2.8616e+05]
+  P_fluid channel: e c E_c n_re [W/m^3]                        [1.1021e+01, 2.6910e-14]
+  P_fluid channel: exchange (electrons) [W/m^3]                [3.4270e+05, 1.2571e+06]
+  P_fluid channel: heat diffusion [W/m^3]                      [-3.4145e+09, 1.1382e+09]
+  P_fluid channel: radiation and binding [W/m^3]               [-5.9381e+08, -1.1009e+09]
+  P_fluid total [W/m^3]                                        [-4.0079e+09, 3.8852e+07]
+  cooling a_k [1/s]                                            [-1.0531e+05, 1.8954e+03]
+  cooling rate max |a| p g J/(J Δp) [1/s]                      [1.5156e+06, 2.1001e+04]
+  E j_ohm [W/m^3]                                              [3.5923e+04, 5.8382e+05]
+  L_fe on a Maxwellian at (n_cold,T) [W/m^3]                   [-1.0191e+08, -2.4576e+08]
+    relative to 3/2 e n T [1/s]                                [-3.9769e+03, -8.5174e+04]
+  L_fe / (3/2 e n T) [1/s]                                     [-3.9227e+04, -7.6279e+05]
+END
